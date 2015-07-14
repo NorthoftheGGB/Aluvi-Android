@@ -1,9 +1,27 @@
 <resources>
+
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorSecondary</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="ScheduleRideButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/schedule_ride_button_background</item>
+        <item name="android:paddingLeft">10dp</item>
+    </style>
+
+    <style name="ScheduleRideButtonStyle.Light">
+        <item name="android:background">@drawable/schedule_ride_button_background_light</item>
+    </style>
+
+    <style name="ScheduleRideButtonStyle.ExtraLight">
+        <item name="android:background">@drawable/schedule_ride_button_background_extra_light</item>
+    </style>
+
+    <style name="ScheduleRideButtonStyle.Dark">
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

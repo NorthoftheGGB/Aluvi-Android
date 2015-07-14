@@ -1,24 +1,21 @@
 package com.aluvi.android.activities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.aluvi.aluvi.R;
-import com.aluvi.android.fragments.MapButterFragment;
+import com.aluvi.android.fragments.MapFragment;
 
-import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseToolBarActivity
 {
-    @InjectView(R.id.toolbar) Toolbar mToolbar;
     @InjectView(R.id.main_navigation_view) NavigationView mNavigationView;
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
@@ -28,28 +25,21 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
 
-        initToolbar();
+        initNavigationView();
         onHomeClicked();
     }
 
-    public void initToolbar()
+    @Override
+    public int getLayoutId()
     {
-        if (mToolbar != null)
-        {
-            mToolbar.setTitle(R.string.app_name);
-            setSupportActionBar(mToolbar);
-        }
-
-        initNavigationView();
+        return R.layout.activity_main;
     }
 
     public void initNavigationView()
     {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                mToolbar, R.string.drawer_open, R.string.drawer_close);
+                getToolbar(), R.string.drawer_open, R.string.drawer_close);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
@@ -71,12 +61,12 @@ public class MainActivity extends AppCompatActivity
 
     public void onHomeClicked()
     {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, MapButterFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, MapFragment.newInstance()).commit();
     }
 
     public void onScheduleRideClicked()
     {
-
+        startActivity(new Intent(this, ScheduleRideActivity.class));
     }
 
     @Override

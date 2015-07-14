@@ -1,0 +1,94 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="com.aluvi.android.activities.ScheduleRideActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar"/>
+
+        <Button
+            android:id="@+id/schedule_ride_button_from"
+            style="@style/ScheduleRideButtonStyle.Dark"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/toolbar"
+            android:gravity="left|center_vertical"
+            android:text="@string/from"/>
+
+        <Button
+            android:id="@+id/schedule_ride_button_to"
+            style="@style/ScheduleRideButtonStyle.ExtraLight"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignLeft="@+id/schedule_ride_button_from"
+            android:layout_alignStart="@+id/schedule_ride_button_from"
+            android:layout_below="@+id/schedule_ride_button_from"
+            android:gravity="left|center_vertical"
+            android:text="@string/to"/>
+
+        <Button
+            android:id="@+id/schedule_ride_button_start_time"
+            style="@style/ScheduleRideButtonStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignLeft="@+id/schedule_ride_button_to"
+            android:layout_alignStart="@+id/schedule_ride_button_to"
+            android:layout_below="@+id/schedule_ride_button_to"
+            android:gravity="left|center_vertical"
+            android:text="@string/at"/>
+
+        <Button
+            android:id="@+id/schedule_ride_button_end_time"
+            style="@style/ScheduleRideButtonStyle.Dark"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignLeft="@+id/schedule_ride_button_start_time"
+            android:layout_alignStart="@+id/schedule_ride_button_start_time"
+            android:layout_below="@+id/schedule_ride_button_start_time"
+            android:gravity="left|center_vertical"
+            android:text="@string/return_home"/>
+
+        <Button
+            android:id="@+id/schedule_ride_button_drive_there"
+            style="@style/ScheduleRideButtonStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_below="@+id/schedule_ride_button_end_time"
+            android:layout_centerHorizontal="true"
+            android:text="@string/drive_there_user"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/schedule_ride_button_drive_there"
+            android:layout_centerHorizontal="true"
+            android:background="@color/white"
+            android:paddingBottom="10dp"
+            android:paddingLeft="@dimen/activity_vertical_margin"
+            android:paddingRight="@dimen/activity_vertical_margin"
+            android:paddingTop="10dp"
+            android:text="@string/forget_pickup_point"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <Button
+            android:id="@+id/schedule_ride_button_commute_tomorrow"
+            style="@style/ScheduleRideButtonStyle.Light"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView"
+            android:text="@string/commute_tomorrow"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+</ScrollView>

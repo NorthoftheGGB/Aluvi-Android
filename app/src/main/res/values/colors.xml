@@ -2,4 +2,13 @@
 <resources>
     <color name="colorPrimary">#2196F3</color>
     <color name="colorSecondary">#9C27B0</color>
+
+    <color name="scheduleRideButtonBackground">#878787</color>
+    <color name="scheduleRideButtonBackgroundClicked">#656565</color>
+    <color name="scheduleRideButtonBackgroundLight">#C1C1C1</color>
+    <color name="scheduleRideButtonBackgroundLightClicked">#A0A0A0</color>
+    <color name="scheduleRideButtonBackgroundExtraLight">#EAEAEA</color>
+    <color name="scheduleRideButtonBackgroundExtraLightClicked">#C8C8C8</color>
+
+    <color name="transparent_white">#AAFFFFFF</color>
 </resources>

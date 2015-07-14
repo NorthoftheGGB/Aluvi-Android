@@ -16,7 +16,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 
 import butterknife.InjectView;
 
-public class MapButterFragment extends BaseButterFragment
+public class MapFragment extends BaseButterFragment
 {
     @InjectView(R.id.mapview) MapView mMapView;
 
@@ -27,13 +27,13 @@ public class MapButterFragment extends BaseButterFragment
     private final int DEFAULT_ZOOM = 17,
             INVALID_LOCATION = 360;
 
-    public MapButterFragment()
+    public MapFragment()
     {
     }
 
-    public static MapButterFragment newInstance()
+    public static MapFragment newInstance()
     {
-        return new MapButterFragment();
+        return new MapFragment();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class MapButterFragment extends BaseButterFragment
         mMapView.setUserLocationEnabled(true);
 
         float savedLat = getSavedPanLatitude();
-        float savedLon = getSavedPanLatitude();
+        float savedLon = getSavedPanLongitude();
 
         EasyILatLang mMapLocation;
         if (savedLat != INVALID_LOCATION && savedLon != INVALID_LOCATION)
