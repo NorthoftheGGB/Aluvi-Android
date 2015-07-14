@@ -1,12 +1,12 @@
 package com.aluvi.android.model;
 
-import io.realm.RealmObject;
+import com.aluvi.android.model.base.Transit;
 import java.util.Date;
 
 /**
  * Created by matthewxi on 7/13/15.
  */
-public class Ticket extends RealmObject {
+public class Ticket extends Transit {
 
     public static String StateCreated = "created";
     public static String StateRequested = "requested";
