@@ -25,8 +25,8 @@
         android:paddingRight="10dp"
         android:paddingTop="5dp">
 
-        <EditText
-            android:id="@+id/location_select_edit_text_search"
+        <AutoCompleteTextView
+            android:id="@+id/location_select_auto_complete_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -35,18 +35,30 @@
             android:layout_toLeftOf="@+id/location_select_image_button_search"
             android:layout_toStartOf="@+id/location_select_image_button_search"
             android:ems="10"
-            android:inputType="textPostalAddress"/>
+            android:inputType="textPostalAddress"
+            android:imeOptions="actionDone"/>
 
         <ImageButton
             android:id="@+id/location_select_image_button_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/location_select_edit_text_search"
+            android:layout_alignBottom="@+id/location_select_auto_complete_search"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/location_select_edit_text_search"
+            android:layout_alignTop="@+id/location_select_auto_complete_search"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
             android:src="@mipmap/ic_menu_search"/>
+
+        <ProgressBar
+            android:id="@+id/location_select_progress_bar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/location_select_image_button_search"
+            android:layout_alignLeft="@+id/location_select_image_button_search"
+            android:layout_alignRight="@+id/location_select_image_button_search"
+            android:layout_alignTop="@+id/location_select_image_button_search"
+            android:visibility="invisible"/>
     </RelativeLayout>
 </RelativeLayout>

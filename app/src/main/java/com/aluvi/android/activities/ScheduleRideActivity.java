@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.location.Address;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -7,18 +8,21 @@ import android.widget.Button;
 
 import com.aluvi.aluvi.R;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
+import com.aluvi.android.helpers.GeocoderUtils;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.TimePickerDialog;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class ScheduleRideActivity extends BaseToolBarActivity
+public class ScheduleRideActivity extends BaseToolBarActivity implements LocationSelectDialogFragment.OnLocationSelectedListener
 {
     @InjectView(R.id.schedule_ride_button_from) Button mFromButton;
     @InjectView(R.id.schedule_ride_button_to) Button mToButton;
     @InjectView(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
     @InjectView(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
+
+    private final String FROM_LOCATION_TAG = "from_location", TO_LOCATION_TAG = "to_location";
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
 
@@ -37,13 +41,13 @@ public class ScheduleRideActivity extends BaseToolBarActivity
     @OnClick(R.id.schedule_ride_button_from)
     public void onFromButtonClicked()
     {
-        LocationSelectDialogFragment.newInstance().show(getSupportFragmentManager(), "from_location");
+        LocationSelectDialogFragment.newInstance().show(getSupportFragmentManager(), FROM_LOCATION_TAG);
     }
 
     @OnClick(R.id.schedule_ride_button_to)
     public void onToButtonClicked()
     {
-        LocationSelectDialogFragment.newInstance().show(getSupportFragmentManager(), "to_location");
+        LocationSelectDialogFragment.newInstance().show(getSupportFragmentManager(), TO_LOCATION_TAG);
     }
 
     @OnClick(R.id.schedule_ride_button_start_time)
@@ -80,6 +84,20 @@ public class ScheduleRideActivity extends BaseToolBarActivity
     public void onConfirmCommuteButtonClicked()
     {
 
+    }
+
+    @Override
+    public void onLocationSelected(Address address, LocationSelectDialogFragment fragment)
+    {
+        String formattedAddress = GeocoderUtils.getFormattedAddress(address);
+        if (fragment.getTag().equals(FROM_LOCATION_TAG))
+        {
+            mFromButton.setText(formattedAddress);
+        }
+        else
+        {
+            mToButton.setText(formattedAddress);
+        }
     }
 
     @Override
