@@ -74,8 +74,15 @@ public class Car extends RealmObject {
         this.carPhotoUrl = carPhotoUrl;
     }
 
+    public RealmList<Ticket> getTickets() {
+        return tickets;
+    }
 
-    public String summary() {
-        return this.year + ' ' + this.make + ' ' + this.model;
+    public void setTickets(RealmList<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    public static String summary(Car car) {
+        return car.getYear() + ' ' + car.getMake() + ' ' + car.getModel();
     }
 }

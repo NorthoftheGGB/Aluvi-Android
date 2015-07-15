@@ -1,6 +1,7 @@
 package com.aluvi.android.application;
 
 import android.app.Application;
+import android.widget.Toast;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.managers.UserStateManager;
@@ -13,6 +14,16 @@ public class AluviApplication extends Application {
     public void onCreate() {
         super.onCreate();
         AluviApi.initialize(this);
-        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian");
+        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback(){
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure() {
+                Toast.makeText(getApplicationContext(), "Failed to Log In", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

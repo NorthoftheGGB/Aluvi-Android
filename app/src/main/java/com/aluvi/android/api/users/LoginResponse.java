@@ -1,17 +1,18 @@
 package com.aluvi.android.api.users;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by matthewxi on 7/14/15.
  */
 public class LoginResponse {
 
-    String token;
+    public String token;
 
-    public String getToken() {
-        return token;
-    }
+    @JsonProperty("rider_state")
+    public String riderState;
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+    @JsonProperty("driver_state")
+    public String driverState;
+
 }

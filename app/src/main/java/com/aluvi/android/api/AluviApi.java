@@ -61,6 +61,10 @@ public class AluviApi {
     // member variables
     private RequestQueue mRequestQueue;
 
+    public static String constructUrl(String path){
+        return API_BASE_URL + path;
+    }
+
     public AluviApi(Context context) {
         this.mRequestQueue = JacksonNetwork.newRequestQueue(context.getApplicationContext());
     }

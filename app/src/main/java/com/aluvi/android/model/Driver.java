@@ -18,6 +18,10 @@ public class Driver extends RealmObject {
     private String smallImageUrl;
     private String largeImageUrl;
 
+    public static String fullname(Driver driver) {
+        return driver.getFirstName() + ' ' + driver.getLastName();
+    }
+
     public int getId() {
         return id;
     }
@@ -74,7 +78,11 @@ public class Driver extends RealmObject {
         this.largeImageUrl = largeImageUrl;
     }
 
-    public String fullname() {
-        return this.firstName + ' ' + this.lastName;
+    public RealmList<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(RealmList<Ticket> tickets) {
+        this.tickets = tickets;
     }
 }

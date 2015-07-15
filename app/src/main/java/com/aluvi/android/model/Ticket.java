@@ -1,12 +1,13 @@
 package com.aluvi.android.model;
 
-import com.aluvi.android.model.base.Transit;
 import java.util.Date;
+
+import io.realm.RealmObject;
 
 /**
  * Created by matthewxi on 7/13/15.
  */
-public class Ticket extends Transit {
+public class Ticket extends RealmObject {
 
     public static String StateCreated = "created";
     public static String StateRequested = "requested";
@@ -18,7 +19,6 @@ public class Ticket extends Transit {
     public static String StatePaymentProblem = "payment_problem";
 
     public static String RideRequestTypeCommuter = "commuter";
-
 
     private int rideId;
     private int carId;   // These primary keys could be retrieved from related objects
@@ -46,10 +46,42 @@ public class Ticket extends Transit {
     private boolean driving;
     private double fixedPrice;
     private String direction;
+    private int fare_id;
+    private Date desiredArrival;
+    private Date pickupTime;
+    private String state;
 
     private Driver driver;
     private Car car;
     private Fare hovFare;
+
+    public static String routeDescription(Ticket ticket) {
+        return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();
+    }
+
+    public int getFare_id() {
+        return fare_id;
+    }
+
+    public void setFare_id(int fare_id) {
+        this.fare_id = fare_id;
+    }
+
+    public Date getDesiredArrival() {
+        return desiredArrival;
+    }
+
+    public void setDesiredArrival(Date desiredArrival) {
+        this.desiredArrival = desiredArrival;
+    }
+
+    public Date getPickupTime() {
+        return pickupTime;
+    }
+
+    public void setPickupTime(Date pickupTime) {
+        this.pickupTime = pickupTime;
+    }
 
     public int getRideId() {
         return rideId;
@@ -281,5 +313,13 @@ public class Ticket extends Transit {
 
     public void setHovFare(Fare hovFare) {
         this.hovFare = hovFare;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

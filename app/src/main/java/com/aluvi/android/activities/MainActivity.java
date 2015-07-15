@@ -2,17 +2,29 @@ package com.aluvi.android.activities;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.aluvi.aluvi.R;
+import com.aluvi.android.managers.UserStateManager;
 
-public class MainActivity extends ActionBarActivity {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+
+public class MainActivity extends AppCompatActivity {
+
+    @Bind(R.id.login_button) Button loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
     }
 
 
@@ -36,5 +48,22 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.login_button) public void submit(){
+        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback(){
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void failure() {
+                Toast.makeText(getApplicationContext(), "Failed to Log In", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 }

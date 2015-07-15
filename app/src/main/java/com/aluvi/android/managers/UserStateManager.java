@@ -1,5 +1,8 @@
 package com.aluvi.android.managers;
 
+import android.view.View;
+import android.widget.Button;
+
 import com.aluvi.android.api.users.UsersApi;
 
 /**
@@ -10,9 +13,9 @@ public class UserStateManager {
 
     private static UserStateManager mInstance;
 
-    abstract public class Callback {
-        abstract public void success();
-        abstract public void failure();
+    public interface Callback {
+         public void success();
+         public void failure();
     }
 
     public static synchronized UserStateManager getInstance(){
@@ -23,7 +26,17 @@ public class UserStateManager {
     }
 
 
-    public void login(String email, String password, Callback callback) {
-        UsersApi.login(email, password);
+    public void login(String email, String password, final Callback callback) {
+        UsersApi.login(email, password, new UsersApi.Callback(){
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure() {
+                callback.failure();
+            }
+        });
     }
 }

@@ -82,4 +82,12 @@ public class Rider extends RealmObject {
     public void setLargeImageUrl(String largeImageUrl) {
         this.largeImageUrl = largeImageUrl;
     }
+
+    public RealmList<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(RealmList<Fare> fares) {
+        this.fares = fares;
+    }
 }
