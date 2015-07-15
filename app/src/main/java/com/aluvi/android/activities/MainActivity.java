@@ -11,21 +11,24 @@ import android.view.MenuItem;
 
 import com.aluvi.aluvi.R;
 import com.aluvi.android.fragments.MapFragment;
+import com.aluvi.android.fragments.TicketMapFragment;
+import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 
-public class MainActivity extends BaseToolBarActivity
+public class MainActivity extends BaseToolBarActivity implements MapFragment.OnMapEventListener
 {
     @InjectView(R.id.main_navigation_view) NavigationView mNavigationView;
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
+    private final int SCHEDULE_RIDE_REQUEST_CODE = 982;
     private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         initNavigationView();
         onHomeClicked();
     }
@@ -59,14 +62,44 @@ public class MainActivity extends BaseToolBarActivity
         });
     }
 
+    @Override
+    public void onScheduleRideRequested()
+    {
+        startActivityForResult(new Intent(this, ScheduleRideActivity.class), SCHEDULE_RIDE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SCHEDULE_RIDE_REQUEST_CODE)
+        {
+            if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK)
+            {
+                onCommuteScheduled();
+            }
+        }
+    }
+
     public void onHomeClicked()
     {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, MapFragment.newInstance()).commit();
     }
 
-    public void onScheduleRideClicked()
+    public void onCommuteScheduled()
     {
-        startActivity(new Intent(this, ScheduleRideActivity.class));
+        supportInvalidateOptionsMenu();
+        EventBus.getDefault().post(new CommuteScheduledEvent());
+    }
+
+    public void onRiderTicketSelected()
+    {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, TicketMapFragment.newInstance()).commit();
+    }
+
+    public void onDriverTicketSelected()
+    {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, TicketMapFragment.newInstance()).commit();
     }
 
     @Override
@@ -95,8 +128,14 @@ public class MainActivity extends BaseToolBarActivity
     {
         switch (item.getItemId())
         {
-            case R.id.action_schedule_ride:
-                onScheduleRideClicked();
+            case R.id.action_commute_pending:
+                onCommuteScheduled();
+                break;
+            case R.id.action_rider_ticket:
+                onRiderTicketSelected();
+                break;
+            case R.id.action_driver_ticket:
+                onDriverTicketSelected();
                 break;
         }
 

@@ -9,7 +9,10 @@
     <string name="action_schedule_ride">Schedule Ride</string>
 
     <string name="action_settings">Settings</string>
+    <string name="action_commute_pending">Commute Pending</string>
     <string name="action_cancel_schedule_ride">Cancel</string>
+    <string name="action_rider_ticket">Rider Ticket</string>
+    <string name="action_driver_ticket">Driver Ticket</string>
     <string name="map_id">justsoamazing.mn4kk9l9</string>
     <string name="mapbox_access_token">pk.eyJ1IjoianVzdHNvYW1hemluZyIsImEiOiI4ZjI3YzJlN2Y4OWU1OGNjNWY5Mjk4MWU3ZGUwNWFiNCJ9.v-f8fhMNywNn0PI4URxnRg</string>
 
@@ -17,7 +20,6 @@
     <string name="drawer_close">Close</string>
     <string name="title_activity_schedule_ride">Schedule Ride</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="drive_there_user">I\'ll drive us there!</string>
     <string name="forget_pickup_point">Don\'t forget to review the pickup point - you may need to drive to reach it.</string>
     <string name="commute_tomorrow">Commute Tomorrow</string>
@@ -26,4 +28,8 @@
     <string name="to">To:</string>
     <string name="from">From:</string>
     <string name="no_results_address">Couldn\'t find that address</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="schedule_ready">Your schedule will be ready at 9:30 PM. You might want to brush up on your puns.</string>
 </resources>

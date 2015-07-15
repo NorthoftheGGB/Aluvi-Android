@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,9 +23,12 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     @InjectView(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
     @InjectView(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
 
+    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
     private final String FROM_LOCATION_TAG = "from_location", TO_LOCATION_TAG = "to_location";
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
+    private Address mStartLocation, mEndLocation;
+    private boolean mIsDriver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -83,7 +87,8 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked()
     {
-
+        setResult(RESULT_SCHEDULE_OK, new Intent());
+        finish();
     }
 
     @Override
@@ -93,10 +98,12 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
         if (fragment.getTag().equals(FROM_LOCATION_TAG))
         {
             mFromButton.setText(formattedAddress);
+            mStartLocation = address;
         }
         else
         {
             mToButton.setText(formattedAddress);
+            mEndLocation = address;
         }
     }
 
@@ -113,6 +120,7 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
         switch (item.getItemId())
         {
             case R.id.action_cancel_schedule_ride:
+                setResult(RESULT_CANCEL);
                 finish();
                 break;
         }

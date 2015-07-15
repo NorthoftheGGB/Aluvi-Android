@@ -36,7 +36,6 @@ import com.mapbox.mapboxsdk.views.MapViewListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -243,31 +242,21 @@ public class LocationSelectDialogFragment extends DialogFragment
                             Location.distanceBetween(address.getLatitude(), address.getLongitude(), latLng.getLatitude(), latLng.getLongitude(), distanceArr);
                             float distance = distanceArr[0];
 
-                            if (distance < 10) // Store the address only if its less than 10 meters away from the placed pin
+                            if (distance > 10) // Store the address only if its less than 10 meters away from the placed pin
                             {
-                                Log.d(TAG, "Custom location is close enough to found address");
-
-                                addMarkerForAddress(address);
-                                onAddressesFetched(result);
-
-                                if (address != null && mLocationSearchAutoCompleteTextView != null)
-                                {
-                                    mLocationSearchAutoCompleteTextView.setText(GeocoderUtils.getFormattedAddress(address));
-                                }
-
-                                mCurrentlySelectedLocation = address;
+                                Log.d(TAG, "Custom location is far away from fetched address");
+                                address.setLocality(null);
                             }
-                            else
-                            {
-                                onLocationSearchFinished();
-                            }
+
+                            addMarkerForAddress(address);
+                            onAddressesFetched(result);
+                            if (address != null && mLocationSearchAutoCompleteTextView != null)
+                                mLocationSearchAutoCompleteTextView.setText(GeocoderUtils.getFormattedAddress(address));
+
+                            mCurrentlySelectedLocation = address;
                         }
                     }
                 });
-
-        mCurrentlySelectedLocation = new Address(Locale.getDefault());
-        mCurrentlySelectedLocation.setLatitude(latLng.getLatitude());
-        mCurrentlySelectedLocation.setLongitude(latLng.getLongitude());
     }
 
     private void onLocationSearchStarted()
