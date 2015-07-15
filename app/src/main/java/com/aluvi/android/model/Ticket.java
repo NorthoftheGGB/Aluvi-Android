@@ -20,36 +20,36 @@ public class Ticket extends Transit {
     public static String RideRequestTypeCommuter = "commuter";
 
 
-    int rideId;
-    int carId;   // These primary keys could be retrieved from related objects
-    int driverId;
-    int tripId;
-    String rideType;
-    Date requestedTimestamp;
-    Date estimatedArrivalTime;
-    double originLatitude;
-    double originLongitude;
-    String originPlaceName;
-    String originShortName;
-    double destinationLatitude;
-    double destinationLongitude;
-    String destinationPlaceName;
-    String destinationShortName;
-    double meetingPointLatitude;
-    double meetingPointLongitude;
-    String meetingPointPlaceName;
-    double dropOffPointLatitude;
-    double dropOffPointLongitude;
-    String dropOffPointPlaceName;
-    Date rideDate;
-    boolean confirmed; // User has viewed the itinerary and accepted
-    boolean driving;
-    double fixedPrice;
-    String direction;
+    private int rideId;
+    private int carId;   // These primary keys could be retrieved from related objects
+    private int driverId;
+    private int tripId;
+    private String rideType;
+    private Date requestedTimestamp;
+    private Date estimatedArrivalTime;
+    private double originLatitude;
+    private double originLongitude;
+    private String originPlaceName;
+    private String originShortName;
+    private double destinationLatitude;
+    private double destinationLongitude;
+    private String destinationPlaceName;
+    private String destinationShortName;
+    private double meetingPointLatitude;
+    private double meetingPointLongitude;
+    private String meetingPointPlaceName;
+    private double dropOffPointLatitude;
+    private double dropOffPointLongitude;
+    private String dropOffPointPlaceName;
+    private Date rideDate;
+    private boolean confirmed; // User has viewed the itinerary and accepted
+    private boolean driving;
+    private double fixedPrice;
+    private String direction;
 
-    Driver driver;
-    Car car;
-    Fare hovFare;
+    private Driver driver;
+    private Car car;
+    private Fare hovFare;
 
     public int getRideId() {
         return rideId;

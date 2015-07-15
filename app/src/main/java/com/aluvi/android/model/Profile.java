@@ -5,25 +5,25 @@ package com.aluvi.android.model;
  */
 public class Profile {
 
-    String firstName;
-    String lastName;
-    String phone;
-    String email;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String email;
 
-    int commuterRefillAmountCents;
-    int commuterBalanceCents;
-    int commuterRefillEnabled;
+    private int commuterRefillAmountCents;
+    private int commuterBalanceCents;
+    private int commuterRefillEnabled;
 
-    String defaultCardToken;
-    String cardLastFour;
-    String cardBrand;
+    private String defaultCardToken;
+    private String cardLastFour;
+    private String cardBrand;
 
-    String recipientCardBrand;
-    String recipientCardLastFour;
-    String bankAccountName;
+    private String recipientCardBrand;
+    private String recipientCardLastFour;
+    private String bankAccountName;
 
-    String smallImageUrl;
-    String largeImageUrl;
+    private String smallImageUrl;
+    private String largeImageUrl;
 
     public String getFirstName() {
         return firstName;

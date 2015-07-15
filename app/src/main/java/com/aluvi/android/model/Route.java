@@ -5,15 +5,15 @@ package com.aluvi.android.model;
  */
 public class Route {
 
-    double homeLatitude;
-    double homeLongitude;
-    double workLatitude;
-    double workLongitude;
-    String homePlaceName;
-    String workPlaceName;
-    String pickupTime;
-    String returnTime;
-    boolean driving;
+    private double homeLatitude;
+    private double homeLongitude;
+    private double workLatitude;
+    private double workLongitude;
+    private String homePlaceName;
+    private String workPlaceName;
+    private String pickupTime;
+    private String returnTime;
+    private boolean driving;
 
     public double getHomeLatitude() {
         return homeLatitude;

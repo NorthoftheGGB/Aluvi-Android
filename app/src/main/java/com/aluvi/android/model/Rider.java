@@ -10,14 +10,14 @@ public class Rider extends RealmObject {
 
     private RealmList<Fare> fares;
 
-    int id;
-    String firstName;
-    String lastName;
-    String phone;
-    double latitude;
-    double longitude;
-    String smallImageUrl;
-    String largeImageUrl;
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private double latitude;
+    private double longitude;
+    private String smallImageUrl;
+    private String largeImageUrl;
 
     public int getId() {
         return id;

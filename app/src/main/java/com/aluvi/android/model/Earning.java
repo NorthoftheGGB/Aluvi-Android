@@ -6,11 +6,11 @@ import java.util.Date;
  * Created by matthewxi on 7/14/15.
  */
 public class Earning {
-    int amountCents;
-    Date timestamp;
-    int fare_id;
-    String motive;
-    Fare fare;
+    private int amountCents;
+    private Date timestamp;
+    private int fare_id;
+    private String motive;
+    private Fare fare;
 
     public int getAmountCents() {
         return amountCents;

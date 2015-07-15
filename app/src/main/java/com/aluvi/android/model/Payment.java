@@ -9,18 +9,18 @@ import io.realm.RealmObject;
  */
 public class Payment extends RealmObject {
 
-    int id;
-    int driver_id;
-    int fare_id;
-    int ride_id;
-    int amountCents;
-    Date capturedAt;
-    String stripeChargeStatus;
-    Date createdAt;
-    String motive;
-    Driver driver;
-    Fare fare;
-    Ticket ticket;
+    private int id;
+    private int driver_id;
+    private int fare_id;
+    private int ride_id;
+    private int amountCents;
+    private Date capturedAt;
+    private String stripeChargeStatus;
+    private Date createdAt;
+    private String motive;
+    private Driver driver;
+    private Fare fare;
+    private Ticket ticket;
 
     public int getId() {
         return id;

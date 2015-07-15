@@ -11,8 +11,8 @@ public class Fare extends Transit {
 
     RealmList<Rider> riders;
 
-    int car_id;
-    int driveTime;
-    float distance;
+    private int car_id;
+    private int driveTime;
+    private float distance;
 
 }

@@ -10,13 +10,13 @@ public class Driver extends RealmObject {
 
     private RealmList<Ticket> tickets;
 
-    int id;
-    String firstName;
-    String lastName;
-    String driversLicenseNumber;
-    String phone;
-    String smallImageUrl;
-    String largeImageUrl;
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String driversLicenseNumber;
+    private String phone;
+    private String smallImageUrl;
+    private String largeImageUrl;
 
     public int getId() {
         return id;

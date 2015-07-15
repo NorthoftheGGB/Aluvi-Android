@@ -10,13 +10,13 @@ public class Car extends RealmObject {
 
     private RealmList<Ticket> tickets;
 
-    int id;
-    String make;
-    String model;
-    String licensePlate;
-    String state;
-    String year;
-    String carPhotoUrl;
+    private int id;
+    private String make;
+    private String model;
+    private String licensePlate;
+    private String state;
+    private String year;
+    private String carPhotoUrl;
 
     public int getId() {
         return id;
