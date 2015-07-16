@@ -136,6 +136,16 @@ public class CommuteManager {
         this.driving = driving;
     }
 
+    private TicketLocation getHomeLocation(){
+        TicketLocation ticketLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
+        return ticketLocation;
+    }
+
+    private TicketLocation getWorkLocation(){
+        TicketLocation ticketLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
+        return ticketLocation;
+    }
+
     public void setHomeLocation(TicketLocation homeLocation){
         homeLatitude = homeLocation.getLatitude();
         homeLongitude = homeLocation.getLongitude();
@@ -259,9 +269,9 @@ public class CommuteManager {
 
         // go ahead and create the tickets, then request with the server
         realm.beginTransaction();
-        Ticket toWorkTicket = realm.createObject(Ticket.class);
+        final Ticket toWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(), driving, pickupTime);
-        Ticket fromWorkTicket = realm.createObject(Ticket.class);
+        final Ticket fromWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(), driving, returnTime);
         realm.commitTransaction();
 
@@ -274,12 +284,26 @@ public class CommuteManager {
 
             @Override
             public void success(CommuterTicketsResponse response) {
+                Realm realm = Realm.getInstance(ctx);
+                realm.beginTransaction();
+                toWorkTicket.setTripId(response.ticketFromWorkTripId);
+                toWorkTicket.setRideId(response.ticketToWorkRideId);
+                fromWorkTicket.setTripId(response.ticketFromWorkTripId);
+                fromWorkTicket.setTripId(response.ticketFromWorkRideId);
+                realm.commitTransaction();
                 callback.success();
             }
 
             @Override
             public void failure(int statusCode) {
+                // just delete the ticket if it doesn't go through
+                Realm realm = Realm.getInstance(ctx);
+                realm.beginTransaction();
+                toWorkTicket.removeFromRealm();
+                fromWorkTicket.removeFromRealm();;
+                realm.commitTransaction();
                 callback.failure("Scheduling failure message");
+
             }
         }
 
@@ -287,13 +311,12 @@ public class CommuteManager {
 
     }
 
-    private TicketLocation getHomeLocation(){
-        TicketLocation ticketLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
-        return ticketLocation;
+    public void cancelRide(Callback callback){
+
     }
 
-    private TicketLocation getWorkLocation(){
-        TicketLocation ticketLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
-        return ticketLocation;
+    public void cancelTrip(Callback callback){
+
     }
+
 }
