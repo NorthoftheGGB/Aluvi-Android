@@ -27,8 +27,9 @@ public class UserStateManager {
     private String riderState;
 
     public interface Callback {
-         public void success();
-         public void failure(String message);
+        void success();
+
+        void failure(String message);
     }
 
     public static synchronized void initialize(Context context){

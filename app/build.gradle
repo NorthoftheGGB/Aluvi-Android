@@ -30,6 +30,9 @@ android {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://mint.splunk.com/gradle/"
+    }
 }
 
 dependencies {
@@ -59,4 +62,5 @@ dependencies {
     compile 'com.google.code.gson:gson:1.7.2'
     compile 'joda-time:joda-time:2.3'
     compile 'io.realm:realm-android:0.81.1'
+    compile "com.splunk.mint:mint:4.2.1"
 }

@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aluvi.android.R;
+import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
-import com.aluvi.android.models.EasyILatLang;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import butterknife.Bind;

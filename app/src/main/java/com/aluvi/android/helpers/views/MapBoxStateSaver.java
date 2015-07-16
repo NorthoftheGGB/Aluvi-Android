@@ -3,7 +3,7 @@ package com.aluvi.android.helpers.views;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aluvi.android.models.EasyILatLang;
+import com.aluvi.android.helpers.EasyILatLang;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 

@@ -1,4 +1,4 @@
-package com.aluvi.android.models;
+package com.aluvi.android.helpers;
 
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
