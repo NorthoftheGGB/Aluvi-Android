@@ -1,5 +1,8 @@
 package com.aluvi.android.model.realm;
 
+import android.util.Log;
+
+import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.model.local.TicketLocation;
 
 import org.joda.time.LocalDate;
@@ -71,10 +74,15 @@ public class Ticket extends RealmObject {
         ticket.destinationPlaceName = destination.getPlaceName();
         ticket.driving = driving;
         String[] parts = pickupTime.split(":");
+        if(parts.length < 2){
+            // throw an exception
+            Log.e("COMMUTE", "PICKUP TIME NOT FORMATTED CORRECTLY");
+            //throw new MyException("PICKUP TIME NOT FORMATTED CORRECTLY");
+        }
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(rideDate);
-        cal.add(Calendar.HOUR_OF_DAY, Integer.valueOf(parts[1]).intValue());
-        cal.add(Calendar.MINUTE, Integer.valueOf(parts[2]).intValue());
+        cal.add(Calendar.HOUR_OF_DAY, Integer.valueOf(parts[0]).intValue());
+        cal.add(Calendar.MINUTE, Integer.valueOf(parts[1]).intValue());
         ticket.pickupTime = cal.getTime();
         return ticket;
     }

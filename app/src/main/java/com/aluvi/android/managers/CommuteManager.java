@@ -3,11 +3,13 @@ package com.aluvi.android.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.aluvi.android.api.tickets.CommuterTicketsResponse;
+import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
+import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.Ticket;
-import com.aluvi.android.utilities.AluviStrings;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -134,6 +136,19 @@ public class CommuteManager {
         this.driving = driving;
     }
 
+    public void setHomeLocation(TicketLocation homeLocation){
+        homeLatitude = homeLocation.getLatitude();
+        homeLongitude = homeLocation.getLongitude();
+        homePlaceName = homeLocation.getPlaceName();
+    }
+
+    public void setWorkLocation(TicketLocation workLocation){
+        workLatitude = workLocation.getLatitude();
+        workLongitude = workLocation.getLongitude();
+        workPlaceName = workLocation.getPlaceName();
+    }
+
+
     private void load(){
         homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
         homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
@@ -167,6 +182,8 @@ public class CommuteManager {
 
     public void save(Callback callback){
         // Implement Routes API
+
+        store();
     }
 
     public void clear(){
@@ -201,7 +218,7 @@ public class CommuteManager {
         }
     }
 
-    public void requestRidesForTomorrow(Callback callback) throws UserRecoverableSystemError {
+    public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
         LocalDate today = new LocalDate();
         LocalDate tomorrow = today.plus(Period.days(1));
         Date rideDate = tomorrow.toDateTimeAtStartOfDay().toDate();
@@ -229,7 +246,8 @@ public class CommuteManager {
         }
 
         if(count == 2){
-            throw new UserRecoverableSystemError(AluviStrings.commuter_rides_already_in_database);
+            throw new UserRecoverableSystemError( "There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
+            // AluviStrings.commuter_rides_already_in_database);
         }
 
         if(count == 1 && orphan != null){
@@ -243,10 +261,29 @@ public class CommuteManager {
         realm.beginTransaction();
         Ticket toWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(), driving, pickupTime);
-        Ticket toHomeTicket = realm.createObject(Ticket.class);
-        Ticket.buildNewTicket(toHomeTicket, rideDate, getWorkLocation(), getHomeLocation(), driving, returnTime);
+        Ticket fromWorkTicket = realm.createObject(Ticket.class);
+        Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(), driving, returnTime);
+        realm.commitTransaction();
 
 
+        class Callback extends RequestCommuterTicketsCallback {
+
+            public Callback(Ticket toWorkTicket, Ticket fromWorkTicket) {
+                super(toWorkTicket, fromWorkTicket);
+            }
+
+            @Override
+            public void success(CommuterTicketsResponse response) {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Scheduling failure message");
+            }
+        }
+
+        TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket, new Callback(toWorkTicket, fromWorkTicket));
 
     }
 

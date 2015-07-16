@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.aluvi.aluvi.R;
+import com.aluvi.android.exceptions.UserRecoverableSystemError;
+import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 
 import butterknife.Bind;
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.login_button) Button loginButton;
     @Bind(R.id.logout_button) Button logoutButton;
+    @Bind(R.id.schedule_button) Button scheduleButton;
 
 
     @Override
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.logout_button) public void logout(){
-        UserStateManager.getInstance().logout(new UserStateManager.Callback(){
+        UserStateManager.getInstance().logout(new UserStateManager.Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged Out", Toast.LENGTH_SHORT).show();
@@ -80,5 +83,28 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Failed to Log Out", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @OnClick(R.id.schedule_button) public void schedule(){
+        try {
+            CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.Callback(){
+                @Override
+                public void success() {
+                    Toast.makeText(getApplicationContext(), "Scheduled!", Toast.LENGTH_SHORT).show();
+
+                }
+
+                @Override
+                public void failure(String message) {
+                    Toast.makeText(getApplicationContext(), "NOT Scheduled!", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        } catch (UserRecoverableSystemError userRecoverableSystemError) {
+            userRecoverableSystemError.printStackTrace();
+            // This should be handled by a dialog, not a Toast
+            Toast.makeText(this, userRecoverableSystemError.getMessage(), Toast.LENGTH_LONG);
+        }
+
     }
 }

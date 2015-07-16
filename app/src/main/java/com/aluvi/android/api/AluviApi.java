@@ -11,6 +11,7 @@ import com.spothero.volley.JacksonNetwork;
 public class AluviApi {
     public static String API_BASE_URL = "http://52.25.169.216:3000/api/"; // AWS, single worker
 
+    public static String API_POST_REQUEST_COMMUTER_TICKETS = "rides/commute";
     public static String API_POST_RIDE_REQUEST = "rides/request";
     public static String API_POST_REQUEST_CANCELLED = "rides/request/cancel";
     public static String API_GET_RIDES_STATE = "rides/state";
