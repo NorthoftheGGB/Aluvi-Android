@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
+    sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="68dp"
     sothree:umanoShadowHeight="4dp"
     tools:context="com.aluvi.android.fragments.TicketMapFragment">
@@ -15,10 +16,8 @@
         layout="@layout/fragment_map">
     </include>
 
-    <TextView
+    <FrameLayout
+        android:id="@+id/map_sliding_panel_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center|top"
-        android:text="The Awesome Sliding Up Panel"
-        android:textSize="16sp"/>
+        android:layout_height="match_parent"/>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -31,6 +31,15 @@ public class TicketMapFragment extends MapFragment
     }
 
     @Override
+    public void initUI()
+    {
+        super.initUI();
+
+        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
+                TicketInfoFragment.newInstance()).commit();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
         menu.clear();

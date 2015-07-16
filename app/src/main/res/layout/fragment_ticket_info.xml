@@ -1,13 +1,130 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.aluvi.android.fragments.TicketInfoFragment">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                tools:context="com.aluvi.android.fragments.TicketInfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"/>
+        android:id="@+id/ticket_info_text_view_price_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="$10"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/ticket_info_text_view_car_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ticket_info_text_view_price_info"
+        android:layout_alignStart="@+id/ticket_info_text_view_price_info"
+        android:layout_below="@+id/ticket_info_text_view_price_info"
+        android:text="Red Taurus"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/ticket_info_text_view_car_license_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ticket_info_text_view_car_name"
+        android:layout_alignStart="@+id/ticket_info_text_view_car_name"
+        android:layout_below="@+id/ticket_info_text_view_car_name"
+        android:text="XXXXXXXX"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ticket_info_image_view_profile"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/ticket_info_text_view_price_info"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_toEndOf="@+id/ticket_info_text_view_car_license_number"
+        android:layout_toRightOf="@+id/ticket_info_text_view_car_license_number"
+        android:src="@mipmap/test_profile_pic"
+        app:border_color="#FF000000"
+        app:border_width="2dp"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ticket_info_image_view_profile"
+        android:layout_alignLeft="@+id/ticket_info_image_view_profile"
+        android:layout_alignRight="@+id/ticket_info_image_view_profile"
+        android:layout_alignStart="@+id/ticket_info_image_view_profile"
+        android:layout_below="@+id/ticket_info_image_view_profile"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="Daniel"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ticket_info_image_view_profile2"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView2"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@+id/ticket_info_text_view_car_license_number"
+        android:layout_toRightOf="@+id/ticket_info_text_view_car_license_number"
+        android:src="@mipmap/test_profile_pic"
+        app:border_color="#FF000000"
+        app:border_width="2dp"/>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ticket_info_image_view_profile"
+        android:layout_alignLeft="@+id/ticket_info_image_view_profile"
+        android:layout_alignRight="@+id/ticket_info_image_view_profile"
+        android:layout_alignStart="@+id/ticket_info_image_view_profile"
+        android:layout_below="@+id/ticket_info_image_view_profile2"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="Anibelle"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ticket_info_image_view_profile3"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_toEndOf="@+id/ticket_info_text_view_car_license_number"
+        android:layout_toRightOf="@+id/ticket_info_text_view_car_license_number"
+        android:src="@mipmap/test_profile_pic"
+        app:border_color="#FF000000"
+        app:border_width="2dp"
+        android:layout_below="@+id/textView3"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ticket_info_image_view_profile"
+        android:layout_alignLeft="@+id/ticket_info_image_view_profile"
+        android:layout_alignRight="@+id/ticket_info_image_view_profile"
+        android:layout_alignStart="@+id/ticket_info_image_view_profile"
+        android:gravity="center_horizontal"
+        android:text="Lucy"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/ticket_info_image_view_profile3"
+        android:layout_marginTop="10dp"/>
+
+</RelativeLayout>
