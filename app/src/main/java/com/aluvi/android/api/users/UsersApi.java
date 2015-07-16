@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
-import com.aluvi.android.api.AluviUnauthenticatedRequest;
+import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;

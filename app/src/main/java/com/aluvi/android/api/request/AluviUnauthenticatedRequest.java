@@ -1,5 +1,6 @@
-package com.aluvi.android.api;
+package com.aluvi.android.api.request;
 
+import com.aluvi.android.api.AluviApi;
 import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 

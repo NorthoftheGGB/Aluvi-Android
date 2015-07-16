@@ -1,4 +1,4 @@
-package com.aluvi.android.api;
+package com.aluvi.android.api.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

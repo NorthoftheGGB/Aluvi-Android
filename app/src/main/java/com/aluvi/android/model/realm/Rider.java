@@ -1,4 +1,4 @@
-package com.aluvi.android.model;
+package com.aluvi.android.model.realm;
 
 import io.realm.RealmObject;
 import io.realm.RealmList;
@@ -6,21 +6,18 @@ import io.realm.RealmList;
 /**
  * Created by matthewxi on 7/13/15.
  */
-public class Driver extends RealmObject {
+public class Rider extends RealmObject {
 
-    private RealmList<Ticket> tickets;
+    private RealmList<Fare> fares;
 
     private int id;
     private String firstName;
     private String lastName;
-    private String driversLicenseNumber;
     private String phone;
+    private double latitude;
+    private double longitude;
     private String smallImageUrl;
     private String largeImageUrl;
-
-    public static String fullname(Driver driver) {
-        return driver.getFirstName() + ' ' + driver.getLastName();
-    }
 
     public int getId() {
         return id;
@@ -46,20 +43,28 @@ public class Driver extends RealmObject {
         this.lastName = lastName;
     }
 
-    public String getDriversLicenseNumber() {
-        return driversLicenseNumber;
-    }
-
-    public void setDriversLicenseNumber(String driversLicenseNumber) {
-        this.driversLicenseNumber = driversLicenseNumber;
-    }
-
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getSmallImageUrl() {
@@ -78,11 +83,11 @@ public class Driver extends RealmObject {
         this.largeImageUrl = largeImageUrl;
     }
 
-    public RealmList<Ticket> getTickets() {
-        return tickets;
+    public RealmList<Fare> getFares() {
+        return fares;
     }
 
-    public void setTickets(RealmList<Ticket> tickets) {
-        this.tickets = tickets;
+    public void setFares(RealmList<Fare> fares) {
+        this.fares = fares;
     }
 }

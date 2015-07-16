@@ -7,7 +7,7 @@ import com.aluvi.android.api.devices.Device;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.application.AluviPreferences;
-import com.aluvi.android.model.Profile;
+import com.aluvi.android.model.local.Profile;
 import com.google.gson.Gson;
 
 /**

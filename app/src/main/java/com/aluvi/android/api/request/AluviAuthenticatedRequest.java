@@ -1,5 +1,6 @@
-package com.aluvi.android.api;
+package com.aluvi.android.api.request;
 
+import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.managers.UserStateManager;
 import com.android.volley.AuthFailureError;
 import com.spothero.volley.JacksonRequest;

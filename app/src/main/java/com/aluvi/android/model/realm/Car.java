@@ -1,4 +1,4 @@
-package com.aluvi.android.model;
+package com.aluvi.android.model.realm;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;

@@ -1,6 +1,12 @@
-package com.aluvi.android.model;
+package com.aluvi.android.model.realm;
 
+import com.aluvi.android.model.local.TicketLocation;
+
+import org.joda.time.LocalDate;
+
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import io.realm.RealmObject;
 
@@ -54,6 +60,24 @@ public class Ticket extends RealmObject {
     private Driver driver;
     private Car car;
     private Fare hovFare;
+
+    public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin, TicketLocation destination, boolean driving, String pickupTime ){
+        ticket.rideDate = rideDate;
+        ticket.originLatitude = origin.getLatitude();
+        ticket.originLongitude = origin.getLongitude();
+        ticket.originPlaceName = origin.getPlaceName();
+        ticket.destinationLatitude = destination.getLatitude();
+        ticket.destinationLongitude = destination.getLongitude();
+        ticket.destinationPlaceName = destination.getPlaceName();
+        ticket.driving = driving;
+        String[] parts = pickupTime.split(":");
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(rideDate);
+        cal.add(Calendar.HOUR_OF_DAY, Integer.valueOf(parts[1]).intValue());
+        cal.add(Calendar.MINUTE, Integer.valueOf(parts[2]).intValue());
+        ticket.pickupTime = cal.getTime();
+        return ticket;
+    }
 
     public static String routeDescription(Ticket ticket) {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();

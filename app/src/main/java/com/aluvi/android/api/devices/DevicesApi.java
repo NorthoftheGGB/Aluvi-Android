@@ -1,7 +1,7 @@
 package com.aluvi.android.api.devices;
 
 import com.aluvi.android.api.AluviApi;
-import com.aluvi.android.api.AluviAuthenticatedRequest;
+import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.application.GlobalIdentifiers;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;

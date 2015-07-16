@@ -1,4 +1,4 @@
-package com.aluvi.android.model;
+package com.aluvi.android.model.local;
 
 /**
  * Created by matthewxi on 7/13/15.
