@@ -18,7 +18,7 @@ public class EasyILatLang implements ILatLng
 
     public EasyILatLang(LatLng location)
     {
-        this(location.getLatitude(), location.getLongitude());
+        this(location != null ? location.getLatitude() : 0, location != null ? location.getLongitude() : 0);
     }
 
     @Override
