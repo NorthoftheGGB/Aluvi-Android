@@ -12,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.models.EasyILatLang;
 import com.mapbox.mapboxsdk.views.MapView;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
 public class MapFragment extends BaseButterFragment
@@ -28,8 +28,8 @@ public class MapFragment extends BaseButterFragment
         void onScheduleRideRequested();
     }
 
-    @InjectView(R.id.mapview) MapView mMapView;
-    @InjectView(R.id.map_text_view_commute_pending) TextView mCommutePendingTextView;
+    @Bind(R.id.mapview) MapView mMapView;
+    @Bind(R.id.map_text_view_commute_pending) TextView mCommutePendingTextView;
 
     private final String MAP_STATE_KEY = "map_fragment_main";
 

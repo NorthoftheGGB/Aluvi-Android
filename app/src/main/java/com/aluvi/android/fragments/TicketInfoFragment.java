@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 
 public class TicketInfoFragment extends BaseButterFragment
 {

@@ -7,21 +7,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.helpers.GeocoderUtils;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.TimePickerDialog;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 public class ScheduleRideActivity extends BaseToolBarActivity implements LocationSelectDialogFragment.OnLocationSelectedListener
 {
-    @InjectView(R.id.schedule_ride_button_from) Button mFromButton;
-    @InjectView(R.id.schedule_ride_button_to) Button mToButton;
-    @InjectView(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
-    @InjectView(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
+    @Bind(R.id.schedule_ride_button_from) Button mFromButton;
+    @Bind(R.id.schedule_ride_button_to) Button mToButton;
+    @Bind(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
+    @Bind(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
 
     public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
     private final String FROM_LOCATION_TAG = "from_location", TO_LOCATION_TAG = "to_location";

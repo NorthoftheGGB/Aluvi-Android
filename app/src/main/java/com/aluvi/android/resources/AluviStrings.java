@@ -1,10 +1,5 @@
 package com.aluvi.android.resources;
 
-import android.content.Context;
-
-import com.aluvi.aluvi.R;
-
-
 /**
  * Created by matthewxi on 7/16/15.
  */

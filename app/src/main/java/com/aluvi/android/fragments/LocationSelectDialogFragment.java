@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 import com.aluvi.android.helpers.AsyncCallback;
 import com.aluvi.android.helpers.GeocoderUtils;
 import com.aluvi.android.helpers.views.BaseArrayAdapter;
@@ -37,8 +37,8 @@ import com.mapbox.mapboxsdk.views.MapViewListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
@@ -51,10 +51,10 @@ public class LocationSelectDialogFragment extends DialogFragment
         void onLocationSelected(Address address, LocationSelectDialogFragment fragment);
     }
 
-    @InjectView(R.id.location_select_image_button_search) ImageButton mSearchImageButton;
-    @InjectView(R.id.location_select_progress_bar) ProgressBar mSearchProgressBar;
-    @InjectView(R.id.location_select_auto_complete_search) AutoCompleteTextView mLocationSearchAutoCompleteTextView;
-    @InjectView(R.id.location_select_map_view) MapView mMapView;
+    @Bind(R.id.location_select_image_button_search) ImageButton mSearchImageButton;
+    @Bind(R.id.location_select_progress_bar) ProgressBar mSearchProgressBar;
+    @Bind(R.id.location_select_auto_complete_search) AutoCompleteTextView mLocationSearchAutoCompleteTextView;
+    @Bind(R.id.location_select_map_view) MapView mMapView;
 
     private final String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map";
     private LocationSelectAdapter mAddressSuggestionsAutoCompleteAdapter;
@@ -78,7 +78,7 @@ public class LocationSelectDialogFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
         final View rootView = View.inflate(getActivity(), R.layout.fragment_location_select, null);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
         initMap();
 
         mAddressSuggestionsAutoCompleteAdapter = new LocationSelectAdapter(getActivity(), new ArrayList<Address>());
@@ -285,7 +285,7 @@ public class LocationSelectDialogFragment extends DialogFragment
     public void onDestroyView()
     {
         super.onDestroyView();
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
     }
 
     private static class LocationSelectAdapter extends BaseArrayAdapter<Address>

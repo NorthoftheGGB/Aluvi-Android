@@ -9,18 +9,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 import com.aluvi.android.fragments.MapFragment;
 import com.aluvi.android.fragments.TicketMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
 public class MainActivity extends BaseToolBarActivity implements MapFragment.OnMapEventListener
 {
-    @InjectView(R.id.main_navigation_view) NavigationView mNavigationView;
-    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
+    @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
     private final int SCHEDULE_RIDE_REQUEST_CODE = 982;
     private ActionBarDrawerToggle mDrawerToggle;

@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 
 public class TicketMapFragment extends MapFragment
 {
