@@ -1,7 +1,9 @@
 package com.aluvi.android.api;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,10 +13,10 @@ import java.util.Map;
 public class AluviPayload {
 
     public Map<String, String> toMap (){
-        HashMap map = new HashMap<String, String>();
+        Type type = new TypeToken<Map<String, String>>(){}.getType();
         Gson gson = new Gson();
         String json = gson.toJson(this);
-        map = gson.fromJson(json, map.getClass());
+        HashMap map = gson.fromJson(json, type);
         return map;
     }
 

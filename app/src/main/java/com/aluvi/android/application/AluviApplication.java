@@ -23,7 +23,7 @@ public class AluviApplication extends Application {
             }
 
             @Override
-            public void failure() {
+            public void failure(String message) {
                 Toast.makeText(getApplicationContext(), "Failed to Log In", Toast.LENGTH_SHORT).show();
             }
         });

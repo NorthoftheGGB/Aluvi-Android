@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by matthewxi on 7/15/15.
  */
-public class AluviSecureRequest extends JacksonRequest {
+public class AluviSecureRequest<T> extends JacksonRequest<T> {
 
     private static int ALUVI_API_TIMEOUT = 30000;
 
@@ -26,7 +26,7 @@ public class AluviSecureRequest extends JacksonRequest {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = super.getHeaders();
-        headers.put("Token", UserStateManager.getInstance().getToken());
+        headers.put("Token", UserStateManager.getInstance().getApiToken());
         return headers;
     }
 }

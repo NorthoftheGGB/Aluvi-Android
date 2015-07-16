@@ -3,6 +3,8 @@ package com.aluvi.android.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.aluvi.android.api.devices.Device;
+import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.model.Profile;
@@ -26,7 +28,7 @@ public class UserStateManager {
 
     public interface Callback {
          public void success();
-         public void failure();
+         public void failure(String message);
     }
 
     public static synchronized void initialize(Context context){
@@ -71,11 +73,11 @@ public class UserStateManager {
 
     public String getDriverState() {
         return driverState;
-        preferences.edit().putString(AluviPreferences.DRIVER_STATE_KEY, driverState).commit();
     }
 
     public void setDriverState(String driverState) {
         this.driverState = driverState;
+        preferences.edit().putString(AluviPreferences.DRIVER_STATE_KEY, driverState).commit();
     }
 
     public String getRiderState() {
@@ -94,18 +96,44 @@ public class UserStateManager {
 
                 // CommuteManager.loadFromServer()
 
-                callback.success();
+                DevicesApi.updateUser(new DevicesApi.Callback() {
+                    @Override
+                    public void success() {
+                        callback.success();
+                    }
+
+                    @Override
+                    public void failure(int statusCode) {
+                        callback.failure("Could not update user");
+                    }
+                });
+
 
             }
 
             @Override
             public void failure(int statusCode) {
-                callback.failure();
+                callback.failure("Could not log in");
             }
         });
     }
 
-    public void logout(){
+    public void logout(final Callback callback){
+        Device device = new Device();
+        device.setUserId(Integer.valueOf(0));
+        device.setPushToken("");
+        DevicesApi.patchDevice(device, new DevicesApi.Callback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
 
+            @Override
+            public void failure(int statusCode) {
+                // we will probably translate the status code to a message here
+                // using a strings file.
+                callback.failure("Logout Failed for some reason");
+            }
+        });
     }
 }

@@ -1,6 +1,5 @@
 package com.aluvi.android.activities;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,6 +18,8 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
 
     @Bind(R.id.login_button) Button loginButton;
+    @Bind(R.id.logout_button) Button logoutButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.login_button) public void submit(){
+    @OnClick(R.id.login_button) public void login(){
         UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback(){
             @Override
             public void success() {
@@ -59,11 +60,25 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void failure() {
+            public void failure(String message) {
                 Toast.makeText(getApplicationContext(), "Failed to Log In", Toast.LENGTH_SHORT).show();
 
             }
         });
 
+    }
+
+    @OnClick(R.id.logout_button) public void logout(){
+        UserStateManager.getInstance().logout(new UserStateManager.Callback(){
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Logged Out", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(String message) {
+                Toast.makeText(getApplicationContext(), "Failed to Log Out", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
