@@ -14,6 +14,8 @@ public class AluviApplication extends Application {
     public void onCreate() {
         super.onCreate();
         AluviApi.initialize(this);
+        UserStateManager.initialize(this);
+
         UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback(){
             @Override
             public void success() {

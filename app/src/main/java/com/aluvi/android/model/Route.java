@@ -1,9 +1,11 @@
 package com.aluvi.android.model;
 
+import io.realm.RealmObject;
+
 /**
  * Created by matthewxi on 7/14/15.
  */
-public class Route {
+public class Route extends RealmObject {
 
     private double homeLatitude;
     private double homeLongitude;
