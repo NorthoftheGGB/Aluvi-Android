@@ -94,6 +94,8 @@ public class UserStateManager {
             @Override
             public void success(String token) {
 
+                setApiToken(token);
+
                 // CommuteManager.loadFromServer()
 
                 DevicesApi.updateUser(new DevicesApi.Callback() {

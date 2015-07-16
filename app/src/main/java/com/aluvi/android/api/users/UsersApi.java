@@ -1,24 +1,17 @@
 package com.aluvi.android.api.users;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
+import com.aluvi.android.api.AluviUnauthenticatedRequest;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.spothero.volley.JacksonNetwork;
-import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
 import java.util.HashMap;
-
-import static android.util.Log.*;
 
 /**
  * Created by matthewxi on 7/14/15.
@@ -35,8 +28,8 @@ public class UsersApi {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.EMAIL_KEY, email);
         params.put(AluviApiKeys.PASSWORD_KEY, password);
-        JacksonRequest request =  new JacksonRequest<LoginResponse>(
-                Request.Method.POST, AluviApi.API_BASE_URL,  AluviApi.API_LOGIN, params,
+        AluviUnauthenticatedRequest request =  new AluviUnauthenticatedRequest(
+                Request.Method.POST, AluviApi.API_LOGIN, params,
                 new JacksonRequestListener<LoginResponse>(){
 
                     @Override

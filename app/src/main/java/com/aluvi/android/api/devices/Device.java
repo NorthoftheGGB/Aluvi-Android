@@ -5,17 +5,27 @@ import android.content.pm.PackageInfo;
 import com.aluvi.aluvi.BuildConfig;
 import com.aluvi.android.api.AluviPayload;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by matthewxi on 7/15/15.
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Device extends AluviPayload {
 
+    @JsonProperty("user_id")
     private Integer userId;
+
+    @JsonProperty("push_token")
     private String pushToken;
+
+    @JsonProperty("app_version")
     private String appVersion;
+
+    @JsonProperty("app_identifier")
     private String appIdentifier;
 
     public Device() {

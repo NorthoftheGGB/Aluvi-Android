@@ -1,21 +1,15 @@
 package com.aluvi.android.api.devices;
 
-import android.provider.Settings;
-import android.util.Log;
-
 import com.aluvi.android.api.AluviApi;
-import com.aluvi.android.api.AluviApiKeys;
-import com.aluvi.android.api.AluviSecureRequest;
-import com.aluvi.android.api.users.LoginResponse;
+import com.aluvi.android.api.AluviAuthenticatedRequest;
+import com.aluvi.android.application.GlobalIdentifiers;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,9 +35,9 @@ public class DevicesApi {
     }
 
     public static void patchDevice(Device device, final Callback callback){
-        AluviSecureRequest request = new AluviSecureRequest<Device>(
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Device>(
                 Request.Method.POST,
-                AluviApi.API_DEVICES + "/" + Settings.Secure.ANDROID_ID,
+                AluviApi.API_DEVICES + GlobalIdentifiers.getInstance().getAndroidId(),
                 device,
                 new JacksonRequestListener<Device>() {
 
