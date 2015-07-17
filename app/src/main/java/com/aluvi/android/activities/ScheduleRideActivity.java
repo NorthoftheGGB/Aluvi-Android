@@ -50,6 +50,11 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
         String homeAddress = manager.getHomePlaceName();
         String workAddress = manager.getWorkPlaceName();
 
+        mStartHour = manager.getPickupTimeHour();
+        mStartMin = manager.getPickupTimeMinute();
+        mEndHour = manager.getReturnTimeHour();
+        mEndMin = manager.getReturnTimeMinute();
+
         mFromButton.setText(homeAddress);
         mToButton.setText(workAddress);
     }

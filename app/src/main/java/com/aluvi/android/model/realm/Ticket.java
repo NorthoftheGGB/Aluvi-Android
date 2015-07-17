@@ -1,11 +1,6 @@
 package com.aluvi.android.model.realm;
 
-import android.util.Log;
-
-import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.model.local.TicketLocation;
-
-import org.joda.time.LocalDate;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -16,8 +11,8 @@ import io.realm.RealmObject;
 /**
  * Created by matthewxi on 7/13/15.
  */
-public class Ticket extends RealmObject {
-
+public class Ticket extends RealmObject
+{
     public static String StateCreated = "created";
     public static String StateRequested = "requested";
     public static String StateScheduled = "scheduled";
@@ -64,7 +59,9 @@ public class Ticket extends RealmObject {
     private Car car;
     private Fare hovFare;
 
-    public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin, TicketLocation destination, boolean driving, String pickupTime ){
+    public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin,
+                                        TicketLocation destination, boolean driving, int pickupTimeHour, int pickUpTimeMin)
+    {
         ticket.rideDate = rideDate;
         ticket.originLatitude = origin.getLatitude();
         ticket.originLongitude = origin.getLongitude();
@@ -73,285 +70,347 @@ public class Ticket extends RealmObject {
         ticket.destinationLongitude = destination.getLongitude();
         ticket.destinationPlaceName = destination.getPlaceName();
         ticket.driving = driving;
-        String[] parts = pickupTime.split(":");
-        if(parts.length < 2){
-            // throw an exception
-            Log.e("COMMUTE", "PICKUP TIME NOT FORMATTED CORRECTLY");
-            //throw new MyException("PICKUP TIME NOT FORMATTED CORRECTLY");
-        }
+
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(rideDate);
-        cal.add(Calendar.HOUR_OF_DAY, Integer.valueOf(parts[0]).intValue());
-        cal.add(Calendar.MINUTE, Integer.valueOf(parts[1]).intValue());
+        cal.add(Calendar.HOUR_OF_DAY, pickupTimeHour);
+        cal.add(Calendar.MINUTE, pickUpTimeMin);
         ticket.pickupTime = cal.getTime();
         return ticket;
     }
 
-    public static String routeDescription(Ticket ticket) {
+    public static String routeDescription(Ticket ticket)
+    {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();
     }
 
-    public int getFare_id() {
+    public int getFare_id()
+    {
         return fare_id;
     }
 
-    public void setFare_id(int fare_id) {
+    public void setFare_id(int fare_id)
+    {
         this.fare_id = fare_id;
     }
 
-    public Date getDesiredArrival() {
+    public Date getDesiredArrival()
+    {
         return desiredArrival;
     }
 
-    public void setDesiredArrival(Date desiredArrival) {
+    public void setDesiredArrival(Date desiredArrival)
+    {
         this.desiredArrival = desiredArrival;
     }
 
-    public Date getPickupTime() {
+    public Date getPickupTime()
+    {
         return pickupTime;
     }
 
-    public void setPickupTime(Date pickupTime) {
+    public void setPickupTime(Date pickupTime)
+    {
         this.pickupTime = pickupTime;
     }
 
-    public int getRideId() {
+    public int getRideId()
+    {
         return rideId;
     }
 
-    public void setRideId(int rideId) {
+    public void setRideId(int rideId)
+    {
         this.rideId = rideId;
     }
 
-    public int getCarId() {
+    public int getCarId()
+    {
         return carId;
     }
 
-    public void setCarId(int carId) {
+    public void setCarId(int carId)
+    {
         this.carId = carId;
     }
 
-    public int getDriverId() {
+    public int getDriverId()
+    {
         return driverId;
     }
 
-    public void setDriverId(int driverId) {
+    public void setDriverId(int driverId)
+    {
         this.driverId = driverId;
     }
 
-    public int getTripId() {
+    public int getTripId()
+    {
         return tripId;
     }
 
-    public void setTripId(int tripId) {
+    public void setTripId(int tripId)
+    {
         this.tripId = tripId;
     }
 
-    public String getRideType() {
+    public String getRideType()
+    {
         return rideType;
     }
 
-    public void setRideType(String rideType) {
+    public void setRideType(String rideType)
+    {
         this.rideType = rideType;
     }
 
-    public Date getRequestedTimestamp() {
+    public Date getRequestedTimestamp()
+    {
         return requestedTimestamp;
     }
 
-    public void setRequestedTimestamp(Date requestedTimestamp) {
+    public void setRequestedTimestamp(Date requestedTimestamp)
+    {
         this.requestedTimestamp = requestedTimestamp;
     }
 
-    public Date getEstimatedArrivalTime() {
+    public Date getEstimatedArrivalTime()
+    {
         return estimatedArrivalTime;
     }
 
-    public void setEstimatedArrivalTime(Date estimatedArrivalTime) {
+    public void setEstimatedArrivalTime(Date estimatedArrivalTime)
+    {
         this.estimatedArrivalTime = estimatedArrivalTime;
     }
 
-    public double getOriginLatitude() {
+    public double getOriginLatitude()
+    {
         return originLatitude;
     }
 
-    public void setOriginLatitude(double originLatitude) {
+    public void setOriginLatitude(double originLatitude)
+    {
         this.originLatitude = originLatitude;
     }
 
-    public double getOriginLongitude() {
+    public double getOriginLongitude()
+    {
         return originLongitude;
     }
 
-    public void setOriginLongitude(double originLongitude) {
+    public void setOriginLongitude(double originLongitude)
+    {
         this.originLongitude = originLongitude;
     }
 
-    public String getOriginPlaceName() {
+    public String getOriginPlaceName()
+    {
         return originPlaceName;
     }
 
-    public void setOriginPlaceName(String originPlaceName) {
+    public void setOriginPlaceName(String originPlaceName)
+    {
         this.originPlaceName = originPlaceName;
     }
 
-    public String getOriginShortName() {
+    public String getOriginShortName()
+    {
         return originShortName;
     }
 
-    public void setOriginShortName(String originShortName) {
+    public void setOriginShortName(String originShortName)
+    {
         this.originShortName = originShortName;
     }
 
-    public double getDestinationLatitude() {
+    public double getDestinationLatitude()
+    {
         return destinationLatitude;
     }
 
-    public void setDestinationLatitude(double destinationLatitude) {
+    public void setDestinationLatitude(double destinationLatitude)
+    {
         this.destinationLatitude = destinationLatitude;
     }
 
-    public double getDestinationLongitude() {
+    public double getDestinationLongitude()
+    {
         return destinationLongitude;
     }
 
-    public void setDestinationLongitude(double destinationLongitude) {
+    public void setDestinationLongitude(double destinationLongitude)
+    {
         this.destinationLongitude = destinationLongitude;
     }
 
-    public String getDestinationPlaceName() {
+    public String getDestinationPlaceName()
+    {
         return destinationPlaceName;
     }
 
-    public void setDestinationPlaceName(String destinationPlaceName) {
+    public void setDestinationPlaceName(String destinationPlaceName)
+    {
         this.destinationPlaceName = destinationPlaceName;
     }
 
-    public String getDestinationShortName() {
+    public String getDestinationShortName()
+    {
         return destinationShortName;
     }
 
-    public void setDestinationShortName(String destinationShortName) {
+    public void setDestinationShortName(String destinationShortName)
+    {
         this.destinationShortName = destinationShortName;
     }
 
-    public double getMeetingPointLatitude() {
+    public double getMeetingPointLatitude()
+    {
         return meetingPointLatitude;
     }
 
-    public void setMeetingPointLatitude(double meetingPointLatitude) {
+    public void setMeetingPointLatitude(double meetingPointLatitude)
+    {
         this.meetingPointLatitude = meetingPointLatitude;
     }
 
-    public double getMeetingPointLongitude() {
+    public double getMeetingPointLongitude()
+    {
         return meetingPointLongitude;
     }
 
-    public void setMeetingPointLongitude(double meetingPointLongitude) {
+    public void setMeetingPointLongitude(double meetingPointLongitude)
+    {
         this.meetingPointLongitude = meetingPointLongitude;
     }
 
-    public String getMeetingPointPlaceName() {
+    public String getMeetingPointPlaceName()
+    {
         return meetingPointPlaceName;
     }
 
-    public void setMeetingPointPlaceName(String meetingPointPlaceName) {
+    public void setMeetingPointPlaceName(String meetingPointPlaceName)
+    {
         this.meetingPointPlaceName = meetingPointPlaceName;
     }
 
-    public double getDropOffPointLatitude() {
+    public double getDropOffPointLatitude()
+    {
         return dropOffPointLatitude;
     }
 
-    public void setDropOffPointLatitude(double dropOffPointLatitude) {
+    public void setDropOffPointLatitude(double dropOffPointLatitude)
+    {
         this.dropOffPointLatitude = dropOffPointLatitude;
     }
 
-    public double getDropOffPointLongitude() {
+    public double getDropOffPointLongitude()
+    {
         return dropOffPointLongitude;
     }
 
-    public void setDropOffPointLongitude(double dropOffPointLongitude) {
+    public void setDropOffPointLongitude(double dropOffPointLongitude)
+    {
         this.dropOffPointLongitude = dropOffPointLongitude;
     }
 
-    public String getDropOffPointPlaceName() {
+    public String getDropOffPointPlaceName()
+    {
         return dropOffPointPlaceName;
     }
 
-    public void setDropOffPointPlaceName(String dropOffPointPlaceName) {
+    public void setDropOffPointPlaceName(String dropOffPointPlaceName)
+    {
         this.dropOffPointPlaceName = dropOffPointPlaceName;
     }
 
-    public Date getRideDate() {
+    public Date getRideDate()
+    {
         return rideDate;
     }
 
-    public void setRideDate(Date rideDate) {
+    public void setRideDate(Date rideDate)
+    {
         this.rideDate = rideDate;
     }
 
-    public boolean isConfirmed() {
+    public boolean isConfirmed()
+    {
         return confirmed;
     }
 
-    public void setConfirmed(boolean confirmed) {
+    public void setConfirmed(boolean confirmed)
+    {
         this.confirmed = confirmed;
     }
 
-    public boolean isDriving() {
+    public boolean isDriving()
+    {
         return driving;
     }
 
-    public void setDriving(boolean driving) {
+    public void setDriving(boolean driving)
+    {
         this.driving = driving;
     }
 
-    public double getFixedPrice() {
+    public double getFixedPrice()
+    {
         return fixedPrice;
     }
 
-    public void setFixedPrice(double fixedPrice) {
+    public void setFixedPrice(double fixedPrice)
+    {
         this.fixedPrice = fixedPrice;
     }
 
-    public String getDirection() {
+    public String getDirection()
+    {
         return direction;
     }
 
-    public void setDirection(String direction) {
+    public void setDirection(String direction)
+    {
         this.direction = direction;
     }
 
-    public Driver getDriver() {
+    public Driver getDriver()
+    {
         return driver;
     }
 
-    public void setDriver(Driver driver) {
+    public void setDriver(Driver driver)
+    {
         this.driver = driver;
     }
 
-    public Car getCar() {
+    public Car getCar()
+    {
         return car;
     }
 
-    public void setCar(Car car) {
+    public void setCar(Car car)
+    {
         this.car = car;
     }
 
-    public Fare getHovFare() {
+    public Fare getHovFare()
+    {
         return hovFare;
     }
 
-    public void setHovFare(Fare hovFare) {
+    public void setHovFare(Fare hovFare)
+    {
         this.hovFare = hovFare;
     }
 
-    public String getState() {
+    public String getState()
+    {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(String state)
+    {
         this.state = state;
     }
 }

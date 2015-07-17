@@ -37,14 +37,10 @@ public class CommuteManager
     private SharedPreferences preferences;
     private Context ctx;
 
-    private float homeLatitude;
-    private float homeLongitude;
-    private float workLatitude;
-    private float workLongitude;
-    private String homePlaceName;
-    private String workPlaceName;
-    private String pickupTime;
-    private String returnTime;
+    private float homeLatitude, homeLongitude, workLatitude, workLongitude;
+    private String homePlaceName, workPlaceName;
+    private int pickupTimeHour, pickupTimeMinute;
+    private int returnTimeHour, returnTimeMinute;
     private boolean driving;
 
     public static synchronized void initialize(Context context)
@@ -65,6 +61,169 @@ public class CommuteManager
         ctx = context;
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         load();
+    }
+
+    private void load()
+    {
+        homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
+        homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
+
+        workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
+        workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
+
+        homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
+        workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
+
+        pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
+        returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
+
+        pickupTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, -1);
+        returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
+
+        driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
+    }
+
+    public void loadFromServer()
+    {
+        // routes API
+        // TODO: implement RoutesApi library file
+    }
+
+    private void store()
+    {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLatitude);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLongitude);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, workLatitude);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, workLongitude);
+        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, homePlaceName);
+        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, workPlaceName);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, pickupTimeHour);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, returnTimeHour);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, pickupTimeMinute);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, returnTimeMinute);
+        editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, driving);
+        editor.commit();
+    }
+
+    public void save(Callback callback)
+    {
+        // TODO: Implement Routes API
+        store();
+    }
+
+    public void clear()
+    {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
+        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
+        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, -1);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
+        editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
+        editor.commit();
+
+        load(); // Reset by pulling default values from shared prefs
+    }
+
+    public boolean routeIsSet()
+    {
+        return homeLatitude == 0 || homeLongitude == 0 || workLatitude == 0 || workLongitude == 0
+                || pickupTimeHour == -1 || pickupTimeMinute == -1 || returnTimeHour == -1 || returnTimeMinute == -1;
+    }
+
+    public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError
+    {
+        LocalDate today = new LocalDate();
+        LocalDate tomorrow = today.plus(Period.days(1));
+        Date rideDate = tomorrow.toDateTimeAtStartOfDay().toDate();
+
+        Realm realm = Realm.getInstance(ctx);
+
+        // Lood for a prexisting request for tomorrow
+        RealmQuery<Ticket> query = realm.where(Ticket.class);
+        query.equalTo("rideDate", rideDate);
+
+        RealmResults<Ticket> results = query.findAll();
+        int count = 0;
+        Ticket orphan = null;
+        if (results.size() != 0)
+        {
+            // since we can't do an IN query, we check here for statuses
+            for (Ticket ticket : results)
+            {
+                String state = ticket.getState();
+                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled))
+                {
+                    // already have a ticket in there for tomorrow
+                    count++;
+                    orphan = ticket;
+                }
+            }
+        }
+
+        if (count == 2)
+        {
+            throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
+            // AluviStrings.commuter_rides_already_in_database);
+        }
+
+        if (count == 1 && orphan != null)
+        {
+            // Orphaned request, delete it
+            realm.beginTransaction();
+            orphan.removeFromRealm();
+            realm.commitTransaction();
+        }
+
+        // go ahead and create the tickets, then request with the server
+        realm.beginTransaction();
+        Ticket toWorkTicket = realm.createObject(Ticket.class);
+        Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(),
+                driving, pickupTimeHour, pickupTimeMinute);
+        Ticket fromWorkTicket = realm.createObject(Ticket.class);
+        Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(),
+                driving, returnTimeHour, returnTimeMinute);
+        realm.commitTransaction();
+
+        class Callback extends RequestCommuterTicketsCallback
+        {
+            public Callback(Ticket toWorkTicket, Ticket fromWorkTicket)
+            {
+                super(toWorkTicket, fromWorkTicket);
+            }
+
+            @Override
+            public void success(CommuterTicketsResponse response)
+            {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode)
+            {
+                callback.failure("Scheduling failure message");
+            }
+        }
+
+        TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket, new Callback(toWorkTicket, fromWorkTicket));
+    }
+
+    private TicketLocation getHomeLocation()
+    {
+        TicketLocation ticketLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
+        return ticketLocation;
+    }
+
+    private TicketLocation getWorkLocation()
+    {
+        TicketLocation ticketLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
+        return ticketLocation;
     }
 
     public double getHomeLatitude()
@@ -127,26 +286,6 @@ public class CommuteManager
         this.workPlaceName = workPlaceName;
     }
 
-    public String getPickupTime()
-    {
-        return pickupTime;
-    }
-
-    public void setPickupTime(String pickupTime)
-    {
-        this.pickupTime = pickupTime;
-    }
-
-    public String getReturnTime()
-    {
-        return returnTime;
-    }
-
-    public void setReturnTime(String returnTime)
-    {
-        this.returnTime = returnTime;
-    }
-
     public boolean isDriving()
     {
         return driving;
@@ -171,172 +310,43 @@ public class CommuteManager
         workPlaceName = workLocation.getPlaceName();
     }
 
-    private void load()
+    public int getPickupTimeHour()
     {
-        homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
-        homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
-        workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
-        workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
-        homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
-        workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
-        pickupTime = preferences.getString(AluviPreferences.COMMUTER_PICKUP_TIME_KEY, "");
-        returnTime = preferences.getString(AluviPreferences.COMMUTER_RETURN_TIME_KEY, "");
-        driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
+        return pickupTimeHour;
     }
 
-    public void loadFromServer()
+    public void setPickupTimeHour(int pickupTimeHour)
     {
-        // routes API
-        // implement RoutesApi library file
+        this.pickupTimeHour = pickupTimeHour;
     }
 
-    private void store()
+    public int getPickupTimeMinute()
     {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLatitude);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLongitude);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, workLatitude);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, workLongitude);
-        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, homePlaceName);
-        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, workPlaceName);
-        editor.putString(AluviPreferences.COMMUTER_PICKUP_TIME_KEY, pickupTime);
-        editor.putString(AluviPreferences.COMMUTER_RETURN_TIME_KEY, returnTime);
-        editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, driving);
-        editor.commit();
+        return pickupTimeMinute;
     }
 
-    public void save(Callback callback)
+    public void setPickupTimeMinute(int pickupTimeMinute)
     {
-        // Implement Routes API
-
-        store();
+        this.pickupTimeMinute = pickupTimeMinute;
     }
 
-    public void clear()
+    public int getReturnTimeHour()
     {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
-        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
-        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
-        editor.putString(AluviPreferences.COMMUTER_PICKUP_TIME_KEY, "");
-        editor.putString(AluviPreferences.COMMUTER_RETURN_TIME_KEY, "");
-        editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
-        editor.commit();
-
-        homeLatitude = 0;
-        homeLongitude = 0;
-        workLatitude = 0;
-        workLongitude = 0;
-        homePlaceName = "";
-        workPlaceName = "";
-        pickupTime = "";
-        returnTime = "";
-        driving = false;
+        return returnTimeHour;
     }
 
-    public boolean routeIsSet()
+    public void setReturnTimeHour(int returnTimeHour)
     {
-        if (homeLatitude == 0 || homeLongitude == 0 || workLatitude == 0 || workLongitude == 0 || pickupTime == null || returnTime == null)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        this.returnTimeHour = returnTimeHour;
     }
 
-    public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError
+    public int getReturnTimeMinute()
     {
-        LocalDate today = new LocalDate();
-        LocalDate tomorrow = today.plus(Period.days(1));
-        Date rideDate = tomorrow.toDateTimeAtStartOfDay().toDate();
-
-        Realm realm = Realm.getInstance(ctx);
-
-        // Lood for a prexisting request for tomorrow
-        RealmQuery<Ticket> query = realm.where(Ticket.class);
-        query.equalTo("rideDate", rideDate);
-
-        RealmResults<Ticket> results = query.findAll();
-        int count = 0;
-        Ticket orphan = null;
-        if (results.size() != 0)
-        {
-            // since we can't do an IN query, we check here for statuses
-            for (Ticket ticket : results)
-            {
-                String state = ticket.getState();
-                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled))
-                {
-                    // already have a ticket in there for tomorrow
-                    count++;
-                    orphan = ticket;
-                }
-            }
-
-        }
-
-        if (count == 2)
-        {
-            throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
-            // AluviStrings.commuter_rides_already_in_database);
-        }
-
-        if (count == 1 && orphan != null)
-        {
-            // Orphaned request, delete it
-            realm.beginTransaction();
-            orphan.removeFromRealm();
-            realm.commitTransaction();
-        }
-
-        // go ahead and create the tickets, then request with the server
-        realm.beginTransaction();
-        Ticket toWorkTicket = realm.createObject(Ticket.class);
-        Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(), driving, pickupTime);
-        Ticket fromWorkTicket = realm.createObject(Ticket.class);
-        Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(), driving, returnTime);
-        realm.commitTransaction();
-
-
-        class Callback extends RequestCommuterTicketsCallback
-        {
-
-            public Callback(Ticket toWorkTicket, Ticket fromWorkTicket)
-            {
-                super(toWorkTicket, fromWorkTicket);
-            }
-
-            @Override
-            public void success(CommuterTicketsResponse response)
-            {
-                callback.success();
-            }
-
-            @Override
-            public void failure(int statusCode)
-            {
-                callback.failure("Scheduling failure message");
-            }
-        }
-
-        TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket, new Callback(toWorkTicket, fromWorkTicket));
-
+        return returnTimeMinute;
     }
 
-    private TicketLocation getHomeLocation()
+    public void setReturnTimeMinute(int returnTimeMinute)
     {
-        TicketLocation ticketLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
-        return ticketLocation;
-    }
-
-    private TicketLocation getWorkLocation()
-    {
-        TicketLocation ticketLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
-        return ticketLocation;
+        this.returnTimeMinute = returnTimeMinute;
     }
 }
