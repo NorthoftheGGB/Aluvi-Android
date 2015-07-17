@@ -32,8 +32,8 @@ public class AluviApplication extends Application
         // Pretend to set up commuter preferences
         CommuteManager.getInstance().setHomeLocation(new TicketLocation(67.2f, 102.3f, "Lost at sea"));
         CommuteManager.getInstance().setWorkLocation(new TicketLocation(67.3f, 102.155f, "Lost at sea"));
-        CommuteManager.getInstance().setPickupTime("7:00");
-        CommuteManager.getInstance().setReturnTime("16:00");
+//        CommuteManager.getInstance().setPickupTime("7:00");
+//        CommuteManager.getInstance().setReturnTime("16:00");
         CommuteManager.getInstance().setDriving(false);
         CommuteManager.getInstance().save(new CommuteManager.Callback()
         {

@@ -37,8 +37,7 @@ public class CommuteManager
     private SharedPreferences preferences;
     private Context ctx;
 
-    private float homeLatitude, homeLongitude, workLatitude, workLongitude;
-    private String homePlaceName, workPlaceName;
+    private TicketLocation homeLocation, workLocation;
     private int pickupTimeHour, pickupTimeMinute;
     private int returnTimeHour, returnTimeMinute;
     private boolean driving;
@@ -56,7 +55,7 @@ public class CommuteManager
         return mInstance;
     }
 
-    public CommuteManager(Context context)
+    private CommuteManager(Context context)
     {
         ctx = context;
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
@@ -65,14 +64,16 @@ public class CommuteManager
 
     private void load()
     {
-        homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
-        homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
+        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
+        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
+        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
+        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
 
-        workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
-        workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
+        String homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
+        String workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
 
-        homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
-        workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
+        homeLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
+        workLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
 
         pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
         returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
@@ -92,12 +93,12 @@ public class CommuteManager
     private void store()
     {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLatitude);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLongitude);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, workLatitude);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, workLongitude);
-        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, homePlaceName);
-        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, workPlaceName);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLocation.getLatitude());
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLocation.getLongitude());
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, workLocation.getLatitude());
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, workLocation.getLongitude());
+        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, homeLocation.getPlaceName());
+        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, workLocation.getPlaceName());
         editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, pickupTimeHour);
         editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, returnTimeHour);
         editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, pickupTimeMinute);
@@ -133,8 +134,9 @@ public class CommuteManager
 
     public boolean routeIsSet()
     {
-        return homeLatitude == 0 || homeLongitude == 0 || workLatitude == 0 || workLongitude == 0
-                || pickupTimeHour == -1 || pickupTimeMinute == -1 || returnTimeHour == -1 || returnTimeMinute == -1;
+        return homeLocation.getLatitude() == 0 || homeLocation.getLongitude() == 0 || workLocation.getLatitude() == 0
+                || workLocation.getLongitude() == 0 || pickupTimeHour == -1 || pickupTimeMinute == -1 || returnTimeHour == -1
+                || returnTimeMinute == -1;
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError
@@ -214,78 +216,6 @@ public class CommuteManager
         TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket, new Callback(toWorkTicket, fromWorkTicket));
     }
 
-    private TicketLocation getHomeLocation()
-    {
-        TicketLocation ticketLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
-        return ticketLocation;
-    }
-
-    private TicketLocation getWorkLocation()
-    {
-        TicketLocation ticketLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
-        return ticketLocation;
-    }
-
-    public double getHomeLatitude()
-    {
-        return homeLatitude;
-    }
-
-    public void setHomeLatitude(float homeLatitude)
-    {
-        this.homeLatitude = homeLatitude;
-    }
-
-    public double getHomeLongitude()
-    {
-        return homeLongitude;
-    }
-
-    public void setHomeLongitude(float homeLongitude)
-    {
-        this.homeLongitude = homeLongitude;
-    }
-
-    public double getWorkLatitude()
-    {
-        return workLatitude;
-    }
-
-    public void setWorkLatitude(float workLatitude)
-    {
-        this.workLatitude = workLatitude;
-    }
-
-    public double getWorkLongitude()
-    {
-        return workLongitude;
-    }
-
-    public void setWorkLongitude(float workLongitude)
-    {
-        this.workLongitude = workLongitude;
-    }
-
-    public String getHomePlaceName()
-    {
-        return homePlaceName;
-    }
-
-    public void setHomePlaceName(String homePlaceName)
-    {
-        this.homePlaceName = homePlaceName;
-    }
-
-    public String getWorkPlaceName()
-    {
-        return workPlaceName;
-    }
-
-    public void setWorkPlaceName(String workPlaceName)
-    {
-        this.workPlaceName = workPlaceName;
-    }
-
     public boolean isDriving()
     {
         return driving;
@@ -298,16 +228,22 @@ public class CommuteManager
 
     public void setHomeLocation(TicketLocation homeLocation)
     {
-        homeLatitude = homeLocation.getLatitude();
-        homeLongitude = homeLocation.getLongitude();
-        homePlaceName = homeLocation.getPlaceName();
+        this.homeLocation = homeLocation;
     }
 
     public void setWorkLocation(TicketLocation workLocation)
     {
-        workLatitude = workLocation.getLatitude();
-        workLongitude = workLocation.getLongitude();
-        workPlaceName = workLocation.getPlaceName();
+        this.workLocation = workLocation;
+    }
+
+    private TicketLocation getHomeLocation()
+    {
+        return homeLocation;
+    }
+
+    private TicketLocation getWorkLocation()
+    {
+        return workLocation;
     }
 
     public int getPickupTimeHour()
