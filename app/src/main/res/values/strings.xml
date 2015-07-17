@@ -24,4 +24,6 @@
     <string name="loading">Loading</string>
     <string name="please_wait">Please Wait...</string>
     <string name="logged_in">Logged In</string>
+    <string name="unable_schedule_commute">Unable to schedule commute</string>
+    <string name="retry">Retry</string>
 </resources>

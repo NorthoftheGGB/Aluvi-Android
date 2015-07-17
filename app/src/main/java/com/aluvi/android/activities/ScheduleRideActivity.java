@@ -1,12 +1,15 @@
 package com.aluvi.android.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 import com.aluvi.android.R;
+import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketLocation;
@@ -18,13 +21,16 @@ import butterknife.OnClick;
 
 public class ScheduleRideActivity extends BaseToolBarActivity implements LocationSelectDialogFragment.OnLocationSelectedListener
 {
+    @Bind(R.id.schedule_ride_root_view) View mRootView;
     @Bind(R.id.schedule_ride_button_from) Button mFromButton;
     @Bind(R.id.schedule_ride_button_to) Button mToButton;
     @Bind(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
     @Bind(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
 
-    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
-    private final String FROM_LOCATION_TAG = "from_location", TO_LOCATION_TAG = "to_location";
+    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354, RESULT_ERROR = 431;
+    private final String TAG = "ScheduleRideActivity",
+            FROM_LOCATION_TAG = "from_location",
+            TO_LOCATION_TAG = "to_location";
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
     private TicketLocation mStartLocation, mEndLocation;
@@ -82,7 +88,7 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
             public void onTimeSet(int hour, int min)
             {
                 mStartHour = hour;
-                mStartMin = min;
+                mStartMin = min == -1 ? 0 : min;
                 mStartTimeButton.setText(getString(R.string.at) + " " + getAmPm(mStartHour, mStartMin));
             }
         });
@@ -97,7 +103,7 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
             public void onTimeSet(int hour, int min)
             {
                 mEndHour = hour;
-                mEndMin = min;
+                mEndMin = min == -1 ? 0 : min;
                 mEndTimeButton.setText(getString(R.string.return_home) + " " + getAmPm(mEndHour, mEndMin));
             }
         });
@@ -106,7 +112,57 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked()
     {
-        setResult(RESULT_SCHEDULE_OK, new Intent());
+        final CommuteManager manager = CommuteManager.getInstance();
+        manager.setHomeLocation(mStartLocation);
+        manager.setWorkLocation(mEndLocation);
+        manager.setPickupTimeHour(mStartHour);
+        manager.setReturnTimeHour(mEndHour);
+        manager.setPickupTimeMinute(mStartMin);
+        manager.setReturnTimeMinute(mEndMin);
+        manager.save(null);
+
+        try
+        {
+            manager.requestRidesForTomorrow(new CommuteManager.Callback()
+            {
+                @Override
+                public void success()
+                {
+                    onCommuteRequestSuccess();
+                }
+
+                @Override
+                public void failure(String message)
+                {
+                    Log.e(TAG, message);
+                    onCommuteRequestFail();
+                }
+            });
+        }
+        catch (UserRecoverableSystemError error)
+        {
+            error.printStackTrace();
+            onCommuteRequestFail();
+        }
+    }
+
+    public void onCommuteRequestFail()
+    {
+        Snackbar.make(mRootView, R.string.unable_schedule_commute, Snackbar.LENGTH_LONG)
+                .setAction(R.string.retry, new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        onConfirmCommuteButtonClicked();
+                    }
+                })
+                .show();
+    }
+
+    public void onCommuteRequestSuccess()
+    {
+        setResult(RESULT_SCHEDULE_OK);
         finish();
     }
 

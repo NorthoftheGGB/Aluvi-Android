@@ -91,24 +91,9 @@ public class LocationSelectDialogFragment extends DialogFragment
 
         final View rootView = View.inflate(getActivity(), R.layout.fragment_location_select, null);
         ButterKnife.bind(this, rootView);
+
         initMap();
-
-        mAddressSuggestionsAutoCompleteAdapter = new LocationSelectAdapter(getActivity(), new ArrayList<TicketLocation>());
-        mLocationSearchAutoCompleteTextView.setAdapter(mAddressSuggestionsAutoCompleteAdapter);
-        mLocationSearchAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
-            {
-                ViewHelpers.hideKeyboardFragment(getActivity(), rootView); // Can't hide using the parent activity because of focus issues
-
-                TicketLocation clickedAddress = mAddressSuggestionsAutoCompleteAdapter.getItem(position);
-                addMarkerForAddress(clickedAddress);
-
-                mMapView.setCenter(new EasyILatLang(clickedAddress.getLatitude(), clickedAddress.getLongitude()));
-                mCurrentlySelectedLocation = clickedAddress;
-            }
-        });
+        initAutoCompleteTextView(rootView);
 
         return new MaterialDialog.Builder(getActivity())
                 .customView(rootView, false)
@@ -131,7 +116,7 @@ public class LocationSelectDialogFragment extends DialogFragment
 
     }
 
-    public void initMap()
+    private void initMap()
     {
         MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
         if (mCurrentlySelectedLocation != null)
@@ -168,6 +153,29 @@ public class LocationSelectDialogFragment extends DialogFragment
             @Override
             public void onLongPressMap(MapView mapView, ILatLng iLatLng)
             {
+            }
+        });
+    }
+
+    private void initAutoCompleteTextView(final View rootView)
+    {
+        if (mCurrentlySelectedLocation != null)
+            mLocationSearchAutoCompleteTextView.setText(mCurrentlySelectedLocation.getPlaceName());
+
+        mAddressSuggestionsAutoCompleteAdapter = new LocationSelectAdapter(getActivity(), new ArrayList<TicketLocation>());
+        mLocationSearchAutoCompleteTextView.setAdapter(mAddressSuggestionsAutoCompleteAdapter);
+        mLocationSearchAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+            {
+                ViewHelpers.hideKeyboardFragment(getActivity(), rootView); // Can't hide using the parent activity because of focus issues
+
+                TicketLocation clickedAddress = mAddressSuggestionsAutoCompleteAdapter.getItem(position);
+                addMarkerForAddress(clickedAddress);
+
+                mMapView.setCenter(new EasyILatLang(clickedAddress.getLatitude(), clickedAddress.getLongitude()));
+                mCurrentlySelectedLocation = clickedAddress;
             }
         });
     }
@@ -318,12 +326,12 @@ public class LocationSelectDialogFragment extends DialogFragment
             addressTextView.setText(getItem(position).getPlaceName());
         }
 
-        private final NoFilter<Address> NO_FILTER = new NoFilter<Address>()
+        private final NoFilter<TicketLocation> NO_FILTER = new NoFilter<TicketLocation>()
         {
             @Override
-            public CharSequence convertToString(Address resultValue)
+            public CharSequence convertToString(TicketLocation resultValue)
             {
-                return GeocoderUtils.getFormattedAddress(resultValue);
+                return resultValue.getPlaceName();
             }
         };
 
