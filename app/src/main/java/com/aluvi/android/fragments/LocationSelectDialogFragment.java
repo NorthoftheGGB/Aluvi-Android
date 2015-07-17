@@ -62,9 +62,11 @@ public class LocationSelectDialogFragment extends DialogFragment
     private OnLocationSelectedListener mLocationSelectedListener;
     private TicketLocation mCurrentlySelectedLocation;
 
-    public static LocationSelectDialogFragment newInstance()
+    public static LocationSelectDialogFragment newInstance(TicketLocation currentlySelectionLocation)
     {
-        return new LocationSelectDialogFragment();
+        Bundle args = new Bundle();
+        LocationSelectDialogFragment fragment = new LocationSelectDialogFragment();
+        return fragment;
     }
 
     @Override

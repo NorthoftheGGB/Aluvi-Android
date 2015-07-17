@@ -236,12 +236,12 @@ public class CommuteManager
         this.workLocation = workLocation;
     }
 
-    private TicketLocation getHomeLocation()
+    public TicketLocation getHomeLocation()
     {
         return homeLocation;
     }
 
-    private TicketLocation getWorkLocation()
+    public TicketLocation getWorkLocation()
     {
         return workLocation;
     }

@@ -47,8 +47,8 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     {
         CommuteManager manager = CommuteManager.getInstance();
 
-        String homeAddress = manager.getHomePlaceName();
-        String workAddress = manager.getWorkPlaceName();
+        String homeAddress = manager.getHomeLocation().getPlaceName();
+        String workAddress = manager.getWorkLocation().getPlaceName();
 
         mStartHour = manager.getPickupTimeHour();
         mStartMin = manager.getPickupTimeMinute();

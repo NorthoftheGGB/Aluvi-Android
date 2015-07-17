@@ -1,13 +1,15 @@
 package com.aluvi.android.model.local;
 
 import android.location.Address;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.aluvi.android.helpers.GeocoderUtils;
 
 /**
  * Created by matthewxi on 7/16/15.
  */
-public class TicketLocation
+public class TicketLocation implements Parcelable
 {
     private float latitude, longitude;
     private String placeName;
@@ -24,6 +26,42 @@ public class TicketLocation
         this((float) address.getLatitude(), (float) address.getLongitude(),
                 GeocoderUtils.getFormattedAddress(address));
     }
+
+    public TicketLocation(Parcel source)
+    {
+        latitude = source.readFloat();
+        longitude = source.readFloat();
+        placeName = source.readString();
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeFloat(latitude);
+        dest.writeFloat(longitude);
+        dest.writeString(placeName);
+    }
+
+    public static final Parcelable.Creator<TicketLocation> CREATOR = new Parcelable.Creator<TicketLocation>()
+    {
+        @Override
+        public TicketLocation createFromParcel(Parcel source)
+        {
+            return new TicketLocation(source);
+        }
+
+        @Override
+        public TicketLocation[] newArray(int size)
+        {
+            return new TicketLocation[size];
+        }
+    };
 
     public float getLatitude()
     {
