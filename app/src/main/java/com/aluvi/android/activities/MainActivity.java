@@ -1,18 +1,27 @@
 package com.aluvi.android.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.MapFragment;
 import com.aluvi.android.fragments.TicketMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
+import com.aluvi.android.helpers.views.BaseArrayAdapter;
+import com.aluvi.android.helpers.views.ViewHolder;
+import com.aluvi.android.managers.UserStateManager;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
@@ -21,6 +30,8 @@ public class MainActivity extends BaseToolBarActivity implements MapFragment.OnM
 {
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+
+    private final String TAG = "MainActivity";
 
     private final int SCHEDULE_RIDE_REQUEST_CODE = 982;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -52,8 +63,11 @@ public class MainActivity extends BaseToolBarActivity implements MapFragment.OnM
             {
                 switch (menuItem.getItemId())
                 {
-                    case R.id.drawer_home:
+                    case R.id.action_drawer_home:
                         onHomeClicked();
+                        break;
+                    case R.id.action_debug_user_log_in:
+                        debugLogInSelected();
                         break;
                 }
 
@@ -140,5 +154,82 @@ public class MainActivity extends BaseToolBarActivity implements MapFragment.OnM
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    class DebugUser
+    {
+        String username, password;
+
+        public DebugUser(String username, String password)
+        {
+            this.username = username;
+            this.password = password;
+        }
+    }
+
+    private void debugLogInSelected()
+    {
+        DebugUser[] testUsers = {
+                new DebugUser("test@test.com", "tiny123"),
+                new DebugUser("joe@joe.com", "tiny123")
+        };
+
+        class DebugAdapter extends BaseArrayAdapter<DebugUser>
+        {
+            public DebugAdapter(Context context, DebugUser[] data)
+            {
+                super(context, android.R.layout.simple_list_item_1, data);
+            }
+
+            @Override
+            protected void initView(ViewHolder holder, int position)
+            {
+                ((TextView) holder.getView(android.R.id.text1)).setText(getItem(position).username);
+            }
+        }
+
+        final DebugAdapter adapter = new DebugAdapter(this, testUsers);
+        new MaterialDialog.Builder(this)
+                .adapter(adapter, new MaterialDialog.ListCallback()
+                {
+                    @Override
+                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence)
+                    {
+                        logUserIn(adapter.getItem(i));
+                        materialDialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void logUserIn(DebugUser user)
+    {
+        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                .progress(true, 0)
+                .title(R.string.loading)
+                .content(R.string.please_wait)
+                .cancelable(false)
+                .show();
+
+        UserStateManager.getInstance().login(user.username, user.password, new UserStateManager.Callback()
+        {
+            @Override
+            public void success()
+            {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
+                Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(String message)
+            {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
+                Log.e(TAG, message);
+            }
+        });
     }
 }

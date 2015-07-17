@@ -26,6 +26,12 @@ public abstract class BaseArrayAdapter<T> extends ArrayAdapter<T>
         this.rowLayoutResource = resource;
     }
 
+    public BaseArrayAdapter(Context context, int resource, T[] data)
+    {
+        super(context, resource, data);
+        this.rowLayoutResource = resource;
+    }
+
     @Override
     public long getItemId(int position)
     {

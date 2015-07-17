@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_schedule_ride">Schedule Ride</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_commute_pending">Commute Pending</string>
+    <string name="action_cancel_schedule_ride">Cancel</string>
+    <string name="action_rider_ticket">Rider Ticket</string>
+    <string name="action_driver_ticket">Driver Ticket</string>
+    <string name="action_debug_users_log_in">Log In</string>
+    <string name="action_home">Home</string>
+</resources>

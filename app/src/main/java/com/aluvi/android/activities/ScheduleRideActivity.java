@@ -1,7 +1,6 @@
 package com.aluvi.android.activities;
 
 import android.content.Intent;
-import android.location.Address;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,7 +8,8 @@ import android.widget.Button;
 
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
-import com.aluvi.android.helpers.GeocoderUtils;
+import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.model.local.TicketLocation;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.TimePickerDialog;
 
@@ -27,19 +27,31 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     private final String FROM_LOCATION_TAG = "from_location", TO_LOCATION_TAG = "to_location";
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
-    private Address mStartLocation, mEndLocation;
+    private TicketLocation mStartLocation, mEndLocation;
     private boolean mIsDriver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        initLocations();
     }
 
     @Override
     public int getLayoutId()
     {
         return R.layout.activity_schedule_ride;
+    }
+
+    public void initLocations()
+    {
+        CommuteManager manager = CommuteManager.getInstance();
+
+        String homeAddress = manager.getHomePlaceName();
+        String workAddress = manager.getWorkPlaceName();
+
+        mFromButton.setText(homeAddress);
+        mToButton.setText(workAddress);
     }
 
     @OnClick(R.id.schedule_ride_button_from)
@@ -92,17 +104,16 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     }
 
     @Override
-    public void onLocationSelected(Address address, LocationSelectDialogFragment fragment)
+    public void onLocationSelected(TicketLocation address, LocationSelectDialogFragment fragment)
     {
-        String formattedAddress = GeocoderUtils.getFormattedAddress(address);
         if (fragment.getTag().equals(FROM_LOCATION_TAG))
         {
-            mFromButton.setText(formattedAddress);
+            mFromButton.setText(address.getPlaceName());
             mStartLocation = address;
         }
         else
         {
-            mToButton.setText(formattedAddress);
+            mToButton.setText(address.getPlaceName());
             mEndLocation = address;
         }
     }

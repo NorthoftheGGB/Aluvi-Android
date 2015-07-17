@@ -3,20 +3,9 @@
     <string name="commuter_rides_already_in_database">There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again</string>
 
     <string name="title_activity_main">@string/app_name</string>
-    <string name="home">Home</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_schedule_ride">Schedule Ride</string>
-
-    <string name="action_settings">Settings</string>
-    <string name="action_commute_pending">Commute Pending</string>
-    <string name="action_cancel_schedule_ride">Cancel</string>
-    <string name="action_rider_ticket">Rider Ticket</string>
-    <string name="action_driver_ticket">Driver Ticket</string>
-    <string name="map_id">justsoamazing.mn4kk9l9</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoianVzdHNvYW1hemluZyIsImEiOiI4ZjI3YzJlN2Y4OWU1OGNjNWY5Mjk4MWU3ZGUwNWFiNCJ9.v-f8fhMNywNn0PI4URxnRg</string>
 
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
@@ -31,7 +20,8 @@
     <string name="from">From:</string>
     <string name="no_results_address">Couldn\'t find that address</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="schedule_ready">Your schedule will be ready at 9:30 PM. You might want to brush up on your puns.</string>
+    <string name="loading">Loading</string>
+    <string name="please_wait">Please Wait...</string>
+    <string name="logged_in">Logged In</string>
 </resources>

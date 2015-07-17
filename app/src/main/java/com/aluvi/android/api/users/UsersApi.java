@@ -16,48 +16,49 @@ import java.util.HashMap;
 /**
  * Created by matthewxi on 7/14/15.
  */
-public class UsersApi {
+public class UsersApi
+{
+    public interface Callback
+    {
+        void success(String token);
 
-    public interface Callback {
-        public void success(String token);
-        public void failure(int statusCode);
+        void failure(int statusCode);
     }
 
-    static public void login(String email, String password, final Callback callback ){
-
+    static public void login(String email, String password, final Callback callback)
+    {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.EMAIL_KEY, email);
         params.put(AluviApiKeys.PASSWORD_KEY, password);
-        AluviUnauthenticatedRequest request =  new AluviUnauthenticatedRequest(
+        AluviUnauthenticatedRequest request = new AluviUnauthenticatedRequest(
                 Request.Method.POST, AluviApi.API_LOGIN, params,
-                new JacksonRequestListener<LoginResponse>(){
+                new JacksonRequestListener<LoginResponse>()
+                {
 
                     @Override
-                    public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
-                        if(response != null) {
+                    public void onResponse(LoginResponse response, int statusCode, VolleyError error)
+                    {
+                        if (response != null)
+                        {
                             Log.d("Login Success", response.token);
                             callback.success(response.token);
-                        } else {
+                        }
+                        else
+                        {
                             Log.d("JSON", "Did not work " + error.getMessage());
                             callback.failure(statusCode);
                         }
-                     }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return SimpleType.construct(LoginResponse.class);
                     }
 
-
+                    @Override
+                    public JavaType getReturnType()
+                    {
+                        return SimpleType.construct(LoginResponse.class);
+                    }
                 }
-
         );
+
         request.addAcceptedStatusCodes(new int[]{201, 403, 404});
-
         AluviApi.getInstance().getRequestQueue().add(request);
-
-
     }
-
-
 }

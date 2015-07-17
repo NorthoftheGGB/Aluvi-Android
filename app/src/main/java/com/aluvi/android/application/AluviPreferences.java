@@ -3,7 +3,8 @@ package com.aluvi.android.application;
 /**
  * Created by matthewxi on 7/15/15.
  */
-public class AluviPreferences {
+public class AluviPreferences
+{
     public static String COMMUTER_PREFERENCES_FILE = "CommuterPreferences";
 
     public static final String API_TOKEN_KEY = "API_TOKEN_KEY";
@@ -20,5 +21,4 @@ public class AluviPreferences {
     public static final String COMMUTER_PICKUP_TIME_KEY = "COMMUTER_PICKUP_TIME_KEY";
     public static final String COMMUTER_RETURN_TIME_KEY = "COMMUTER_RETURN_TIME_KEY";
     public static final String COMMUTER_IS_DRIVER_KEY = "COMMUTER_IS_DRIVER_KEY";
-
 }

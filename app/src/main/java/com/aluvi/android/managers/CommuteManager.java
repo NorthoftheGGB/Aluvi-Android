@@ -67,7 +67,6 @@ public class CommuteManager
         load();
     }
 
-
     public double getHomeLatitude()
     {
         return homeLatitude;
@@ -171,7 +170,6 @@ public class CommuteManager
         workLongitude = workLocation.getLongitude();
         workPlaceName = workLocation.getPlaceName();
     }
-
 
     private void load()
     {
