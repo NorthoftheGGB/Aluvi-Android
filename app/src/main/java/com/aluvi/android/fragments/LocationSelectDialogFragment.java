@@ -57,7 +57,9 @@ public class LocationSelectDialogFragment extends DialogFragment
     @Bind(R.id.location_select_auto_complete_search) AutoCompleteTextView mLocationSearchAutoCompleteTextView;
     @Bind(R.id.location_select_map_view) MapView mMapView;
 
-    private final String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map";
+    private final static String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map",
+            TICKET_KEY = "ticket_location";
+
     private LocationSelectAdapter mAddressSuggestionsAutoCompleteAdapter;
     private OnLocationSelectedListener mLocationSelectedListener;
     private TicketLocation mCurrentlySelectedLocation;
@@ -65,7 +67,11 @@ public class LocationSelectDialogFragment extends DialogFragment
     public static LocationSelectDialogFragment newInstance(TicketLocation currentlySelectionLocation)
     {
         Bundle args = new Bundle();
+        args.putParcelable(TICKET_KEY, currentlySelectionLocation);
+
         LocationSelectDialogFragment fragment = new LocationSelectDialogFragment();
+        fragment.mCurrentlySelectedLocation = currentlySelectionLocation;
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -80,6 +86,9 @@ public class LocationSelectDialogFragment extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
+        if (getArguments() != null)
+            mCurrentlySelectedLocation = getArguments().getParcelable(TICKET_KEY);
+
         final View rootView = View.inflate(getActivity(), R.layout.fragment_location_select, null);
         ButterKnife.bind(this, rootView);
         initMap();
@@ -125,6 +134,9 @@ public class LocationSelectDialogFragment extends DialogFragment
     public void initMap()
     {
         MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
+        if (mCurrentlySelectedLocation != null)
+            mMapView.setCenter(new EasyILatLang(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude()));
+
         mMapView.setMapViewListener(new MapViewListener()
         {
             @Override

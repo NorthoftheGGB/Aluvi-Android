@@ -62,13 +62,15 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     @OnClick(R.id.schedule_ride_button_from)
     public void onFromButtonClicked()
     {
-        LocationSelectDialogFragment.newInstance().show(getSupportFragmentManager(), FROM_LOCATION_TAG);
+        LocationSelectDialogFragment.newInstance(CommuteManager.getInstance().getHomeLocation())
+                .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
     }
 
     @OnClick(R.id.schedule_ride_button_to)
     public void onToButtonClicked()
     {
-        LocationSelectDialogFragment.newInstance().show(getSupportFragmentManager(), TO_LOCATION_TAG);
+        LocationSelectDialogFragment.newInstance(CommuteManager.getInstance().getWorkLocation())
+                .show(getSupportFragmentManager(), TO_LOCATION_TAG);
     }
 
     @OnClick(R.id.schedule_ride_button_start_time)
