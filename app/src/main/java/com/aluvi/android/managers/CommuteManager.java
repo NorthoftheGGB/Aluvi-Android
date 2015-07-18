@@ -293,7 +293,7 @@ public class CommuteManager {
                 this.toWorkTicket.setTripId(response.tripId);
                 this.toWorkTicket.setRideId(response.ticketToWorkRideId);
                 this.fromWorkTicket.setTripId(response.tripId);
-                this.fromWorkTicket.setTripId(response.ticketFromWorkRideId);
+                this.fromWorkTicket.setRideId(response.ticketFromWorkRideId);
                 Trip trip = realm.createObject(Trip.class);
                 trip.setTripId(response.tripId);
                 trip.getTickets().add(this.toWorkTicket);
@@ -369,10 +369,12 @@ public class CommuteManager {
     }
 
 
-    public void cancelTrip(Trip trip, final Callback callback){
+    public void cancelTrip(final Trip trip, final Callback callback){
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
+                Trip.removeTickets(trip);
+                RealmHelper.removeFromRealm(trip);
                 callback.success();
             }
 

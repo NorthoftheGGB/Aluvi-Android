@@ -1,7 +1,9 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.model.RealmHelper;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -20,6 +22,14 @@ public class Trip extends RealmObject {
             RealmHelper.removeFromRealm(trip);
         }
     }
+    public static void removeTickets(Trip trip) {
+        Realm realm = AluviRealm.getDefaultRealm();
+        realm.beginTransaction();
+        while(trip.getTickets().size() > 0){
+            trip.getTickets().first().removeFromRealm();
+        }
+        realm.commitTransaction();
+    }
 
     public int getTripId() {
         return tripId;
@@ -36,5 +46,6 @@ public class Trip extends RealmObject {
     public void setTickets(RealmList<Ticket> tickets) {
         this.tickets = tickets;
     }
+
 
 }

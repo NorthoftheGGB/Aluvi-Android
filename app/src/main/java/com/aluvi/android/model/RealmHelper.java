@@ -3,6 +3,7 @@ package com.aluvi.android.model;
 import com.aluvi.android.application.AluviRealm;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -15,4 +16,5 @@ public class RealmHelper {
         object.removeFromRealm();
         realm.commitTransaction();
     }
+
 }

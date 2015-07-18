@@ -19,7 +19,7 @@ public class AluviRealm {
         // Configure Realm
         Log.w("Aluvi", "Migrations have not been implemented for Realm");
         RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
-                .name("aluvi")
+                .name("aluvi.realm")
                 .schemaVersion(1)
                 .deleteRealmIfMigrationNeeded()  // not running migrations yet
                 .build();
