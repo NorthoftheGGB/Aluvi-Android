@@ -3,13 +3,18 @@ package com.aluvi.android.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
+import com.aluvi.android.api.tickets.TicketData;
 import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviPreferences;
+import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
+import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.Ticket;
+import com.aluvi.android.model.realm.Trip;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -223,16 +228,16 @@ public class CommuteManager {
         return driving;
     }
 
-    public void cancelTicket(final Ticket ticket, final Callback callback){
+    public void cancelTicket(final Ticket ticket, final Callback callback) {
 
-        if(ticket.getRideId() != 0) {
+        if (ticket.getRideId() != 0) {
 
             if (ticket.isDriving()) {
                 // Driver Api - cancel driving
 
             } else {
 
-                if(ticket.getHovFare() == null) {
+                if (ticket.getHovFare() == null) {
                     // ride has not been scheduled yet
                     TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
                         @Override
@@ -268,13 +273,14 @@ public class CommuteManager {
         } else {
             RealmHelper.removeFromRealm(ticket);
         }
+    }
 
     public void setDriving(boolean driving) {
         this.driving = driving;
     }
 
 
-    public void cancelTrip(final Trip trip, final Callback callback){
+    public void cancelTrip(final Trip trip, final Callback callback) {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
@@ -288,6 +294,8 @@ public class CommuteManager {
                 callback.failure("Could not cancel trip.  Please try again");
             }
         });
+    }
+
     public void setHomeLocation(TicketLocation homeLocation) {
         this.homeLocation = homeLocation;
     }

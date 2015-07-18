@@ -58,6 +58,7 @@ public class Ticket extends RealmObject
     private Driver driver;
     private Car car;
     private Fare hovFare;
+    private Trip trip;
 
     public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin,
                                         TicketLocation destination, boolean driving, int pickupTimeHour, int pickUpTimeMin)
@@ -412,5 +413,13 @@ public class Ticket extends RealmObject
     public void setState(String state)
     {
         this.state = state;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
     }
 }
