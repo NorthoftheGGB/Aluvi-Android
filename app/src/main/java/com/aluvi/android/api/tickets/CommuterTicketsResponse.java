@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by matthewxi on 7/16/15.
  */
 public class CommuterTicketsResponse {
-
     @JsonProperty("outgoing_ride_id")
     Integer ticketToWorkRideId;
 

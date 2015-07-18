@@ -45,17 +45,19 @@ import butterknife.OnClick;
 /**
  * Created by usama on 7/13/15.
  */
-public class LocationSelectDialogFragment extends DialogFragment
-{
-    public interface OnLocationSelectedListener
-    {
+public class LocationSelectDialogFragment extends DialogFragment {
+    public interface OnLocationSelectedListener {
         void onLocationSelected(TicketLocation address, LocationSelectDialogFragment fragment);
     }
 
-    @Bind(R.id.location_select_image_button_search) ImageButton mSearchImageButton;
-    @Bind(R.id.location_select_progress_bar) ProgressBar mSearchProgressBar;
-    @Bind(R.id.location_select_auto_complete_search) AutoCompleteTextView mLocationSearchAutoCompleteTextView;
-    @Bind(R.id.location_select_map_view) MapView mMapView;
+    @Bind(R.id.location_select_image_button_search)
+    ImageButton mSearchImageButton;
+    @Bind(R.id.location_select_progress_bar)
+    ProgressBar mSearchProgressBar;
+    @Bind(R.id.location_select_auto_complete_search)
+    AutoCompleteTextView mLocationSearchAutoCompleteTextView;
+    @Bind(R.id.location_select_map_view)
+    MapView mMapView;
 
     private final static String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map",
             TICKET_KEY = "ticket_location";
@@ -64,8 +66,7 @@ public class LocationSelectDialogFragment extends DialogFragment
     private OnLocationSelectedListener mLocationSelectedListener;
     private TicketLocation mCurrentlySelectedLocation;
 
-    public static LocationSelectDialogFragment newInstance(TicketLocation currentlySelectionLocation)
-    {
+    public static LocationSelectDialogFragment newInstance(TicketLocation currentlySelectionLocation) {
         Bundle args = new Bundle();
         args.putParcelable(TICKET_KEY, currentlySelectionLocation);
 
@@ -76,16 +77,14 @@ public class LocationSelectDialogFragment extends DialogFragment
     }
 
     @Override
-    public void onAttach(Activity activity)
-    {
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
         mLocationSelectedListener = (OnLocationSelectedListener) activity;
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState)
-    {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (getArguments() != null)
             mCurrentlySelectedLocation = getArguments().getParcelable(TICKET_KEY);
 
@@ -99,14 +98,11 @@ public class LocationSelectDialogFragment extends DialogFragment
                 .customView(rootView, false)
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback()
-                {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog)
-                    {
+                    public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
-                        if (mLocationSelectedListener != null)
-                        {
+                        if (mLocationSelectedListener != null) {
                             mLocationSelectedListener.onLocationSelected(mCurrentlySelectedLocation,
                                     LocationSelectDialogFragment.this);
                         }
@@ -116,59 +112,48 @@ public class LocationSelectDialogFragment extends DialogFragment
 
     }
 
-    private void initMap()
-    {
+    private void initMap() {
         MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
         if (mCurrentlySelectedLocation != null)
             mMapView.setCenter(new EasyILatLang(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude()));
 
-        mMapView.setMapViewListener(new MapViewListener()
-        {
+        mMapView.setMapViewListener(new MapViewListener() {
             @Override
-            public void onShowMarker(MapView mapView, Marker marker)
-            {
+            public void onShowMarker(MapView mapView, Marker marker) {
             }
 
             @Override
-            public void onHideMarker(MapView mapView, Marker marker)
-            {
+            public void onHideMarker(MapView mapView, Marker marker) {
             }
 
             @Override
-            public void onTapMarker(MapView mapView, Marker marker)
-            {
+            public void onTapMarker(MapView mapView, Marker marker) {
             }
 
             @Override
-            public void onLongPressMarker(MapView mapView, Marker marker)
-            {
+            public void onLongPressMarker(MapView mapView, Marker marker) {
             }
 
             @Override
-            public void onTapMap(MapView mapView, ILatLng iLatLng)
-            {
+            public void onTapMap(MapView mapView, ILatLng iLatLng) {
                 addMarker(iLatLng);
             }
 
             @Override
-            public void onLongPressMap(MapView mapView, ILatLng iLatLng)
-            {
+            public void onLongPressMap(MapView mapView, ILatLng iLatLng) {
             }
         });
     }
 
-    private void initAutoCompleteTextView(final View rootView)
-    {
+    private void initAutoCompleteTextView(final View rootView) {
         if (mCurrentlySelectedLocation != null)
             mLocationSearchAutoCompleteTextView.setText(mCurrentlySelectedLocation.getPlaceName());
 
         mAddressSuggestionsAutoCompleteAdapter = new LocationSelectAdapter(getActivity(), new ArrayList<TicketLocation>());
         mLocationSearchAutoCompleteTextView.setAdapter(mAddressSuggestionsAutoCompleteAdapter);
-        mLocationSearchAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        mLocationSearchAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
-            {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 ViewHelpers.hideKeyboardFragment(getActivity(), rootView); // Can't hide using the parent activity because of focus issues
 
                 TicketLocation clickedAddress = mAddressSuggestionsAutoCompleteAdapter.getItem(position);
@@ -181,59 +166,47 @@ public class LocationSelectDialogFragment extends DialogFragment
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
         MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
     }
 
     @OnClick(R.id.location_select_image_button_search)
-    public void onLocationSearchClicked()
-    {
+    public void onLocationSearchClicked() {
         String enteredLocation = mLocationSearchAutoCompleteTextView.getText().toString();
-        if (!"".equals(enteredLocation))
-        {
+        if (!"".equals(enteredLocation)) {
             onLocationSearchStarted();
-            GeocoderUtils.getAddressesForName(enteredLocation, 3, getActivity(), new AsyncCallback<List<Address>>()
-            {
+            GeocoderUtils.getAddressesForName(enteredLocation, 3, getActivity(), new AsyncCallback<List<Address>>() {
                 @Override
-                public void onOperationCompleted(List<Address> result)
-                {
+                public void onOperationCompleted(List<Address> result) {
                     onAddressesFetched(result);
                 }
             });
         }
     }
 
-    private void onAddressesFetched(List<Address> addresses)
-    {
+    private void onAddressesFetched(List<Address> addresses) {
         onLocationSearchFinished();
 
         Log.d(TAG, "Received address result");
-        if (addresses != null)
-        {
+        if (addresses != null) {
             Log.d(TAG, "Addresses: " + addresses.toString());
 
-            if (mAddressSuggestionsAutoCompleteAdapter != null)
-            {
+            if (mAddressSuggestionsAutoCompleteAdapter != null) {
                 mAddressSuggestionsAutoCompleteAdapter.clear();
                 for (Address address : addresses)
                     mAddressSuggestionsAutoCompleteAdapter.add(new TicketLocation(address));
 
                 mAddressSuggestionsAutoCompleteAdapter.notifyDataSetChanged();
             }
-        }
-        else
-        {
-            if (getActivity() != null)
-            {
+        } else {
+            if (getActivity() != null) {
                 Toast.makeText(getActivity(), R.string.no_results_address, Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void addMarkerForAddress(TicketLocation address)
-    {
+    private void addMarkerForAddress(TicketLocation address) {
         Marker marker = getDefaultMarker(address.getPlaceName(), "",
                 new LatLng(address.getLatitude(), address.getLongitude()));
 
@@ -241,8 +214,7 @@ public class LocationSelectDialogFragment extends DialogFragment
         mMapView.addMarker(marker);
     }
 
-    private void addMarker(final ILatLng latLng)
-    {
+    private void addMarker(final ILatLng latLng) {
         mMapView.clear();
         mMapView.addMarker(getDefaultMarker(null, null, new LatLng(latLng.getLatitude(), latLng.getLongitude())));
 
@@ -250,15 +222,12 @@ public class LocationSelectDialogFragment extends DialogFragment
 
         onLocationSearchStarted();
         GeocoderUtils.getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), 1,
-                getActivity(), new AsyncCallback<List<Address>>()
-                {
+                getActivity(), new AsyncCallback<List<Address>>() {
                     @Override
-                    public void onOperationCompleted(List<Address> result)
-                    {
+                    public void onOperationCompleted(List<Address> result) {
                         Log.d(TAG, "Found addresses for custom marker location");
 
-                        if (result != null && result.size() > 0)
-                        {
+                        if (result != null && result.size() > 0) {
                             Address address = result.get(0);
 
                             float[] distanceArr = new float[3];
@@ -283,14 +252,12 @@ public class LocationSelectDialogFragment extends DialogFragment
                 });
     }
 
-    private void onLocationSearchStarted()
-    {
+    private void onLocationSearchStarted() {
         mSearchImageButton.setVisibility(View.INVISIBLE);
         mSearchProgressBar.setVisibility(View.VISIBLE);
     }
 
-    private void onLocationSearchFinished()
-    {
+    private void onLocationSearchFinished() {
         if (mSearchImageButton != null && mSearchProgressBar != null) // Frequently called in callbacks, so check that we still have access to these guys
         {
             mSearchImageButton.setVisibility(View.VISIBLE);
@@ -298,39 +265,32 @@ public class LocationSelectDialogFragment extends DialogFragment
         }
     }
 
-    private Marker getDefaultMarker(String title, String description, LatLng latLng)
-    {
+    private Marker getDefaultMarker(String title, String description, LatLng latLng) {
         Marker marker = new Marker(title, description, latLng);
         marker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
         return marker;
     }
 
     @Override
-    public void onDestroyView()
-    {
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
 
-    private static class LocationSelectAdapter extends BaseArrayAdapter<TicketLocation>
-    {
-        public LocationSelectAdapter(Context context, ArrayList<TicketLocation> data)
-        {
+    private static class LocationSelectAdapter extends BaseArrayAdapter<TicketLocation> {
+        public LocationSelectAdapter(Context context, ArrayList<TicketLocation> data) {
             super(context, android.R.layout.simple_dropdown_item_1line, data);
         }
 
         @Override
-        protected void initView(ViewHolder holder, int position)
-        {
+        protected void initView(ViewHolder holder, int position) {
             TextView addressTextView = (TextView) holder.getView(android.R.id.text1);
             addressTextView.setText(getItem(position).getPlaceName());
         }
 
-        private final NoFilter<TicketLocation> NO_FILTER = new NoFilter<TicketLocation>()
-        {
+        private final NoFilter<TicketLocation> NO_FILTER = new NoFilter<TicketLocation>() {
             @Override
-            public CharSequence convertToString(TicketLocation resultValue)
-            {
+            public CharSequence convertToString(TicketLocation resultValue) {
                 return resultValue.getPlaceName();
             }
         };
@@ -339,8 +299,7 @@ public class LocationSelectDialogFragment extends DialogFragment
          * Override ArrayAdapter.getFilter() to return our own filtering.
          */
         @Override
-        public Filter getFilter()
-        {
+        public Filter getFilter() {
             return NO_FILTER;
         }
 
@@ -351,21 +310,17 @@ public class LocationSelectDialogFragment extends DialogFragment
          * calling e.g. ArrayAdapter.add(), but instead ArrayAdapter.mObjects is
          * updated directly and methods like getCount() return the expected result.
          */
-        private static abstract class NoFilter<T> extends Filter
-        {
-            protected FilterResults performFiltering(CharSequence prefix)
-            {
+        private static abstract class NoFilter<T> extends Filter {
+            protected FilterResults performFiltering(CharSequence prefix) {
                 return new FilterResults();
             }
 
-            protected void publishResults(CharSequence constraint, FilterResults results)
-            {
+            protected void publishResults(CharSequence constraint, FilterResults results) {
                 // Do nothing
             }
 
             @Override
-            public CharSequence convertResultToString(Object resultValue)
-            {
+            public CharSequence convertResultToString(Object resultValue) {
                 return convertToString((T) resultValue);
             }
 

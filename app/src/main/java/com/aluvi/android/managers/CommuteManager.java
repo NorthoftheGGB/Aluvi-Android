@@ -23,10 +23,8 @@ import io.realm.RealmResults;
 /**
  * Created by matthewxi on 7/15/15.
  */
-public class CommuteManager
-{
-    public interface Callback
-    {
+public class CommuteManager {
+    public interface Callback {
         void success();
 
         void failure(String message);
@@ -42,28 +40,23 @@ public class CommuteManager
     private int returnTimeHour, returnTimeMinute;
     private boolean driving;
 
-    public static synchronized void initialize(Context context)
-    {
-        if (mInstance == null)
-        {
+    public static synchronized void initialize(Context context) {
+        if (mInstance == null) {
             mInstance = new CommuteManager(context);
         }
     }
 
-    public static synchronized CommuteManager getInstance()
-    {
+    public static synchronized CommuteManager getInstance() {
         return mInstance;
     }
 
-    private CommuteManager(Context context)
-    {
+    private CommuteManager(Context context) {
         ctx = context;
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         load();
     }
 
-    private void load()
-    {
+    private void load() {
         float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
         float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
         float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
@@ -84,14 +77,12 @@ public class CommuteManager
         driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
     }
 
-    public void loadFromServer()
-    {
+    public void loadFromServer() {
         // routes API
         // TODO: implement RoutesApi library file
     }
 
-    private void store()
-    {
+    private void store() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLocation.getLatitude());
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLocation.getLongitude());
@@ -107,14 +98,12 @@ public class CommuteManager
         editor.commit();
     }
 
-    public void save(Callback callback)
-    {
+    public void save(Callback callback) {
         // TODO: Implement Routes API
         store();
     }
 
-    public void clear()
-    {
+    public void clear() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
@@ -132,15 +121,13 @@ public class CommuteManager
         load(); // Reset by pulling default values from shared prefs
     }
 
-    public boolean routeIsSet()
-    {
+    public boolean routeIsSet() {
         return homeLocation.getLatitude() == 0 || homeLocation.getLongitude() == 0 || workLocation.getLatitude() == 0
                 || workLocation.getLongitude() == 0 || pickupTimeHour == -1 || pickupTimeMinute == -1 || returnTimeHour == -1
                 || returnTimeMinute == -1;
     }
 
-    public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError
-    {
+    public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
         LocalDate today = new LocalDate();
         LocalDate tomorrow = today.plus(Period.days(1));
         Date rideDate = tomorrow.toDateTimeAtStartOfDay().toDate();
@@ -154,14 +141,11 @@ public class CommuteManager
         RealmResults<Ticket> results = query.findAll();
         int count = 0;
         Ticket orphan = null;
-        if (results.size() != 0)
-        {
+        if (results.size() != 0) {
             // since we can't do an IN query, we check here for statuses
-            for (Ticket ticket : results)
-            {
+            for (Ticket ticket : results) {
                 String state = ticket.getState();
-                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled))
-                {
+                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled)) {
                     // already have a ticket in there for tomorrow
                     count++;
                     orphan = ticket;
@@ -169,14 +153,12 @@ public class CommuteManager
             }
         }
 
-        if (count == 2)
-        {
+        if (count == 2) {
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
             // AluviStrings.commuter_rides_already_in_database);
         }
 
-        if (count == 1 && orphan != null)
-        {
+        if (count == 1 && orphan != null) {
             // Orphaned request, delete it
             realm.beginTransaction();
             orphan.removeFromRealm();
@@ -193,22 +175,18 @@ public class CommuteManager
                 driving, returnTimeHour, returnTimeMinute);
         realm.commitTransaction();
 
-        class Callback extends RequestCommuterTicketsCallback
-        {
-            public Callback(Ticket toWorkTicket, Ticket fromWorkTicket)
-            {
+        class Callback extends RequestCommuterTicketsCallback {
+            public Callback(Ticket toWorkTicket, Ticket fromWorkTicket) {
                 super(toWorkTicket, fromWorkTicket);
             }
 
             @Override
-            public void success(CommuterTicketsResponse response)
-            {
+            public void success(CommuterTicketsResponse response) {
                 callback.success();
             }
 
             @Override
-            public void failure(int statusCode)
-            {
+            public void failure(int statusCode) {
                 callback.failure("Scheduling failure message");
             }
         }
@@ -216,73 +194,59 @@ public class CommuteManager
         TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket, new Callback(toWorkTicket, fromWorkTicket));
     }
 
-    public boolean isDriving()
-    {
+    public boolean isDriving() {
         return driving;
     }
 
-    public void setDriving(boolean driving)
-    {
+    public void setDriving(boolean driving) {
         this.driving = driving;
     }
 
-    public void setHomeLocation(TicketLocation homeLocation)
-    {
+    public void setHomeLocation(TicketLocation homeLocation) {
         this.homeLocation = homeLocation;
     }
 
-    public void setWorkLocation(TicketLocation workLocation)
-    {
+    public void setWorkLocation(TicketLocation workLocation) {
         this.workLocation = workLocation;
     }
 
-    public TicketLocation getHomeLocation()
-    {
+    public TicketLocation getHomeLocation() {
         return homeLocation;
     }
 
-    public TicketLocation getWorkLocation()
-    {
+    public TicketLocation getWorkLocation() {
         return workLocation;
     }
 
-    public int getPickupTimeHour()
-    {
+    public int getPickupTimeHour() {
         return pickupTimeHour;
     }
 
-    public void setPickupTimeHour(int pickupTimeHour)
-    {
+    public void setPickupTimeHour(int pickupTimeHour) {
         this.pickupTimeHour = pickupTimeHour;
     }
 
-    public int getPickupTimeMinute()
-    {
+    public int getPickupTimeMinute() {
         return pickupTimeMinute;
     }
 
-    public void setPickupTimeMinute(int pickupTimeMinute)
-    {
+    public void setPickupTimeMinute(int pickupTimeMinute) {
         this.pickupTimeMinute = pickupTimeMinute;
     }
 
-    public int getReturnTimeHour()
-    {
+    public int getReturnTimeHour() {
         return returnTimeHour;
     }
 
-    public void setReturnTimeHour(int returnTimeHour)
-    {
+    public void setReturnTimeHour(int returnTimeHour) {
         this.returnTimeHour = returnTimeHour;
     }
 
-    public int getReturnTimeMinute()
-    {
+    public int getReturnTimeMinute() {
         return returnTimeMinute;
     }
 
-    public void setReturnTimeMinute(int returnTimeMinute)
-    {
+    public void setReturnTimeMinute(int returnTimeMinute) {
         this.returnTimeMinute = returnTimeMinute;
     }
 }

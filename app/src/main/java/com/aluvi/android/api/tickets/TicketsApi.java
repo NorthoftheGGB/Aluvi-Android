@@ -15,7 +15,6 @@ import com.spothero.volley.JacksonRequestListener;
 
 
 public class TicketsApi {
-
     public static void requestCommuterTickets(Ticket ticketToWork, Ticket ticketFromWork, final RequestCommuterTicketsCallback callback) {
         CommuterTicketsRequest requestParams = new CommuterTicketsRequest(ticketToWork, ticketFromWork);
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<CommuterTicketsResponse>(
@@ -39,8 +38,7 @@ public class TicketsApi {
                     }
                 }
         );
+
         AluviApi.getInstance().getRequestQueue().add(request);
-
     }
-
 }
