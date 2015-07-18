@@ -18,8 +18,6 @@ package com.aluvi.android.application.push;
 
 import android.content.Intent;
 
-import com.google.android.gms.iid.InstanceIDListenerService;
-
 public class InstanceIDListenerService extends com.google.android.gms.iid.InstanceIDListenerService {
 
     private static final String TAG = "MyInstanceIDLS";

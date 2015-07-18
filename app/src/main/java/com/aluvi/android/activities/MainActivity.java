@@ -1,14 +1,18 @@
 package com.aluvi.android.activities;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
+import com.aluvi.android.application.push.RegistrationIntentService;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
     }
 
 
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.login_button) public void login(){
-        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback(){
+        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
@@ -157,4 +162,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /*
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
+    }
+    */
 }

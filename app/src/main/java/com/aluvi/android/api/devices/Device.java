@@ -1,6 +1,6 @@
 package com.aluvi.android.api.devices;
 
-import com.aluvi.aluvi.BuildConfig;
+import com.aluvi.android.BuildConfig;
 import com.aluvi.android.api.request.AluviPayload;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

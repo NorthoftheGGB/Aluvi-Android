@@ -28,7 +28,6 @@ import android.util.Log;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.MainActivity;
-import com.google.android.gms.gcm.GcmListenerService;
 
 public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerService {
 

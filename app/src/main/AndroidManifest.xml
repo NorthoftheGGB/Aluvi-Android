@@ -24,13 +24,17 @@
             </intent-filter>
         </activity>
     </application>
+    <service
+        android:name="com.aluvi.android.application.push.RegistrationIntentService"
+        android:exported="false">
+    </service>
     <receiver
         android:name="com.google.android.gms.gcm.GcmReceiver"
         android:exported="true"
         android:permission="com.google.android.c2dm.permission.SEND" >
         <intent-filter>
             <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <category android:name="com.example.gcm" />
+            <category android:name="com.example.gcm" />  <!-- this probably needs to change -->
         </intent-filter>
     </receiver>
     <service
@@ -47,5 +51,6 @@
             <action android:name="com.google.android.gms.iid.InstanceID"/>
         </intent-filter>
     </service>
+
 
 </manifest>

@@ -2,7 +2,7 @@ package com.aluvi.android.resources;
 
 import android.content.Context;
 
-import com.aluvi.aluvi.R;
+import com.aluvi.android.R;
 
 
 /**
