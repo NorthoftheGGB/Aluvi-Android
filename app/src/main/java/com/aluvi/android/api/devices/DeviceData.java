@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
-public class Device extends AluviPayload {
+public class DeviceData extends AluviPayload {
 
     @JsonProperty("user_id")
     private Integer userId;
@@ -27,7 +27,7 @@ public class Device extends AluviPayload {
     @JsonProperty("app_identifier")
     private String appIdentifier;
 
-    public Device() {
+    public DeviceData() {
         appVersion = String.valueOf(BuildConfig.VERSION_CODE);
         appIdentifier = BuildConfig.VERSION_NAME;
     }
