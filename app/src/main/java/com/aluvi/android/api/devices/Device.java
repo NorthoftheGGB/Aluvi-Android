@@ -5,13 +5,14 @@ import com.aluvi.android.api.request.AluviPayload;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Created by matthewxi on 7/15/15.
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
 public class Device extends AluviPayload {
 
     @JsonProperty("user_id")

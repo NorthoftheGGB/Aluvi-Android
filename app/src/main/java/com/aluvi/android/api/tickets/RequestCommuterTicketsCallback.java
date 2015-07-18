@@ -6,8 +6,8 @@ import com.aluvi.android.model.realm.Ticket;
  * Created by matthewxi on 7/16/15.
  */
 abstract public class RequestCommuterTicketsCallback {
-    Ticket toWorkTicket;
-    Ticket fromWorkTicket;
+    protected Ticket toWorkTicket;
+    protected Ticket fromWorkTicket;
 
     public RequestCommuterTicketsCallback(Ticket toWorkTicket, Ticket fromWorkTicket) {
         this.toWorkTicket = toWorkTicket;

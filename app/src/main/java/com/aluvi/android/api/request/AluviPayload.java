@@ -1,8 +1,10 @@
 package com.aluvi.android.api.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -13,6 +15,8 @@ import java.util.Map;
 /**
  * Created by matthewxi on 7/15/15.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
 public class AluviPayload {
 
     // Convert class fields to a Map<String, String>

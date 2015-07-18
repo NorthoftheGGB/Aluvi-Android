@@ -35,6 +35,10 @@ public class AluviRealm {
         return instance.getRealm();
     }
 
+    public static void closeDefaultRealm(){
+        instance.getRealm().close();
+    }
+
     public Realm getRealm(){
         return this.realm;
     }

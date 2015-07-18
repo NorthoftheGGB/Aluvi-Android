@@ -33,6 +33,7 @@ public class Ticket extends RealmObject {
     private int carId;   // These primary keys could be retrieved from related objects
     private int driverId;
     private int tripId;
+    private int fareId;
     private String rideType;
     private Date requestedTimestamp;
     private Date estimatedArrivalTime;
@@ -55,24 +56,24 @@ public class Ticket extends RealmObject {
     private boolean driving;
     private double fixedPrice;
     private String direction;
-    private int fare_id;
     private Date desiredArrival;
     private Date pickupTime;
     private String state;
 
+    private Trip trip;
     private Driver driver;
     private Car car;
     private Fare hovFare;
 
     public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin, TicketLocation destination, boolean driving, String pickupTime ){
-        ticket.rideDate = rideDate;
-        ticket.originLatitude = origin.getLatitude();
-        ticket.originLongitude = origin.getLongitude();
-        ticket.originPlaceName = origin.getPlaceName();
-        ticket.destinationLatitude = destination.getLatitude();
-        ticket.destinationLongitude = destination.getLongitude();
-        ticket.destinationPlaceName = destination.getPlaceName();
-        ticket.driving = driving;
+        ticket.setRideDate(rideDate);
+        ticket.setOriginLatitude(origin.getLatitude());
+        ticket.setOriginLongitude( origin.getLongitude());
+        ticket.setOriginPlaceName( origin.getPlaceName());
+        ticket.setDestinationLatitude( destination.getLatitude());
+        ticket.setDestinationLongitude( destination.getLongitude());
+        ticket.setDestinationPlaceName( destination.getPlaceName());
+        ticket.setDriving( driving);
         String[] parts = pickupTime.split(":");
         if(parts.length < 2){
             // throw an exception
@@ -83,7 +84,7 @@ public class Ticket extends RealmObject {
         cal.setTime(rideDate);
         cal.add(Calendar.HOUR_OF_DAY, Integer.valueOf(parts[0]).intValue());
         cal.add(Calendar.MINUTE, Integer.valueOf(parts[1]).intValue());
-        ticket.pickupTime = cal.getTime();
+        ticket.setPickupTime(cal.getTime());
         return ticket;
     }
 
@@ -91,12 +92,12 @@ public class Ticket extends RealmObject {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();
     }
 
-    public int getFare_id() {
-        return fare_id;
+    public int getFareId() {
+        return fareId;
     }
 
-    public void setFare_id(int fare_id) {
-        this.fare_id = fare_id;
+    public void setFareId(int fare_id) {
+        this.fareId = fare_id;
     }
 
     public Date getDesiredArrival() {
@@ -353,5 +354,13 @@ public class Ticket extends RealmObject {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
     }
 }

@@ -15,6 +15,8 @@ public class AluviApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        AluviRealm.initialize(this);
         GlobalIdentifiers.initialize(this);
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
@@ -49,5 +51,11 @@ public class AluviApplication extends Application {
 
             }
         });
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        AluviRealm.closeDefaultRealm();
     }
 }

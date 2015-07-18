@@ -8,13 +8,17 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.aluvi.aluvi.R;
+import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.model.realm.Ticket;
+import com.aluvi.android.model.realm.Trip;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.login_button) Button loginButton;
     @Bind(R.id.logout_button) Button logoutButton;
     @Bind(R.id.schedule_button) Button scheduleButton;
+    @Bind(R.id.cancel_ticket_button) Button cancelTicketButton;
+    @Bind(R.id.cancel_trip_button) Button cancelTripButton;
 
 
     @Override
@@ -96,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void failure(String message) {
-                    Toast.makeText(getApplicationContext(), "NOT Scheduled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -106,5 +112,49 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, userRecoverableSystemError.getMessage(), Toast.LENGTH_LONG);
         }
 
+    }
+
+    @OnClick(R.id.cancel_ticket_button) public void cancelTicket(){
+        Realm realm = AluviRealm.getDefaultRealm();
+        Ticket ticket = realm.where(Ticket.class).findFirst();
+        if(ticket == null){
+            Toast.makeText(getApplicationContext(), "Null", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        CommuteManager.getInstance().cancelTicket(ticket, new CommuteManager.Callback() {
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Cancelled!", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void failure(String message) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    @OnClick(R.id.cancel_trip_button) public void cancelTrip(){
+        Realm realm = AluviRealm.getDefaultRealm();
+        Trip trip = realm.where(Trip.class).findFirst();
+        if(trip == null){
+            Toast.makeText(getApplicationContext(), "Null", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        CommuteManager.getInstance().cancelTrip(trip, new CommuteManager.Callback() {
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Cancelled!", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void failure(String message) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 }
