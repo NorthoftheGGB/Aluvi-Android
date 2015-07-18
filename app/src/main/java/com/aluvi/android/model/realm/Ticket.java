@@ -2,6 +2,7 @@ package com.aluvi.android.model.realm;
 
 import android.util.Log;
 
+import com.aluvi.android.api.tickets.TicketData;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.model.local.TicketLocation;
 
@@ -86,6 +87,11 @@ public class Ticket extends RealmObject {
         cal.add(Calendar.MINUTE, Integer.valueOf(parts[1]).intValue());
         ticket.setPickupTime(cal.getTime());
         return ticket;
+    }
+
+    public static void updateFromTicketData(TicketData data){
+        //TODO needs to be implemented
+        //we may want to return the state transition if we need to know??
     }
 
     public static String routeDescription(Ticket ticket) {

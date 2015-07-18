@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
+import com.aluvi.android.api.tickets.TicketData;
 import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
@@ -381,6 +382,21 @@ public class CommuteManager {
             @Override
             public void failure(int statusCode) {
                 callback.failure("Could not cancel trip.  Please try again");
+            }
+        });
+    }
+
+    public void refreshTickets(final Callback callback){
+        TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback(){
+            @Override
+            public void success(TicketData[] tickets) {
+                //TODO Here we need to update the tickets in realm with details from the server
+                //need to be careful to recognize any missed state transitions
+            }
+
+            @Override
+            public void failure(int statusCode) {
+
             }
         });
     }

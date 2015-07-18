@@ -12,8 +12,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequestListener;
 
-import org.apache.http.HttpStatus;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +21,11 @@ import java.util.Map;
 
 
 public class TicketsApi {
+
+    public interface RefreshTicketsCallback {
+        public void success(TicketData[] tickets);
+        public void failure(int statusCode);
+    }
 
     public static void requestCommuterTickets(Ticket ticketToWork, Ticket ticketFromWork, final RequestCommuterTicketsCallback callback) {
         CommuterTicketsRequest requestParams = new CommuterTicketsRequest(ticketToWork, ticketFromWork);
@@ -141,4 +144,28 @@ public class TicketsApi {
 
     }
 
+    public static void refreshTickets(final RefreshTicketsCallback callback) {
+
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<TicketData[]>(
+                Request.Method.GET,
+                AluviApi.API_GET_ACTIVE_TICKETS,
+                new JacksonRequestListener<TicketData[]>() {
+                    @Override
+                    public void onResponse(TicketData[] response, int statusCode, VolleyError error) {
+                        if (statusCode == 200) {
+                            callback.success(response);
+                        } else {
+                            callback.failure(statusCode);
+                        }
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(TicketData[].class);
+                    }
+                }
+        );
+        request.addAcceptedStatusCodes(new int[]{200, 400});
+        AluviApi.getInstance().getRequestQueue().add(request);
+    }
 }
