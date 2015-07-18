@@ -23,23 +23,24 @@ public class AluviRealm {
                 .schemaVersion(1)
                 .deleteRealmIfMigrationNeeded()  // not running migrations yet
                 .build();
+
         instance = new AluviRealm(realmConfig);
     }
 
-    public AluviRealm(RealmConfiguration realmConfig ) {
+    public AluviRealm(RealmConfiguration realmConfig) {
         this.realmConfig = realmConfig;
         this.realm = Realm.getInstance(realmConfig);
     }
 
-    public static Realm getDefaultRealm(){
+    public static Realm getDefaultRealm() {
         return instance.getRealm();
     }
 
-    public static void closeDefaultRealm(){
+    public static void closeDefaultRealm() {
         instance.getRealm().close();
     }
 
-    public Realm getRealm(){
+    public Realm getRealm() {
         return this.realm;
     }
 

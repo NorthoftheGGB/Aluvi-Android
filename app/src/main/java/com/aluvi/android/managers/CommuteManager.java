@@ -19,7 +19,6 @@ import com.aluvi.android.model.realm.Trip;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
-
 import java.util.Date;
 
 import io.realm.Realm;
@@ -47,13 +46,13 @@ public class CommuteManager {
     private int returnTimeHour, returnTimeMinute;
     private boolean driving;
 
-    public static synchronized void initialize(Context context){
-        if(mInstance == null){
+    public static synchronized void initialize(Context context) {
+        if (mInstance == null) {
             mInstance = new CommuteManager(context);
         }
     }
 
-    public static synchronized CommuteManager getInstance(){
+    public static synchronized CommuteManager getInstance() {
         return mInstance;
     }
 
@@ -84,12 +83,12 @@ public class CommuteManager {
         driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
     }
 
-    public void loadFromServer(){
+    public void loadFromServer() {
         // routes API
         // implement RoutesApi library file
     }
 
-    private void store(){
+    private void store() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLocation.getLatitude());
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLocation.getLongitude());
@@ -105,13 +104,12 @@ public class CommuteManager {
         editor.commit();
     }
 
-    public void save(Callback callback){
-        // Implement Routes API
-
+    public void save(Callback callback) {
+        // TODO: Implement Routes API
         store();
     }
 
-    public void clear(){
+    public void clear() {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
@@ -149,11 +147,11 @@ public class CommuteManager {
         RealmResults<Ticket> results = query.findAll();
         int count = 0;
         Ticket orphan = null;
-        if(results.size() != 0){
+        if (results.size() != 0) {
             // since we can't do an IN query, we check here for statuses
-            for(Ticket ticket : results){
+            for (Ticket ticket : results) {
                 String state = ticket.getState();
-                if( state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled) ){
+                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled)) {
                     // already have a ticket in there for tomorrow
                     count++;
                     orphan = ticket;
@@ -162,12 +160,12 @@ public class CommuteManager {
 
         }
 
-        if(count == 2){
-            throw new UserRecoverableSystemError( "There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
+        if (count == 2) {
+            throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
             // AluviStrings.commuter_rides_already_in_database);
         }
 
-        if(count == 1 && orphan != null){
+        if (count == 1 && orphan != null) {
             // Orphaned request, delete it
             realm.beginTransaction();
             orphan.removeFromRealm();
@@ -215,7 +213,8 @@ public class CommuteManager {
                 Realm realm = AluviRealm.getDefaultRealm();
                 realm.beginTransaction();
                 toWorkTicket.removeFromRealm();
-                fromWorkTicket.removeFromRealm();;
+                fromWorkTicket.removeFromRealm();
+                ;
                 realm.commitTransaction();
                 callback.failure("Scheduling failure message");
             }
@@ -344,8 +343,8 @@ public class CommuteManager {
         this.returnTimeMinute = returnTimeMinute;
     }
 
-    public void refreshTickets(final Callback callback){
-        TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback(){
+    public void refreshTickets(final Callback callback) {
+        TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
             public void success(TicketData[] tickets) {
                 //TODO Here we need to update the tickets in realm with details from the server

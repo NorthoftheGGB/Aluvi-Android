@@ -17,7 +17,7 @@ public class AluviApplication extends Application {
         super.onCreate();
 
         Mint.initAndStartSession(this, "9a3f54d4");
-        
+
         AluviRealm.initialize(this);
         PushManager.setup(this);
         GlobalIdentifiers.initialize(this);
