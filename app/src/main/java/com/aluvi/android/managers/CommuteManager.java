@@ -14,6 +14,7 @@ import com.aluvi.android.model.realm.Ticket;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+
 import java.util.Date;
 
 import io.realm.Realm;
@@ -24,6 +25,7 @@ import io.realm.RealmResults;
  * Created by matthewxi on 7/15/15.
  */
 public class CommuteManager {
+
     public interface Callback {
         void success();
 
@@ -40,17 +42,17 @@ public class CommuteManager {
     private int returnTimeHour, returnTimeMinute;
     private boolean driving;
 
-    public static synchronized void initialize(Context context) {
-        if (mInstance == null) {
+    public static synchronized void initialize(Context context){
+        if(mInstance == null){
             mInstance = new CommuteManager(context);
         }
     }
 
-    public static synchronized CommuteManager getInstance() {
+    public static synchronized CommuteManager getInstance(){
         return mInstance;
     }
 
-    private CommuteManager(Context context) {
+    public CommuteManager(Context context) {
         ctx = context;
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         load();
@@ -77,12 +79,12 @@ public class CommuteManager {
         driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
     }
 
-    public void loadFromServer() {
+    public void loadFromServer(){
         // routes API
-        // TODO: implement RoutesApi library file
+        // implement RoutesApi library file
     }
 
-    private void store() {
+    private void store(){
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLocation.getLatitude());
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLocation.getLongitude());
@@ -98,12 +100,13 @@ public class CommuteManager {
         editor.commit();
     }
 
-    public void save(Callback callback) {
-        // TODO: Implement Routes API
+    public void save(Callback callback){
+        // Implement Routes API
+
         store();
     }
 
-    public void clear() {
+    public void clear(){
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
         editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
@@ -132,7 +135,7 @@ public class CommuteManager {
         LocalDate tomorrow = today.plus(Period.days(1));
         Date rideDate = tomorrow.toDateTimeAtStartOfDay().toDate();
 
-        Realm realm = Realm.getInstance(ctx);
+        Realm realm = AluviRealm.getDefaultRealm();
 
         // Lood for a prexisting request for tomorrow
         RealmQuery<Ticket> query = realm.where(Ticket.class);
@@ -141,24 +144,25 @@ public class CommuteManager {
         RealmResults<Ticket> results = query.findAll();
         int count = 0;
         Ticket orphan = null;
-        if (results.size() != 0) {
+        if(results.size() != 0){
             // since we can't do an IN query, we check here for statuses
-            for (Ticket ticket : results) {
+            for(Ticket ticket : results){
                 String state = ticket.getState();
-                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled)) {
+                if( state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled) ){
                     // already have a ticket in there for tomorrow
                     count++;
                     orphan = ticket;
                 }
             }
+
         }
 
-        if (count == 2) {
-            throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
+        if(count == 2){
+            throw new UserRecoverableSystemError( "There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
             // AluviStrings.commuter_rides_already_in_database);
         }
 
-        if (count == 1 && orphan != null) {
+        if(count == 1 && orphan != null){
             // Orphaned request, delete it
             realm.beginTransaction();
             orphan.removeFromRealm();
@@ -167,26 +171,47 @@ public class CommuteManager {
 
         // go ahead and create the tickets, then request with the server
         realm.beginTransaction();
-        Ticket toWorkTicket = realm.createObject(Ticket.class);
+        final Ticket toWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(),
                 driving, pickupTimeHour, pickupTimeMinute);
-        Ticket fromWorkTicket = realm.createObject(Ticket.class);
+        final Ticket fromWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(),
                 driving, returnTimeHour, returnTimeMinute);
         realm.commitTransaction();
 
+
         class Callback extends RequestCommuterTicketsCallback {
+
             public Callback(Ticket toWorkTicket, Ticket fromWorkTicket) {
                 super(toWorkTicket, fromWorkTicket);
             }
 
             @Override
             public void success(CommuterTicketsResponse response) {
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.beginTransaction();
+                this.toWorkTicket.setTripId(response.tripId);
+                this.toWorkTicket.setRideId(response.ticketToWorkRideId);
+                this.fromWorkTicket.setTripId(response.tripId);
+                this.fromWorkTicket.setRideId(response.ticketFromWorkRideId);
+                Trip trip = realm.createObject(Trip.class);
+                trip.setTripId(response.tripId);
+                trip.getTickets().add(this.toWorkTicket);
+                trip.getTickets().add(this.fromWorkTicket);
+                this.toWorkTicket.setTrip(trip);
+                this.fromWorkTicket.setTrip(trip);
+                realm.commitTransaction();
                 callback.success();
             }
 
             @Override
             public void failure(int statusCode) {
+                // just delete the ticket if it doesn't go through
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.beginTransaction();
+                toWorkTicket.removeFromRealm();
+                fromWorkTicket.removeFromRealm();;
+                realm.commitTransaction();
                 callback.failure("Scheduling failure message");
             }
         }
@@ -198,10 +223,71 @@ public class CommuteManager {
         return driving;
     }
 
+    public void cancelTicket(final Ticket ticket, final Callback callback){
+
+        if(ticket.getRideId() != 0) {
+
+            if (ticket.isDriving()) {
+                // Driver Api - cancel driving
+
+            } else {
+
+                if(ticket.getHovFare() == null) {
+                    // ride has not been scheduled yet
+                    TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
+                        @Override
+                        public void success() {
+                            Trip trip = ticket.getTrip();
+                            RealmHelper.removeFromRealm(ticket);
+                            Trip.removeIfEmpty(trip);
+                            callback.success();
+                        }
+
+                        @Override
+                        public void failure(int statusCode) {
+                            callback.failure("We had a problem deleting your ticket.  Please try again.");
+                        }
+                    });
+                } else {
+                    TicketsApi.cancelRiderScheduledTicket(ticket, new ApiCallback() {
+                        @Override
+                        public void success() {
+                            Trip trip = ticket.getTrip();
+                            RealmHelper.removeFromRealm(ticket);
+                            Trip.removeIfEmpty(trip);
+                            callback.success();
+                        }
+
+                        @Override
+                        public void failure(int statusCode) {
+                            callback.failure("We had a problem deleting your ticket.  Please try again.");
+                        }
+                    });
+                }
+            }
+        } else {
+            RealmHelper.removeFromRealm(ticket);
+        }
+
     public void setDriving(boolean driving) {
         this.driving = driving;
     }
 
+
+    public void cancelTrip(final Trip trip, final Callback callback){
+        TicketsApi.cancelTrip(trip, new ApiCallback() {
+            @Override
+            public void success() {
+                Trip.removeTickets(trip);
+                RealmHelper.removeFromRealm(trip);
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Could not cancel trip.  Please try again");
+            }
+        });
     public void setHomeLocation(TicketLocation homeLocation) {
         this.homeLocation = homeLocation;
     }
@@ -249,4 +335,20 @@ public class CommuteManager {
     public void setReturnTimeMinute(int returnTimeMinute) {
         this.returnTimeMinute = returnTimeMinute;
     }
+
+    public void refreshTickets(final Callback callback){
+        TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback(){
+            @Override
+            public void success(TicketData[] tickets) {
+                //TODO Here we need to update the tickets in realm with details from the server
+                //need to be careful to recognize any missed state transitions
+            }
+
+            @Override
+            public void failure(int statusCode) {
+
+            }
+        });
+    }
+
 }

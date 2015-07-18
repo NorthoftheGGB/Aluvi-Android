@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 22
@@ -63,4 +64,5 @@ dependencies {
     compile 'joda-time:joda-time:2.3'
     compile 'io.realm:realm-android:0.81.1'
     compile "com.splunk.mint:mint:4.2.1"
+    compile "com.google.android.gms:play-services:7.5.+"
 }

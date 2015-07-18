@@ -8,13 +8,17 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.aluvi.android.permission.C2D_MESSAGE" />
 
     <application
+        android:name="com.aluvi.android.application.AluviApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name=".application.AluviApplication">
+        android:theme="@style/AppTheme" >
+
         <activity
             android:name="com.aluvi.android.activities.MainActivity"
             android:label="@string/title_activity_main" >
@@ -30,5 +34,33 @@
             android:label="@string/title_activity_schedule_ride" >
         </activity>
     </application>
+    <service
+        android:name="com.aluvi.android.application.push.RegistrationIntentService"
+        android:exported="false">
+    </service>
+    <receiver
+        android:name="com.google.android.gms.gcm.GcmReceiver"
+        android:exported="true"
+        android:permission="com.google.android.c2dm.permission.SEND" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            <category android:name="com.example.gcm" />  <!-- this probably needs to change -->
+        </intent-filter>
+    </receiver>
+    <service
+        android:name="com.aluvi.android.application.push.GcmListenerService"
+        android:exported="false" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        </intent-filter>
+    </service>
+    <service
+        android:name="com.aluvi.android.application.push.InstanceIDListenerService"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.google.android.gms.iid.InstanceID"/>
+        </intent-filter>
+    </service>
+
 
 </manifest>

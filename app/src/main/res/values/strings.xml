@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Aluvi</string>
-    <string name="commuter_rides_already_in_database">There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again</string>
 
     <string name="title_activity_main">@string/app_name</string>
 
+    <string name="gcm_sender_id">560390205545</string>
+
+    <!--- User Recoverable Exceptions -->
+    <string name="commuter_rides_already_in_database">There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

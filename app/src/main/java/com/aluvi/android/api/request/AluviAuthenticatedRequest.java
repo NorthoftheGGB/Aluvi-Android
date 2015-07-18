@@ -20,8 +20,12 @@ public class AluviAuthenticatedRequest<T> extends JacksonRequest<T> {
         super(AluviAuthenticatedRequest.ALUVI_API_TIMEOUT, method, AluviApi.constructUrl(endpoint), payload.toMap(), listener);
     }
 
-    public AluviAuthenticatedRequest(int method, String url, JacksonRequestListener listener) {
-        super(method, url, listener);
+    public AluviAuthenticatedRequest(int method, String endpoint, Map<String,String> payload, JacksonRequestListener listener) {
+        super(AluviAuthenticatedRequest.ALUVI_API_TIMEOUT, method, AluviApi.constructUrl(endpoint), payload, listener);
+    }
+
+    public AluviAuthenticatedRequest(int method, String endpoint, JacksonRequestListener listener) {
+        super(method, AluviApi.constructUrl(endpoint), listener);
     }
 
     @Override
