@@ -1,4 +1,4 @@
-package com.aluvi.android.api.tickets;
+package com.aluvi.android.api.tickets.model;
 
 /**
  * Created by matthewxi on 7/18/15.
