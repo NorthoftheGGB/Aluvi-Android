@@ -27,9 +27,13 @@ public class DeviceData extends AluviPayload {
     @JsonProperty("app_identifier")
     private String appIdentifier;
 
+    @JsonProperty("platform")
+    private String platform;
+
     public DeviceData() {
         appVersion = String.valueOf(BuildConfig.VERSION_CODE);
         appIdentifier = BuildConfig.VERSION_NAME;
+        platform = DevicesApi.ANDROID_PUSH_PLATFORM_NAME;
     }
 
     public int getUserId() {

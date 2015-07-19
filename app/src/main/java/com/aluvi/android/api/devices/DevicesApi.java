@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public class DevicesApi {
 
+    public static final String ANDROID_PUSH_PLATFORM_NAME = "gcm" ;
+
     public interface Callback {
         public void success();
         public void failure(int statusCode);
