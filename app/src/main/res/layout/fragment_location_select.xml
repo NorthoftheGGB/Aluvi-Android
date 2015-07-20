@@ -1,16 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:mapbox="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.aluvi.android.fragments.LocationSelectDialogFragment">
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.aluvi.android.fragments.LocationSelectDialogFragment">
 
     <com.mapbox.mapboxsdk.views.MapView
         android:id="@+id/location_select_map_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         mapbox:accessToken="@string/mapbox_access_token"
-        mapbox:mapid="@string/map_id"/>
+        mapbox:mapid="@string/map_id" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -25,40 +25,28 @@
         android:paddingRight="10dp"
         android:paddingTop="5dp">
 
-        <AutoCompleteTextView
+        <com.aluvi.android.helpers.views.GeoCodingAutoCompleteTextView
             android:id="@+id/location_select_auto_complete_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@+id/location_select_image_button_search"
-            android:layout_toStartOf="@+id/location_select_image_button_search"
+            android:layout_toLeftOf="@+id/location_select_progress_bar"
+            android:layout_toStartOf="@+id/location_select_progress_bar"
             android:ems="10"
-            android:inputType="textPostalAddress"
-            android:imeOptions="actionDone"/>
-
-        <ImageButton
-            android:id="@+id/location_select_image_button_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/location_select_auto_complete_search"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/location_select_auto_complete_search"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/ic_menu_search"/>
+            android:imeOptions="actionDone"
+            android:inputType="textPostalAddress" />
 
         <ProgressBar
             android:id="@+id/location_select_progress_bar"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/location_select_image_button_search"
-            android:layout_alignLeft="@+id/location_select_image_button_search"
-            android:layout_alignRight="@+id/location_select_image_button_search"
-            android:layout_alignTop="@+id/location_select_image_button_search"
-            android:visibility="invisible"/>
+            android:layout_alignBottom="@+id/location_select_auto_complete_search"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/location_select_auto_complete_search"
+            android:visibility="invisible" />
     </RelativeLayout>
 </RelativeLayout>

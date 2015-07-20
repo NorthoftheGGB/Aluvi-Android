@@ -120,13 +120,16 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked() {
         final CommuteManager manager = CommuteManager.getInstance();
+        manager.setDriving(mDriveThereCheckbox.isChecked());
+
         manager.setHomeLocation(mStartLocation);
         manager.setWorkLocation(mEndLocation);
+
         manager.setPickupTimeHour(mStartHour);
-        manager.setReturnTimeHour(mEndHour);
         manager.setPickupTimeMinute(mStartMin);
+
+        manager.setReturnTimeHour(mEndHour);
         manager.setReturnTimeMinute(mEndMin);
-        manager.setDriving(manager.isDriving());
         manager.save(null);
 
         try {
