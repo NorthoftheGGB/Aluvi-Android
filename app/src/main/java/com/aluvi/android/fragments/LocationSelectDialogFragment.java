@@ -109,13 +109,18 @@ public class LocationSelectDialogFragment extends DialogFragment {
                     }
                 })
                 .build();
-
     }
 
     private void initMap() {
+        mMapView.setUserLocationEnabled(true);
         MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
-        if (mCurrentlySelectedLocation != null)
+
+        if (mCurrentlySelectedLocation != null &&
+                mCurrentlySelectedLocation.getLatitude() != GeocoderUtils.INVALID_LOCATION &&
+                mCurrentlySelectedLocation.getLongitude() != GeocoderUtils.INVALID_LOCATION)
             mMapView.setCenter(new EasyILatLang(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude()));
+        else if (mMapView.getUserLocation() != null)
+            mMapView.setCenter(mMapView.getUserLocation());
 
         mMapView.setMapViewListener(new MapViewListener() {
             @Override

@@ -65,8 +65,6 @@ public class DevicesApi {
         };
 
         request.addAcceptedStatusCodes(new int[]{201});
-
         AluviApi.getInstance().getRequestQueue().add(request);
-
     }
 }

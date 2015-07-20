@@ -9,7 +9,7 @@
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="68dp"
     sothree:umanoShadowHeight="4dp"
-    tools:context="com.aluvi.android.fragments.TicketMapFragment">
+    tools:context="com.aluvi.android.fragments.TicketAluviMapFragment">
 
     <include
         android:id="@+id/ticket_map_layout"

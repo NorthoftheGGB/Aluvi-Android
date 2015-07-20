@@ -16,7 +16,6 @@ public class Trip extends RealmObject {
 
     private RealmList<Ticket> tickets;
 
-
     public static void removeIfEmpty(Trip trip) {
         if(trip.getTickets().size() == 0){
             RealmHelper.removeFromRealm(trip);
@@ -46,6 +45,4 @@ public class Trip extends RealmObject {
     public void setTickets(RealmList<Ticket> tickets) {
         this.tickets = tickets;
     }
-
-
 }

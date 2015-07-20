@@ -14,7 +14,7 @@
         android:id="@+id/schedule_ride_button_from"
         style="@style/ScheduleRideButtonStyle.Dark"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="left|center_vertical"
         android:text="@string/from" />
@@ -23,7 +23,7 @@
         android:id="@+id/schedule_ride_button_to"
         style="@style/ScheduleRideButtonStyle.ExtraLight"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="left|center_vertical"
         android:text="@string/to" />
@@ -32,7 +32,7 @@
         android:id="@+id/schedule_ride_button_start_time"
         style="@style/ScheduleRideButtonStyle.Light"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="00dp"
         android:layout_weight="1"
         android:gravity="left|center_vertical"
         android:text="@string/at" />
@@ -41,25 +41,26 @@
         android:id="@+id/schedule_ride_button_end_time"
         style="@style/ScheduleRideButtonStyle.Dark"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="left|center_vertical"
         android:text="@string/return_home" />
 
-    <Button
+    <CheckBox
         android:id="@+id/schedule_ride_button_drive_there"
-        style="@style/ScheduleRideButtonStyle.Light"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/drive_there_user" />
+        android:text="@string/drive_there_user"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/white"
+        android:gravity="center_vertical"
         android:paddingBottom="10dp"
         android:paddingLeft="@dimen/activity_vertical_margin"
         android:paddingRight="@dimen/activity_vertical_margin"
@@ -71,7 +72,7 @@
         android:id="@+id/schedule_ride_button_commute_tomorrow"
         style="@style/ScheduleRideButtonStyle.Light"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:text="@string/commute_tomorrow"
         android:textStyle="bold" />

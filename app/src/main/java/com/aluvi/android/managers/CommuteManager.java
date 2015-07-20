@@ -11,6 +11,7 @@ import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
+import com.aluvi.android.helpers.GeocoderUtils;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.Ticket;
@@ -63,10 +64,10 @@ public class CommuteManager {
     }
 
     private void load() {
-        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
-        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
-        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
-        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
+        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
 
         String homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         String workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
@@ -111,10 +112,10 @@ public class CommuteManager {
 
     public void clear() {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, 0);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, 0);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, 0);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, 0);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
         editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
         editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
@@ -128,9 +129,17 @@ public class CommuteManager {
     }
 
     public boolean routeIsSet() {
-        return homeLocation.getLatitude() == 0 || homeLocation.getLongitude() == 0 || workLocation.getLatitude() == 0
-                || workLocation.getLongitude() == 0 || pickupTimeHour == -1 || pickupTimeMinute == -1 || returnTimeHour == -1
-                || returnTimeMinute == -1;
+
+        boolean locationsIncorrect =
+                homeLocation.getLatitude() == GeocoderUtils.INVALID_LOCATION ||
+                        homeLocation.getLongitude() == GeocoderUtils.INVALID_LOCATION ||
+                        workLocation.getLatitude() == GeocoderUtils.INVALID_LOCATION ||
+                        workLocation.getLongitude() == GeocoderUtils.INVALID_LOCATION;
+
+        boolean timesIncorrect = pickupTimeHour == -1 || pickupTimeMinute == -1 ||
+                returnTimeHour == -1 || returnTimeMinute == -1;
+
+        return !locationsIncorrect && !timesIncorrect;
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
@@ -140,7 +149,7 @@ public class CommuteManager {
 
         Realm realm = AluviRealm.getDefaultRealm();
 
-        // Lood for a prexisting request for tomorrow
+        // Look for a prexisting request for tomorrow
         RealmQuery<Ticket> query = realm.where(Ticket.class);
         query.equalTo("rideDate", rideDate);
 
@@ -182,7 +191,6 @@ public class CommuteManager {
                 driving, returnTimeHour, returnTimeMinute);
         realm.commitTransaction();
 
-
         class Callback extends RequestCommuterTicketsCallback {
 
             public Callback(Ticket toWorkTicket, Ticket fromWorkTicket) {
@@ -193,16 +201,22 @@ public class CommuteManager {
             public void success(CommuterTicketsResponse response) {
                 Realm realm = AluviRealm.getDefaultRealm();
                 realm.beginTransaction();
-                this.toWorkTicket.setTripId(response.tripId);
-                this.toWorkTicket.setRideId(response.ticketToWorkRideId);
-                this.fromWorkTicket.setTripId(response.tripId);
-                this.fromWorkTicket.setRideId(response.ticketFromWorkRideId);
+
+                toWorkTicket.setTripId(response.tripId);
+                toWorkTicket.setRideId(response.ticketToWorkRideId);
+                toWorkTicket.setState(Ticket.StateRequested);
+
+                fromWorkTicket.setTripId(response.tripId);
+                fromWorkTicket.setRideId(response.ticketFromWorkRideId);
+                fromWorkTicket.setState(Ticket.StateRequested);
+
                 Trip trip = realm.createObject(Trip.class);
                 trip.setTripId(response.tripId);
                 trip.getTickets().add(this.toWorkTicket);
                 trip.getTickets().add(this.fromWorkTicket);
-                this.toWorkTicket.setTrip(trip);
-                this.fromWorkTicket.setTrip(trip);
+
+                toWorkTicket.setTrip(trip);
+                fromWorkTicket.setTrip(trip);
                 realm.commitTransaction();
                 callback.success();
             }
@@ -214,7 +228,6 @@ public class CommuteManager {
                 realm.beginTransaction();
                 toWorkTicket.removeFromRealm();
                 fromWorkTicket.removeFromRealm();
-                ;
                 realm.commitTransaction();
                 callback.failure("Scheduling failure message");
             }
@@ -230,10 +243,8 @@ public class CommuteManager {
     public void cancelTicket(final Ticket ticket, final Callback callback) {
 
         if (ticket.getRideId() != 0) {
-
             if (ticket.isDriving()) {
                 // Driver Api - cancel driving
-
             } else {
 
                 if (ticket.getHovFare() == null) {

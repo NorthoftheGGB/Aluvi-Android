@@ -4,23 +4,21 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.aluvi.android.helpers.EasyILatLang;
+import com.aluvi.android.helpers.GeocoderUtils;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 
 /**
  * Created by usama on 7/14/15.
  */
-public class MapBoxStateSaver
-{
+public class MapBoxStateSaver {
     private static final String MAP_PAN_LAT_KEY = "map_pan_lat",
             MAP_PAN_LON_KEY = "map_pan_lon",
             ZOOM_KEY = "zoom";
 
-    private static final int DEFAULT_ZOOM = 17,
-            INVALID_LOCATION = 360;
+    private static final int DEFAULT_ZOOM = 17;
 
-    public static void saveMapState(MapView mapView, String key)
-    {
+    public static void saveMapState(MapView mapView, String key) {
         LatLng center = mapView.getCenter();
 
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(mapView.getContext()).edit();
@@ -30,8 +28,7 @@ public class MapBoxStateSaver
         editor.commit();
     }
 
-    public static boolean restoreMapState(MapView mapView, String key)
-    {
+    public static boolean restoreMapState(MapView mapView, String key) {
         return restoreMapState(mapView, DEFAULT_ZOOM, key);
     }
 
@@ -41,20 +38,20 @@ public class MapBoxStateSaver
      * @param key
      * @return false if there was no saved location
      */
-    public static boolean restoreMapState(MapView mapView, int defaultZoom, String key)
-    {
+    public static boolean restoreMapState(MapView mapView, int defaultZoom, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mapView.getContext());
-
-        float savedLat = prefs.getFloat(MAP_PAN_LAT_KEY + key, INVALID_LOCATION);
-        float savedLon = prefs.getFloat(MAP_PAN_LON_KEY + key, INVALID_LOCATION);
+        float savedLat = prefs.getFloat(MAP_PAN_LAT_KEY + key, GeocoderUtils.INVALID_LOCATION);
+        float savedLon = prefs.getFloat(MAP_PAN_LON_KEY + key, GeocoderUtils.INVALID_LOCATION);
         float savedZoom = prefs.getFloat(ZOOM_KEY + key, defaultZoom);
-
         mapView.setZoom(savedZoom);
-        if (savedLat != INVALID_LOCATION && savedLon != INVALID_LOCATION)
-            mapView.setCenter(new EasyILatLang(savedLat, savedLon));
-        else
-            return false;
 
-        return true;
+        if (savedLat != GeocoderUtils.INVALID_LOCATION && savedLon != GeocoderUtils.INVALID_LOCATION) {
+            mapView.setCenter(new EasyILatLang(savedLat, savedLon));
+            return true;
+        } else {
+            mapView.setZoom(mapView.getMinZoomLevel());
+        }
+
+        return false;
     }
 }

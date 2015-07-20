@@ -100,6 +100,4 @@ public class RegistrationIntentService extends IntentService {
             }
         });
     }
-
-
 }

@@ -12,23 +12,18 @@ import java.util.Locale;
 /**
  * Created by usama on 7/13/15.
  */
-public class GeocoderUtils
-{
+public class GeocoderUtils {
+    public static final float INVALID_LOCATION = 360;
+
     public static void getAddressesForName(final String name, final int maxResults, final Context context,
-                                           final AsyncCallback<List<Address>> addressCallback)
-    {
-        new AsyncTask<Void, Void, List<Address>>()
-        {
+                                           final AsyncCallback<List<Address>> addressCallback) {
+        new AsyncTask<Void, Void, List<Address>>() {
             @Override
-            protected List<Address> doInBackground(Void... voids)
-            {
+            protected List<Address> doInBackground(Void... voids) {
                 Geocoder coder = new Geocoder(context, Locale.getDefault());
-                try
-                {
+                try {
                     return coder.getFromLocationName(name, maxResults);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -36,8 +31,7 @@ public class GeocoderUtils
             }
 
             @Override
-            protected void onPostExecute(List<Address> addresses)
-            {
+            protected void onPostExecute(List<Address> addresses) {
                 super.onPostExecute(addresses);
                 if (addressCallback != null)
                     addressCallback.onOperationCompleted(addresses);
@@ -46,20 +40,14 @@ public class GeocoderUtils
     }
 
     public static void getAddressesForLocation(final double lat, final double lon, final int maxResults,
-                                               final Context context, final AsyncCallback<List<Address>> addressCallback)
-    {
-        new AsyncTask<Void, Void, List<Address>>()
-        {
+                                               final Context context, final AsyncCallback<List<Address>> addressCallback) {
+        new AsyncTask<Void, Void, List<Address>>() {
             @Override
-            protected List<Address> doInBackground(Void... voids)
-            {
+            protected List<Address> doInBackground(Void... voids) {
                 Geocoder coder = new Geocoder(context, Locale.getDefault());
-                try
-                {
+                try {
                     return coder.getFromLocation(lat, lon, maxResults);
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -67,8 +55,7 @@ public class GeocoderUtils
             }
 
             @Override
-            protected void onPostExecute(List<Address> addresses)
-            {
+            protected void onPostExecute(List<Address> addresses) {
                 super.onPostExecute(addresses);
                 if (addressCallback != null)
                     addressCallback.onOperationCompleted(addresses);
@@ -76,12 +63,10 @@ public class GeocoderUtils
         }.execute();
     }
 
-    public static String getFormattedAddress(Address address)
-    {
+    public static String getFormattedAddress(Address address) {
         StringBuilder out = new StringBuilder();
         int addressLines = Math.min(2, address.getMaxAddressLineIndex());
-        for (int i = 0; i < addressLines; i++)
-        {
+        for (int i = 0; i < addressLines; i++) {
             out.append(address.getAddressLine(i));
             if (i + 1 < addressLines)
                 out.append(", ");

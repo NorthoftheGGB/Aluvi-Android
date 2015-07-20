@@ -1,20 +1,2 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.aluvi.android.activities.MainActivity">
-    <item
-        android:id="@+id/action_commute_pending"
-        android:orderInCategory="100"
-        android:title="@string/action_commute_pending"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_rider_ticket"
-        android:orderInCategory="100"
-        android:title="@string/action_rider_ticket"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_driver_ticket"
-        android:orderInCategory="100"
-        android:title="@string/action_driver_ticket"
-        app:showAsAction="never"/>
-</menu>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.aluvi.android.activities.MainActivity"></menu>

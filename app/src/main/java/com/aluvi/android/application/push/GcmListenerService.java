@@ -30,7 +30,7 @@ import com.aluvi.android.activities.MainActivity;
 
 public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerService {
 
-    private static final String TAG = "MyGcmListenerService";
+    private static final String TAG = "AluviGcmListenerService";
 
     /**
      * Called when message is received.

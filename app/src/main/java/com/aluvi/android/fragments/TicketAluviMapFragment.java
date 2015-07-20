@@ -12,15 +12,15 @@ import android.view.ViewGroup;
 
 import com.aluvi.android.R;
 
-public class TicketMapFragment extends MapFragment
+public class TicketAluviMapFragment extends AluviMapFragment
 {
-    public TicketMapFragment()
+    public TicketAluviMapFragment()
     {
     }
 
-    public static TicketMapFragment newInstance()
+    public static TicketAluviMapFragment newInstance()
     {
-        return new TicketMapFragment();
+        return new TicketAluviMapFragment();
     }
 
     @Override
