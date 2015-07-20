@@ -23,7 +23,6 @@ import org.joda.time.Period;
 import java.util.Date;
 
 import io.realm.Realm;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -149,60 +148,49 @@ public class CommuteManager {
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
-        LocalDate today = new LocalDate();
-        LocalDate tomorrow = today.plus(Period.days(1));
-        Date rideDate = tomorrow.toDateTimeAtStartOfDay().toDate();
+        Date rideDate = new LocalDate()
+                .plus(Period.days(1))
+                .toDateTimeAtStartOfDay()
+                .toDate();
 
         Realm realm = AluviRealm.getDefaultRealm();
+        RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
+                .equalTo("rideDate", rideDate) // Rides that are tomorrow which have been created, requested, or scheduled
+                .beginGroup()
+                    .equalTo("state", Ticket.StateCreated)
+                    .or()
+                    .equalTo("state", Ticket.StateRequested)
+                    .or()
+                    .equalTo("state", Ticket.StateScheduled)
+                .endGroup()
+                .findAll();
 
-        // Look for a prexisting request for tomorrow
-        RealmQuery<Ticket> query = realm.where(Ticket.class);
-        query.equalTo("rideDate", rideDate);
-
-        RealmResults<Ticket> results = query.findAll();
-        int count = 0;
-        Ticket orphan = null;
-        if (results.size() != 0) {
-            // since we can't do an IN query, we check here for statuses
-            for (Ticket ticket : results) {
-                String state = ticket.getState();
-                if (state.equals(Ticket.StateCreated) || state.equals(Ticket.StateRequested) || state.equals(Ticket.StateScheduled)) {
-                    // already have a ticket in there for tomorrow
-                    count++;
-                    orphan = ticket;
-                }
-            }
-
-        }
-
-        if (count == 2) {
-            throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again");
-            // AluviStrings.commuter_rides_already_in_database);
-        }
-
-        if (count == 1 && orphan != null) {
-            // Orphaned request, delete it
+        if (results.size() >= 2) {
+            throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
+                    "This is a system error but can be recovered by canceling your commuter rides and requesting again");
+        } else {
             realm.beginTransaction();
-            orphan.removeFromRealm();
+            for (Ticket result : results) {
+                result.removeFromRealm();
+            }
             realm.commitTransaction();
         }
 
-        // go ahead and create the tickets, then request with the server
+        // Go ahead and create the tickets, then request with the server
         realm.beginTransaction();
+
         final Ticket toWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(),
                 driving, pickupTimeHour, pickupTimeMinute);
+
         final Ticket fromWorkTicket = realm.createObject(Ticket.class);
         Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(),
                 driving, returnTimeHour, returnTimeMinute);
+
         realm.commitTransaction();
 
-        class Callback extends RequestCommuterTicketsCallback {
-
-            public Callback(Ticket toWorkTicket, Ticket fromWorkTicket) {
-                super(toWorkTicket, fromWorkTicket);
-            }
-
+        TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket,
+                new RequestCommuterTicketsCallback(toWorkTicket, fromWorkTicket) {
             @Override
             public void success(CommuterTicketsResponse response) {
                 Realm realm = AluviRealm.getDefaultRealm();
@@ -223,6 +211,7 @@ public class CommuteManager {
 
                 toWorkTicket.setTrip(trip);
                 fromWorkTicket.setTrip(trip);
+
                 realm.commitTransaction();
                 callback.success();
             }
@@ -237,9 +226,7 @@ public class CommuteManager {
                 realm.commitTransaction();
                 callback.failure("Scheduling failure message");
             }
-        }
-
-        TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket, new Callback(toWorkTicket, fromWorkTicket));
+        });
     }
 
     public boolean isDriving() {

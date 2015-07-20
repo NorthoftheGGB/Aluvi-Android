@@ -1,9 +1,6 @@
 package com.aluvi.android.activities;
 
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,7 +9,6 @@ import android.widget.Toast;
 
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
-import com.aluvi.android.application.push.RegistrationIntentService;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -37,7 +33,7 @@ public class DebugActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_debug);
         ButterKnife.bind(this);
 
     }

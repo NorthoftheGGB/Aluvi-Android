@@ -61,21 +61,20 @@ public class Ticket extends RealmObject {
 
     public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin,
                                         TicketLocation destination, boolean driving, int pickupTimeHour, int pickUpTimeMin) {
-        ticket.rideDate = rideDate;
-        ticket.originLatitude = origin.getLatitude();
-        ticket.originLongitude = origin.getLongitude();
-        ticket.originPlaceName = origin.getPlaceName();
-        ticket.destinationLatitude = destination.getLatitude();
-        ticket.destinationLongitude = destination.getLongitude();
-        ticket.destinationPlaceName = destination.getPlaceName();
-        ticket.driving = driving;
-        ticket.state = StateCreated;
+        ticket.setRideDate(rideDate);
+        ticket.setOriginLatitude(origin.getLatitude());
+        ticket.setOriginLongitude(origin.getLongitude());
+        ticket.setOriginPlaceName(origin.getPlaceName());
+        ticket.setDestinationLatitude(destination.getLatitude());
+        ticket.setDestinationLongitude(destination.getLongitude());
+        ticket.setDestinationPlaceName(destination.getPlaceName());
+        ticket.setDriving(driving);
 
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(rideDate);
         cal.add(Calendar.HOUR_OF_DAY, pickupTimeHour);
         cal.add(Calendar.MINUTE, pickUpTimeMin);
-        ticket.pickupTime = cal.getTime();
+        ticket.setPickupTime(cal.getTime());
         return ticket;
     }
 

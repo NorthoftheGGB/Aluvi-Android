@@ -141,8 +141,7 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
 
     private void debugLogInSelected() {
         DebugUser[] testUsers = {
-                new DebugUser("test@test.com", "tiny123"),
-                new DebugUser("joe@joe.com", "tiny123")
+                new DebugUser("paypal@fromthegut.org", "martian")
         };
 
         class DebugAdapter extends BaseArrayAdapter<DebugUser> {
