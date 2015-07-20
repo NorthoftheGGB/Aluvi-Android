@@ -63,7 +63,7 @@ public class AluviApi {
     // member variables
     private RequestQueue mRequestQueue;
 
-    public static final String constructUrl(String path) {
+    public static final String constructUrl(String path){
         return API_BASE_URL + path;
     }
 
@@ -75,13 +75,11 @@ public class AluviApi {
         mInstance = new AluviApi(context);
     }
 
-    public static final AluviApi getInstance() {
+    public static final AluviApi getInstance(){
         return mInstance;
     }
 
-    public RequestQueue getRequestQueue() {
+    public RequestQueue getRequestQueue(){
         return mRequestQueue;
     }
-
-
 }

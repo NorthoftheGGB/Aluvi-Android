@@ -17,32 +17,34 @@ import java.util.Map;
  */
 public class DevicesApi {
 
+    public static final String ANDROID_PUSH_PLATFORM_NAME = "gcm" ;
+
     public interface Callback {
         public void success();
         public void failure(int statusCode);
     }
 
     public static void updatePushToken(String pushToken, Callback callback){
-        Device device = new Device();
-        device.setPushToken(pushToken);
-        patchDevice(device, callback);
+        DeviceData deviceData = new DeviceData();
+        deviceData.setPushToken(pushToken);
+        patchDevice(deviceData, callback);
     }
 
     // Send an empty device, the API token will identify and update the user of this device
     public static void updateUser(Callback callback){
-        Device device = new Device();
-        patchDevice(device, callback);
+        DeviceData deviceData = new DeviceData();
+        patchDevice(deviceData, callback);
     }
 
-    public static void patchDevice(Device device, final Callback callback){
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Device>(
+    public static void patchDevice(DeviceData deviceData, final Callback callback){
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<DeviceData>(
                 Request.Method.POST,
                 AluviApi.API_DEVICES + GlobalIdentifiers.getInstance().getAndroidId(),
-                device,
-                new JacksonRequestListener<Device>() {
+                deviceData,
+                new JacksonRequestListener<DeviceData>() {
 
                     @Override
-                    public void onResponse(Device response, int statusCode, VolleyError error) {
+                    public void onResponse(DeviceData response, int statusCode, VolleyError error) {
                         if (response != null) {
                             callback.success();
                         } else {
@@ -52,7 +54,7 @@ public class DevicesApi {
 
                     @Override
                     public JavaType getReturnType() {
-                        return SimpleType.construct(Device.class);
+                        return SimpleType.construct(DeviceData.class);
                     }
                 }
         ){

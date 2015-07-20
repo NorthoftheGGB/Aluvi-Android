@@ -2,8 +2,9 @@ package com.aluvi.android.api.tickets;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
-import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
+import com.aluvi.android.api.ApiCallback;
+import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.android.volley.Request;
@@ -23,9 +24,8 @@ import java.util.Map;
 public class TicketsApi {
 
     public interface RefreshTicketsCallback {
-        void success(TicketData[] tickets);
-
-        void failure(int statusCode);
+        public void success(TicketData[] tickets);
+        public void failure(int statusCode);
     }
 
     public static void requestCommuterTickets(Ticket ticketToWork, Ticket ticketFromWork, final RequestCommuterTicketsCallback callback) {
@@ -51,12 +51,14 @@ public class TicketsApi {
                     }
                 }
         );
-
         request.addAcceptedStatusCodes(new int[]{201, 403});
         AluviApi.getInstance().getRequestQueue().add(request);
+
     }
 
-    public static void cancelRiderTicketRequest(Ticket ticket, final ApiCallback callback) {
+
+
+    public static void cancelRiderTicketRequest(Ticket ticket, final ApiCallback callback){
 
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getRideId()));
@@ -80,13 +82,12 @@ public class TicketsApi {
                     }
                 }
         );
-
         request.addAcceptedStatusCodes(new int[]{200, 403});
         AluviApi.getInstance().getRequestQueue().add(request);
 
     }
 
-    public static void cancelRiderScheduledTicket(Ticket ticket, final ApiCallback callback) {
+    public static void cancelRiderScheduledTicket(Ticket ticket, final ApiCallback callback){
 
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.FARE_KEY, String.valueOf(ticket.getHovFare().getId()));
@@ -115,7 +116,11 @@ public class TicketsApi {
 
     }
 
-    public static void cancelTrip(Trip trip, final ApiCallback callback) {
+
+
+
+
+    public static void cancelTrip(Trip trip, final ApiCallback callback){
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.DELETE,
                 AluviApi.API_DELETE_TRIP + trip.getTripId(),
@@ -135,7 +140,6 @@ public class TicketsApi {
                     }
                 }
         );
-
         request.addAcceptedStatusCodes(new int[]{200, 400});
         AluviApi.getInstance().getRequestQueue().add(request);
 
@@ -162,7 +166,6 @@ public class TicketsApi {
                     }
                 }
         );
-
         request.addAcceptedStatusCodes(new int[]{200, 400});
         AluviApi.getInstance().getRequestQueue().add(request);
     }

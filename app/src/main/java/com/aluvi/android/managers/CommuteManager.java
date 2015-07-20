@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
-import com.aluvi.android.api.tickets.TicketData;
+import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;

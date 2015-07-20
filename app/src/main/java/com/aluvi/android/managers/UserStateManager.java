@@ -3,7 +3,7 @@ package com.aluvi.android.managers;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.aluvi.android.api.devices.Device;
+import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.application.AluviPreferences;
@@ -118,10 +118,10 @@ public class UserStateManager {
     }
 
     public void logout(final Callback callback) {
-        Device device = new Device();
-        device.setUserId(Integer.valueOf(0));
-        device.setPushToken("");
-        DevicesApi.patchDevice(device, new DevicesApi.Callback() {
+        DeviceData deviceData = new DeviceData();
+        deviceData.setUserId(Integer.valueOf(0));
+        deviceData.setPushToken("");
+        DevicesApi.patchDevice(deviceData, new DevicesApi.Callback() {
             @Override
             public void success() {
                 callback.success();
