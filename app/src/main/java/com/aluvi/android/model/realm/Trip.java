@@ -17,16 +17,20 @@ public class Trip extends RealmObject {
     private RealmList<Ticket> tickets;
 
     public static void removeIfEmpty(Trip trip) {
-        if(trip.getTickets().size() == 0){
+        if (trip.getTickets().size() == 0) {
             RealmHelper.removeFromRealm(trip);
         }
     }
+
     public static void removeTickets(Trip trip) {
         Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
-        while(trip.getTickets().size() > 0){
-            trip.getTickets().first().removeFromRealm();
-        }
+
+        if (trip.getTickets() != null)
+            for (Ticket ticket : trip.getTickets()) {
+                ticket.removeFromRealm();
+            }
+
         realm.commitTransaction();
     }
 

@@ -2,6 +2,7 @@ package com.aluvi.android.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
@@ -21,6 +22,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -36,6 +38,7 @@ public class CommuteManager {
         void failure(String message);
     }
 
+    private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
 
     private SharedPreferences preferences;
@@ -157,11 +160,11 @@ public class CommuteManager {
         RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
                 .equalTo("rideDate", rideDate) // Rides that are tomorrow which have been created, requested, or scheduled
                 .beginGroup()
-                    .equalTo("state", Ticket.StateCreated)
-                    .or()
-                    .equalTo("state", Ticket.StateRequested)
-                    .or()
-                    .equalTo("state", Ticket.StateScheduled)
+                .equalTo("state", Ticket.StateCreated)
+                .or()
+                .equalTo("state", Ticket.StateRequested)
+                .or()
+                .equalTo("state", Ticket.StateScheduled)
                 .endGroup()
                 .findAll();
 
@@ -191,42 +194,42 @@ public class CommuteManager {
 
         TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket,
                 new RequestCommuterTicketsCallback(toWorkTicket, fromWorkTicket) {
-            @Override
-            public void success(CommuterTicketsResponse response) {
-                Realm realm = AluviRealm.getDefaultRealm();
-                realm.beginTransaction();
+                    @Override
+                    public void success(CommuterTicketsResponse response) {
+                        Realm realm = AluviRealm.getDefaultRealm();
+                        realm.beginTransaction();
 
-                toWorkTicket.setTripId(response.tripId);
-                toWorkTicket.setRideId(response.ticketToWorkRideId);
-                toWorkTicket.setState(Ticket.StateRequested);
+                        toWorkTicket.setTripId(response.tripId);
+                        toWorkTicket.setRideId(response.ticketToWorkRideId);
+                        toWorkTicket.setState(Ticket.StateRequested);
 
-                fromWorkTicket.setTripId(response.tripId);
-                fromWorkTicket.setRideId(response.ticketFromWorkRideId);
-                fromWorkTicket.setState(Ticket.StateRequested);
+                        fromWorkTicket.setTripId(response.tripId);
+                        fromWorkTicket.setRideId(response.ticketFromWorkRideId);
+                        fromWorkTicket.setState(Ticket.StateRequested);
 
-                Trip trip = realm.createObject(Trip.class);
-                trip.setTripId(response.tripId);
-                trip.getTickets().add(this.toWorkTicket);
-                trip.getTickets().add(this.fromWorkTicket);
+                        Trip trip = realm.createObject(Trip.class);
+                        trip.setTripId(response.tripId);
+                        trip.getTickets().add(this.toWorkTicket);
+                        trip.getTickets().add(this.fromWorkTicket);
 
-                toWorkTicket.setTrip(trip);
-                fromWorkTicket.setTrip(trip);
+                        toWorkTicket.setTrip(trip);
+                        fromWorkTicket.setTrip(trip);
 
-                realm.commitTransaction();
-                callback.success();
-            }
+                        realm.commitTransaction();
+                        callback.success();
+                    }
 
-            @Override
-            public void failure(int statusCode) {
-                // just delete the ticket if it doesn't go through
-                Realm realm = AluviRealm.getDefaultRealm();
-                realm.beginTransaction();
-                toWorkTicket.removeFromRealm();
-                fromWorkTicket.removeFromRealm();
-                realm.commitTransaction();
-                callback.failure("Scheduling failure message");
-            }
-        });
+                    @Override
+                    public void failure(int statusCode) {
+                        // just delete the ticket if it doesn't go through
+                        Realm realm = AluviRealm.getDefaultRealm();
+                        realm.beginTransaction();
+                        toWorkTicket.removeFromRealm();
+                        fromWorkTicket.removeFromRealm();
+                        realm.commitTransaction();
+                        callback.failure("Scheduling failure message");
+                    }
+                });
     }
 
     public boolean isDriving() {
@@ -278,10 +281,39 @@ public class CommuteManager {
         }
     }
 
-    public void setDriving(boolean driving) {
-        this.driving = driving;
-    }
+    public void refreshTickets(final Callback callback) {
+        TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
+            @Override
+            public void success(List<TicketData> tickets) {
+                if (tickets != null) {
+                    Realm realm = AluviRealm.getDefaultRealm();
+                    realm.beginTransaction();
 
+                    for (TicketData ticket : tickets) {
+                        Ticket savedTicket = realm.where(Ticket.class)
+                                .equalTo("rideId", ticket.getRideId())
+                                .findFirst();
+                        if (savedTicket != null) {
+                            savedTicket.setState(ticket.getState());
+                            Log.d(TAG, "Updating ticket with id: " + savedTicket.getRideId());
+                        } else {
+                            // TODO Ticket not found in Realm. Need to sync with server
+                        }
+                    }
+
+                    realm.commitTransaction();
+                }
+
+                if (callback != null)
+                    callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to refresh tickets");
+            }
+        });
+    }
 
     public void cancelTrip(final Trip trip, final Callback callback) {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
@@ -347,19 +379,7 @@ public class CommuteManager {
         this.returnTimeMinute = returnTimeMinute;
     }
 
-    public void refreshTickets(final Callback callback) {
-        TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
-            @Override
-            public void success(TicketData[] tickets) {
-                //TODO Here we need to update the tickets in realm with details from the server
-                //need to be careful to recognize any missed state transitions
-            }
-
-            @Override
-            public void failure(int statusCode) {
-
-            }
-        });
+    public void setDriving(boolean driving) {
+        this.driving = driving;
     }
-
 }

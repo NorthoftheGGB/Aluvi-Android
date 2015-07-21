@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
-import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.realm.Ticket;
@@ -27,9 +26,12 @@ import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 
+import org.joda.time.LocalDate;
+
+import java.util.HashSet;
+
 import butterknife.Bind;
-import de.greenrobot.event.EventBus;
-import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class AluviMapFragment extends BaseButterFragment {
     public interface OnMapEventListener {
@@ -42,7 +44,6 @@ public class AluviMapFragment extends BaseButterFragment {
     private final String TAG = "AluviMapFragment",
             MAP_STATE_KEY = "map_fragment_main";
 
-    private EventBus mBus = EventBus.getDefault();
     private boolean mIsCommutePending;
     private OnMapEventListener mEventListener;
 
@@ -72,35 +73,71 @@ public class AluviMapFragment extends BaseButterFragment {
         if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY))
             if (mMapView.getUserLocation() != null)
                 mMapView.setCenter(new EasyILatLang(mMapView.getUserLocation()), false);
-
-        plotTrip();
-        mBus.register(this);
     }
 
-    @SuppressWarnings("unused")
-    public void onEvent(CommuteScheduledEvent event) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshTickets();
+    }
+
+    public void refreshTickets() {
+        CommuteManager.getInstance().refreshTickets(new CommuteManager.Callback() {
+            @Override
+            public void success() {
+                onTicketsRefreshed();
+            }
+
+            @Override
+            public void failure(String message) {
+                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
+                        .setAction(R.string.retry, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                refreshTickets();
+                            }
+                        })
+                        .show();
+            }
+        });
+    }
+
+    public void onCommuteRequested() {
         mIsCommutePending = true;
         mCommutePendingTextView.setVisibility(View.VISIBLE);
         getActivity().supportInvalidateOptionsMenu();
     }
 
-    private void plotTrip() {
+    public void onCommuteCancelled() {
+        mIsCommutePending = false;
+        mCommutePendingTextView.setVisibility(View.INVISIBLE);
+        getActivity().supportInvalidateOptionsMenu();
+    }
+
+    private void onTicketsRefreshed() {
         Log.i(TAG, "Realm path: " + AluviRealm.getDefaultRealm().getPath());
 
-        Trip savedTrip = AluviRealm.getDefaultRealm().where(Trip.class).findFirst();
-        if (savedTrip != null) {
-            RealmList<Ticket> tickets = savedTrip.getTickets();
-            if (tickets != null) {
-                for (Ticket ticket : tickets) {
-                    Log.i(TAG, "Ticket state: " + ticket.getState());
-                    switch (ticket.getState()) {
-                        case Ticket.StateRequested:
-                            onEvent(new CommuteScheduledEvent());
-                            break;
-                        case Ticket.StateScheduled:
-                            plotTicketRoute(ticket);
-                            break;
+        RealmResults<Trip> savedTrips = AluviRealm.getDefaultRealm()
+                .where(Trip.class)
+                .findAll();
 
+        if (savedTrips != null) {
+            for (Trip trip : savedTrips) {
+                RealmResults<Ticket> tickets = trip.getTickets()
+                        .where().greaterThan("rideDate", new LocalDate().toDate())
+                        .findAll(); // Show tickets for today and beyond
+
+                if (tickets != null) {
+                    for (Ticket ticket : tickets) {
+                        Log.i(TAG, "Ticket state: " + ticket.getState());
+                        switch (ticket.getState()) {
+                            case Ticket.StateRequested:
+                                onCommuteRequested();
+                                break;
+                            case Ticket.StateScheduled:
+                                plotTicketRoute(ticket);
+                                break;
+                        }
                     }
                 }
             }
@@ -152,31 +189,56 @@ public class AluviMapFragment extends BaseButterFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * The name of this method is somewhat misleading. Besides deleting the most recently scheduled trip, this method also gets rid
+     * of junk trip data that has persisted across scheduling failures.
+     */
     private void cancelTrip() {
-        Trip savedTrip = AluviRealm.getDefaultRealm().where(Trip.class).findFirst();
-        if (savedTrip != null) {
-            CommuteManager.getInstance().cancelTrip(savedTrip, new CommuteManager.Callback() {
-                @Override
-                public void success() {
-                    if (getActivity() != null)
-                        getActivity().supportInvalidateOptionsMenu();
-                }
+        RealmResults<Ticket> ticketsToCancel = AluviRealm.getDefaultRealm()
+                .where(Ticket.class)
+                .equalTo("state", Ticket.StateScheduled)
+                .or()
+                .equalTo("state", Ticket.StateRequested)
+                .or()
+                .equalTo("state", Ticket.StateCreated)
+                .findAll();
 
-                @Override
-                public void failure(String message) {
-                    Log.e(TAG, message);
-                    if (getView() != null) {
-                        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-                                .setAction(R.string.retry, new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        cancelTrip();
-                                    }
-                                })
-                                .show();
-                    }
+        if (ticketsToCancel != null) {
+            HashSet<Integer> deletedTrips = new HashSet<>();
+            for (Ticket ticket : ticketsToCancel) {
+                Trip parentTrip = ticket.getTrip();
+                if (parentTrip != null && !deletedTrips.contains(parentTrip.getTripId())) {
+                    deletedTrips.add(parentTrip.getTripId());
+
+                    CommuteManager.getInstance().cancelTrip(parentTrip, new CommuteManager.Callback() {
+                        @Override
+                        public void success() {
+                            Log.d(TAG, "Successfully cancelled trips");
+
+                            if (getActivity() != null) {
+                                Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+                                onCommuteCancelled();
+                            }
+                        }
+
+                        @Override
+                        public void failure(String message) {
+                            Log.e(TAG, message);
+
+                            if (getActivity() != null) {
+                                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
+                                        .setAction(R.string.retry, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                cancelTrip();
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 
@@ -184,11 +246,5 @@ public class AluviMapFragment extends BaseButterFragment {
     public void onPause() {
         super.onPause();
         MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
-    }
-
-    @Override
-    public void onDestroyView() {
-        mBus.unregister(this);
-        super.onDestroyView();
     }
 }

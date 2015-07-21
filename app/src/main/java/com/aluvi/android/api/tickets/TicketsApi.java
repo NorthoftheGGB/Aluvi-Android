@@ -11,9 +11,11 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.spothero.volley.JacksonRequest;
 import com.spothero.volley.JacksonRequestListener;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Map;
 public class TicketsApi {
 
     public interface RefreshTicketsCallback {
-        void success(TicketData[] tickets);
+        void success(List<TicketData> tickets);
 
         void failure(int statusCode);
     }
@@ -137,19 +139,19 @@ public class TicketsApi {
                     }
                 }
         );
+
         request.addAcceptedStatusCodes(new int[]{200, 400});
         AluviApi.getInstance().getRequestQueue().add(request);
 
     }
 
     public static void refreshTickets(final RefreshTicketsCallback callback) {
-
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<TicketData[]>(
+        AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.GET,
                 AluviApi.API_GET_ACTIVE_TICKETS,
-                new JacksonRequestListener<TicketData[]>() {
+                new JacksonRequestListener<List<TicketData>>() {
                     @Override
-                    public void onResponse(TicketData[] response, int statusCode, VolleyError error) {
+                    public void onResponse(List<TicketData> response, int statusCode, VolleyError error) {
                         if (statusCode == 200) {
                             callback.success(response);
                         } else {
@@ -159,10 +161,11 @@ public class TicketsApi {
 
                     @Override
                     public JavaType getReturnType() {
-                        return SimpleType.construct(TicketData[].class);
+                        return JacksonRequest.getObjectMapper().getTypeFactory().constructCollectionType(List.class, TicketData.class);
                     }
                 }
         );
+
         request.addAcceptedStatusCodes(new int[]{200, 400});
         AluviApi.getInstance().getRequestQueue().add(request);
     }

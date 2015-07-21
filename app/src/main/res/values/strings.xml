@@ -25,6 +25,7 @@
     <string name="to">To:</string>
     <string name="from">From:</string>
     <string name="no_results_address">Couldn\'t find that address</string>
+    <string name="cancelled_trips">Cancelled Trips</string>
 
     <string name="schedule_ready">Your schedule will be ready at 9:30 PM. You might want to brush up on your puns.</string>
     <string name="loading">Loading</string>
