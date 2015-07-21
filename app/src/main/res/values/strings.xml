@@ -32,5 +32,6 @@
     <string name="please_wait">Please Wait...</string>
     <string name="logged_in">Logged In</string>
     <string name="unable_schedule_commute">Unable to schedule commute</string>
+    <string name="unable_log_in">Unable to log in</string>
     <string name="retry">Retry</string>
 </resources>

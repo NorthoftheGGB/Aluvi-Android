@@ -141,8 +141,10 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
 
     private void debugLogInSelected() {
         DebugUser[] testUsers = {
-                new DebugUser("paypal@fromthegut.org", "martian"),
-                new DebugUser("joe@joe.com", "tiny123")
+//                new DebugUser("paypal@fromthegut.org", "martian"),
+//                new DebugUser("joe@joe.com", "tiny123")
+
+                new DebugUser("test@test.com", "tiny123")
         };
 
         class DebugAdapter extends BaseArrayAdapter<DebugUser> {
@@ -191,6 +193,15 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
                     progressDialog.cancel();
 
                 Log.e(TAG, message);
+
+                if (mDrawerLayout != null)
+                    Snackbar.make(mDrawerLayout.getRootView(), R.string.unable_log_in, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.retry, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    debugLogInSelected();
+                                }
+                            }).show();
             }
         });
     }

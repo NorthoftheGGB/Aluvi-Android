@@ -1,7 +1,10 @@
 package com.aluvi.android.api.tickets.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Date;
 
 /**
  * Created by matthewxi on 7/18/15.
@@ -41,8 +44,9 @@ public class TicketData {
     @JsonProperty("driving")
     private boolean isDriving;
 
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'kk:mm:ss.SSSZZZZ")
     @JsonProperty("pickup_time")
-    private String pickUpTime;
+    private Date pickUpTime;
 
     @JsonProperty("direction")
     private String direction;
@@ -141,11 +145,11 @@ public class TicketData {
         this.isDriving = isDriving;
     }
 
-    public String getPickUpTime() {
+    public Date getPickUpTime() {
         return pickUpTime;
     }
 
-    public void setPickUpTime(String pickUpTime) {
+    public void setPickUpTime(Date pickUpTime) {
         this.pickUpTime = pickUpTime;
     }
 

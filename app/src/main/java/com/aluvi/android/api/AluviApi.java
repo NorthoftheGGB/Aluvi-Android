@@ -9,8 +9,8 @@ import com.spothero.volley.JacksonNetwork;
  * Created by matthewxi on 7/14/15.
  */
 public class AluviApi {
-        public static final String API_BASE_URL = "http://52.25.169.216:3000/api/"; // AWS, single worker
-//    public static final String API_BASE_URL = "http://52.26.200.141:4000/api"; // Testing server
+    //        public static final String API_BASE_URL = "http://52.25.169.216:3000/api/"; // AWS, single worker
+    public static final String API_BASE_URL = "http://52.26.200.141:4000/api"; // Testing server
 
     public static final String API_POST_REQUEST_COMMUTER_TICKETS = "rides/commute";
     public static final String API_POST_RIDE_REQUEST = "rides/request";
@@ -22,7 +22,7 @@ public class AluviApi {
     public static final String API_POST_FARE_COMPLETED = "rides/arrived";
     public static final String API_DELETE_TRIP = "rides/trips/";
 
-    public static final String API_GET_ACTIVE_TICKETS = "v2/rides/tickets"; // this path uses v2 API
+    public static final String API_GET_ACTIVE_TICKETS = "rides/tickets"; // this path uses v2 API
     public static final String API_GET_ACTIVE_FARES = "rides/fares";
 
     public static final String API_GET_PAYMENTS = "rides/payments";
@@ -63,7 +63,7 @@ public class AluviApi {
     // member variables
     private RequestQueue mRequestQueue;
 
-    public static final String constructUrl(String path){
+    public static final String constructUrl(String path) {
         return API_BASE_URL + path;
     }
 
@@ -75,11 +75,11 @@ public class AluviApi {
         mInstance = new AluviApi(context);
     }
 
-    public static final AluviApi getInstance(){
+    public static final AluviApi getInstance() {
         return mInstance;
     }
 
-    public RequestQueue getRequestQueue(){
+    public RequestQueue getRequestQueue() {
         return mRequestQueue;
     }
 }

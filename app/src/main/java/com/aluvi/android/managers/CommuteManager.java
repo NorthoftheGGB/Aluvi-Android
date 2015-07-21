@@ -2,7 +2,6 @@ package com.aluvi.android.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
@@ -293,12 +292,26 @@ public class CommuteManager {
                         Ticket savedTicket = realm.where(Ticket.class)
                                 .equalTo("rideId", ticket.getRideId())
                                 .findFirst();
-                        if (savedTicket != null) {
-                            savedTicket.setState(ticket.getState());
-                            Log.d(TAG, "Updating ticket with id: " + savedTicket.getRideId());
-                        } else {
-                            // TODO Ticket not found in Realm. Need to sync with server
+
+                        // If the ticket doesn't exist (because the device's memory was cleared, tickets created on another device, etc)
+                        // then create it and copy over data from the TicketData object
+                        if (savedTicket == null) {
+                            savedTicket = realm.createObject(Ticket.class);
+
+                            Trip tripForTicket = realm.where(Trip.class).equalTo("tripId", ticket.getTripId())
+                                    .findFirst();
+                            if (tripForTicket != null) {
+                                tripForTicket.getTickets().add(savedTicket);
+                            } else {
+                                Trip trip = realm.createObject(Trip.class);
+                                trip.setTripId(ticket.getTripId());
+                                trip.getTickets().add(savedTicket);
+                            }
+
+                            savedTicket.setTrip(tripForTicket);
                         }
+
+                        Ticket.initTicketForData(savedTicket, ticket);
                     }
 
                     realm.commitTransaction();
