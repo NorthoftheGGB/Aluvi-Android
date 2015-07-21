@@ -22,7 +22,7 @@ public class AluviApi {
     public static final String API_POST_FARE_COMPLETED = "rides/arrived";
     public static final String API_DELETE_TRIP = "rides/trips/";
 
-    public static final String API_GET_ACTIVE_TICKETS = "rides/tickets";
+    public static final String API_GET_ACTIVE_TICKETS = "v2/rides/tickets"; // this path uses v2 API
     public static final String API_GET_ACTIVE_FARES = "rides/fares";
 
     public static final String API_GET_PAYMENTS = "rides/payments";
