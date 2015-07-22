@@ -70,7 +70,7 @@ public class AluviApi {
 
     public AluviApi(Context context) {
         this.mRequestQueue = JacksonNetwork.newRequestQueue(context.getApplicationContext());
-        JacksonRequest.getObjectMapper().configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+        JacksonRequest.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public static final synchronized void initialize(Context context) {

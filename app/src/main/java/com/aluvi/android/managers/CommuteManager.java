@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -145,12 +146,15 @@ public class CommuteManager {
         // Destroy any saved trip data
         Realm aluviRealm = AluviRealm.getDefaultRealm();
         aluviRealm.beginTransaction();
-        for (Trip trip : aluviRealm.where(Trip.class).findAll()) {
-            for (Ticket ticket : trip.getTickets()) {
-                ticket.removeFromRealm();
+
+        RealmResults<Trip> trips = aluviRealm.where(Trip.class).findAll();
+        for (int i = 0; i < trips.size(); i++) { // Don't use for-each syntax because that involves iterators (ConcurrentModificationExceptions)
+            RealmList<Ticket> tickets = trips.get(i).getTickets();
+            for (int j = 0; j < tickets.size(); j++) {
+                tickets.get(j).removeFromRealm();
             }
 
-            trip.removeFromRealm();
+            trips.get(i).removeFromRealm();
         }
 
         aluviRealm.commitTransaction();

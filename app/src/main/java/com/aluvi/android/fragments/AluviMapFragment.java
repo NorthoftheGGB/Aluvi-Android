@@ -133,12 +133,10 @@ public class AluviMapFragment extends BaseButterFragment {
                         switch (ticket.getState()) {
                             case Ticket.StateRequested:
                                 onCommuteRequested();
-                                break;
                             case Ticket.StateScheduled:
+                                plotTicketRoute(ticket);
                                 break;
                         }
-
-                        plotTicketRoute(ticket);
                     }
                 }
             }

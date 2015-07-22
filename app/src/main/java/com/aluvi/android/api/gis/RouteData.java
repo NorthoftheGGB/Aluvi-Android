@@ -2,23 +2,24 @@ package com.aluvi.android.api.gis;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 /**
  * Created by usama on 7/21/15.
  */
-@JsonRootName(value = "shape")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RouteData {
-    @JsonProperty("shapePoints")
-    private double[] shapePoints;
-
+    @JsonProperty("route")
+    private InnerRouteData innerRouteData;
     private LatLng[] coordinates;
 
     public LatLng[] getCoordinates() {
+        if (innerRouteData == null || innerRouteData.shape == null || innerRouteData.shape.shapePoints == null)
+            return null;
+
+        double[] shapePoints = innerRouteData.shape.shapePoints;
         if (coordinates == null) {
-            if (shapePoints.length % 2 != 0)
+            if (innerRouteData.shape.shapePoints.length % 2 != 0)
                 return null;
 
             int shapePointTracker = 0;
@@ -32,11 +33,13 @@ public class RouteData {
         return coordinates;
     }
 
-    public double[] getShapePoints() {
-        return shapePoints;
-    }
+    private static class InnerRouteData {
+        @JsonProperty("shape")
+        private Shape shape;
 
-    public void setShapePoints(double[] shapePoints) {
-        this.shapePoints = shapePoints;
+        private static class Shape {
+            @JsonProperty("shapePoints")
+            private double[] shapePoints;
+        }
     }
 }
