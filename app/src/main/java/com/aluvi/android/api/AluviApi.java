@@ -3,7 +3,9 @@ package com.aluvi.android.api;
 import android.content.Context;
 
 import com.android.volley.RequestQueue;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.spothero.volley.JacksonNetwork;
+import com.spothero.volley.JacksonRequest;
 
 /**
  * Created by matthewxi on 7/14/15.
@@ -56,7 +58,6 @@ public class AluviApi {
     // state
     public static final String API_TOKEN_KEY = "API_TOKEN";
 
-
     //Singleton
     private static AluviApi mInstance;
 
@@ -69,6 +70,7 @@ public class AluviApi {
 
     public AluviApi(Context context) {
         this.mRequestQueue = JacksonNetwork.newRequestQueue(context.getApplicationContext());
+        JacksonRequest.getObjectMapper().configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
     }
 
     public static final synchronized void initialize(Context context) {

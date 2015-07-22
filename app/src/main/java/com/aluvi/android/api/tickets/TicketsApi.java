@@ -118,7 +118,6 @@ public class TicketsApi {
 
     }
 
-
     public static void cancelTrip(Trip trip, final ApiCallback callback) {
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.DELETE,

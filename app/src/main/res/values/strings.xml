@@ -9,6 +9,7 @@
     <string name="commuter_rides_already_in_database">There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again</string>
     <string name="unable_cancel_ride">Error when cancelling ride</string>
     <string name="log_in_required">You must log in to use this feature</string>
+    <string name="error_fetching_route">Error fetching route</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

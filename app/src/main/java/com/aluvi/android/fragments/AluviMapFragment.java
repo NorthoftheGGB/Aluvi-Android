@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aluvi.android.R;
+import com.aluvi.android.api.gis.RouteData;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
@@ -22,7 +23,6 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 
@@ -135,27 +135,47 @@ public class AluviMapFragment extends BaseButterFragment {
                                 onCommuteRequested();
                                 break;
                             case Ticket.StateScheduled:
-                                plotTicketRoute(ticket);
                                 break;
                         }
+
+                        plotTicketRoute(ticket);
                     }
                 }
             }
         }
     }
 
-    private void plotTicketRoute(Ticket ticket) {
-        Marker pickupMarker = new Marker("Pickup", "", new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
-        Marker destinationMarker = new Marker("Destination", "", new LatLng(ticket.getDestinationLatitude(),
-                ticket.getDestinationLongitude()));
+    private void plotTicketRoute(final Ticket ticket) {
+        CommuteManager.getInstance().loadRouteForTicket(ticket, new CommuteManager.DataCallback<RouteData>() {
+            @Override
+            public void success(RouteData result) {
+                if (mMapView != null) {
+                    PathOverlay overlay = new PathOverlay();
 
-        PathOverlay overlay = new PathOverlay();
-        overlay.addPoint(ticket.getOriginLatitude(), ticket.getOriginLongitude());
-        overlay.addPoint(ticket.getDestinationLatitude(), ticket.getDestinationLongitude());
+                    LatLng[] coordinates = result.getCoordinates();
+                    if (coordinates != null)
+                        for (LatLng coordinate : coordinates) {
+                            overlay.addPoint(coordinate);
+                        }
 
-        mMapView.addMarker(pickupMarker);
-        mMapView.addMarker(destinationMarker);
-        mMapView.addOverlay(overlay);
+                    mMapView.addOverlay(overlay);
+                }
+            }
+
+            @Override
+            public void failure(String message) {
+                Log.e(TAG, message);
+                if (getView() != null) {
+                    Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.retry, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    plotTicketRoute(ticket);
+                                }
+                            }).show();
+                }
+            }
+        });
     }
 
     @Override

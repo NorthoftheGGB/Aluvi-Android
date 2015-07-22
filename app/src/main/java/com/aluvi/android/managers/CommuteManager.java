@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.aluvi.android.api.ApiCallback;
+import com.aluvi.android.api.gis.MapQuestApi;
+import com.aluvi.android.api.gis.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
@@ -16,6 +18,7 @@ import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -34,6 +37,11 @@ public class CommuteManager {
     public interface Callback {
         void success();
 
+        void failure(String message);
+    }
+
+    public interface DataCallback<T> {
+        void success(T result);
         void failure(String message);
     }
 
@@ -157,7 +165,7 @@ public class CommuteManager {
 
         Realm realm = AluviRealm.getDefaultRealm();
         RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
-                .equalTo("rideDate", rideDate) // Rides that are tomorrow which have been created, requested, or scheduled
+                .greaterThan("rideDate", rideDate) // Rides that are tomorrow or later which have been created, requested, or scheduled
                 .beginGroup()
                 .equalTo("state", Ticket.StateCreated)
                 .or()
@@ -340,6 +348,23 @@ public class CommuteManager {
             @Override
             public void failure(int statusCode) {
                 callback.failure("Could not cancel trip.  Please try again");
+            }
+        });
+    }
+
+    public void loadRouteForTicket(Ticket ticket, final DataCallback<RouteData> callback) {
+        LatLng start = new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude());
+        LatLng end = new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude());
+
+        MapQuestApi.findRoute(start, end, new MapQuestApi.MapQuestCallback() {
+            @Override
+            public void onRouteFound(RouteData route) {
+                callback.success(route);
+            }
+
+            @Override
+            public void onFailure(int statusCode) {
+                callback.failure("Could not fetch route");
             }
         });
     }
