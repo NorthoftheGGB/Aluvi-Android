@@ -134,5 +134,7 @@ public class UserStateManager {
                 callback.failure("Logout Failed for some reason");
             }
         });
+
+        CommuteManager.getInstance().clear();
     }
 }

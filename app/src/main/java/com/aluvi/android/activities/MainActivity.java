@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -21,6 +22,7 @@ import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.fragments.TicketAluviMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.views.BaseArrayAdapter;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.ViewHolder;
 import com.aluvi.android.managers.UserStateManager;
 
@@ -62,6 +64,9 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
                         break;
                     case R.id.action_debug_user_log_in:
                         debugLogInSelected();
+                        break;
+                    case R.id.action_debug_user_log_out:
+                        debugLogOutSelected();
                         break;
                 }
 
@@ -144,7 +149,8 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
 //                new DebugUser("paypal@fromthegut.org", "martian"),
 //                new DebugUser("joe@joe.com", "tiny123")
 
-                new DebugUser("test@test.com", "tiny123")
+                new DebugUser("test@test.com", "tiny123"),
+                new DebugUser("joe@joe.com", "tiny123")
         };
 
         class DebugAdapter extends BaseArrayAdapter<DebugUser> {
@@ -170,14 +176,37 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
                 .show();
     }
 
-    private void logUserIn(DebugUser user) {
-        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
-                .progress(true, 0)
-                .title(R.string.loading)
-                .content(R.string.please_wait)
-                .cancelable(false)
-                .show();
+    private void debugLogOutSelected() {
+        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this);
+        UserStateManager.getInstance().logout(new UserStateManager.Callback() {
+            @Override
+            public void success() {
+                if (progressDialog != null) {
+                    progressDialog.cancel();
+                }
+            }
 
+            @Override
+            public void failure(String message) {
+                Log.e(TAG, message);
+                if (progressDialog != null) {
+                    progressDialog.cancel();
+                }
+
+                if (mDrawerLayout != null)
+                    Snackbar.make(mDrawerLayout.getRootView(), R.string.unable_log_out, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.retry, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    debugLogOutSelected();
+                                }
+                            }).show();
+            }
+        });
+    }
+
+    private void logUserIn(DebugUser user) {
+        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this);
         UserStateManager.getInstance().login(user.username, user.password, new UserStateManager.Callback() {
             @Override
             public void success() {

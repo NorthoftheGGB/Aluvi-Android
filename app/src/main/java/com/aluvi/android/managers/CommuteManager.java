@@ -42,6 +42,7 @@ public class CommuteManager {
 
     public interface DataCallback<T> {
         void success(T result);
+
         void failure(String message);
     }
 
@@ -139,8 +140,20 @@ public class CommuteManager {
         editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
         editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
         editor.commit();
-
         load(); // Reset by pulling default values from shared prefs
+
+        // Destroy any saved trip data
+        Realm aluviRealm = AluviRealm.getDefaultRealm();
+        aluviRealm.beginTransaction();
+        for (Trip trip : aluviRealm.where(Trip.class).findAll()) {
+            for (Ticket ticket : trip.getTickets()) {
+                ticket.removeFromRealm();
+            }
+
+            trip.removeFromRealm();
+        }
+
+        aluviRealm.commitTransaction();
     }
 
     public boolean routeIsSet() {

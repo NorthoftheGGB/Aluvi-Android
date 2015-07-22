@@ -9,5 +9,10 @@
             android:id="@+id/action_debug_user_log_in"
             android:title="@string/action_debug_users_log_in">
         </item>
+
+        <item
+            android:id="@+id/action_debug_user_log_out"
+            android:title="@string/action_debug_users_log_out">
+        </item>
     </group>
 </menu>
