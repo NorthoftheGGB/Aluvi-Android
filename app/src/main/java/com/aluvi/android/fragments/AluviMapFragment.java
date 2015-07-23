@@ -133,10 +133,12 @@ public class AluviMapFragment extends BaseButterFragment {
                         switch (ticket.getState()) {
                             case Ticket.StateRequested:
                                 onCommuteRequested();
+                                break;
                             case Ticket.StateScheduled:
-                                plotTicketRoute(ticket);
                                 break;
                         }
+
+                        plotTicketRoute(ticket);
                     }
                 }
             }
@@ -147,7 +149,7 @@ public class AluviMapFragment extends BaseButterFragment {
         CommuteManager.getInstance().loadRouteForTicket(ticket, new CommuteManager.DataCallback<RouteData>() {
             @Override
             public void success(RouteData result) {
-                if (mMapView != null) {
+                if (result != null && mMapView != null) {
                     PathOverlay overlay = new PathOverlay();
 
                     LatLng[] coordinates = result.getCoordinates();

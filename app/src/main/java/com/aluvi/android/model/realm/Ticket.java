@@ -83,12 +83,15 @@ public class Ticket extends RealmObject {
 
     public static void initTicketForData(Ticket ticket, TicketData data) {
         ticket.setState(data.getState());
+
         ticket.setOriginLatitude(data.getOriginLatitude());
-        ticket.setOriginLongitude(data.getOriginLatitude());
+        ticket.setOriginLongitude(data.getOriginLongitude());
         ticket.setOriginPlaceName(data.getOriginPlaceName());
+
         ticket.setDestinationLatitude(data.getDestinationLatitude());
         ticket.setDestinationLongitude(data.getDestinationLongitude());
         ticket.setDestinationPlaceName(data.getDestinationPlaceName());
+
         ticket.setDriving(data.isDriving());
         ticket.setPickupTime(data.getPickUpTime());
         ticket.setRideDate(new LocalDate()
