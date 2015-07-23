@@ -35,7 +35,7 @@ public class PushManager {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, context,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
                         */
-                Log.i("PushManager", "Bad news!!  Where is google play services??");
+                Log.i("PushManager", "Google play services not found");
 
             } else {
                 Log.i("PushManager", "This device is not supported.");

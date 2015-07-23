@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import com.aluvi.android.R;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
@@ -33,6 +34,9 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     private final String TAG = "ScheduleRideActivity",
             FROM_LOCATION_TAG = "from_location",
             TO_LOCATION_TAG = "to_location";
+
+    private final int MIN_HOME_LEAVE_HOUR = 7, MAX_HOME_LEAVE_HOUR = 9,
+            MIN_WORK_LEAVE_HOUR = 16, MAX_WORK_LEAVE_HOUR = 19;
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
     private TicketLocation mStartLocation, mEndLocation;
@@ -87,19 +91,20 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
 
     @OnClick(R.id.schedule_ride_button_start_time)
     public void onStartTimeButtonClicked() {
-        showTimePicker(mStartHour, mStartMin, new OnTimeSetListener() {
-            @Override
-            public void onTimeSet(int hour, int min) {
-                mStartHour = hour;
-                mStartMin = min;
-                updateStartTimeButton();
-            }
-        });
+        showTimePicker(mStartHour, mStartMin, MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR,
+                new OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(int hour, int min) {
+                        mStartHour = hour;
+                        mStartMin = min;
+                        updateStartTimeButton();
+                    }
+                });
     }
 
     @OnClick(R.id.schedule_ride_button_end_time)
     public void onEndTimeButtonClicked() {
-        showTimePicker(mEndHour, mEndMin, new OnTimeSetListener() {
+        showTimePicker(mEndHour, mEndMin, MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, new OnTimeSetListener() {
             @Override
             public void onTimeSet(int hour, int min) {
                 mEndHour = hour;
@@ -110,11 +115,13 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     }
 
     public void updateEndTimeButton() {
-        mEndTimeButton.setText(getString(R.string.return_home) + " " + getAmPm(mEndHour, mEndMin));
+        if (mEndHour != -1 && mEndMin != -1)
+            mEndTimeButton.setText(getString(R.string.return_home) + " " + getAmPm(mEndHour, mEndMin));
     }
 
     public void updateStartTimeButton() {
-        mStartTimeButton.setText(getString(R.string.at) + " " + getAmPm(mStartHour, mStartMin));
+        if (mStartHour != -1 && mStartMin != -1)
+            mStartTimeButton.setText(getString(R.string.at) + " " + getAmPm(mStartHour, mStartMin));
     }
 
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
@@ -197,11 +204,21 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     }
 
     public void showTimePicker(int startHour, int startMin, final OnTimeSetListener listener) {
+        showTimePicker(startHour, startMin, 0, 24, listener);
+    }
+
+    public void showTimePicker(int startHour, int startMin, final int minHour, final int maxHour, final OnTimeSetListener listener) {
         final TimePickerDialog.Builder builder = new TimePickerDialog.Builder(startHour, startMin) {
             @Override
             public void onPositiveActionClicked(DialogFragment fragment) {
-                listener.onTimeSet(getHour(), getMinute());
-                super.onPositiveActionClicked(fragment);
+                if (getHour() >= minHour && getHour() < maxHour) {
+                    listener.onTimeSet(getHour(), getMinute());
+                    super.onPositiveActionClicked(fragment);
+                } else {
+                    Toast.makeText(ScheduleRideActivity.this, "Time must be within " + getAmPm(minHour, 0)
+                            + " and " + getAmPm(maxHour, 0), Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         };
 
@@ -213,9 +230,6 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
     }
 
     public String getAmPm(int hour, int min) {
-        hour = Math.max(hour, 0);
-        min = Math.max(min, 0);
-
         String modifier = hour >= 12 ? "PM" : "AM";
         hour = hour > 12 ? hour - 12 : hour;
         hour = hour == 0 ? 12 : hour;
