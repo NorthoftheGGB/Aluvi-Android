@@ -7,6 +7,7 @@ import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.application.AluviPreferences;
+import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.model.local.Profile;
 import com.google.gson.Gson;
 
@@ -17,6 +18,7 @@ import com.google.gson.Gson;
 public class UserStateManager {
     private static UserStateManager mInstance;
 
+    private Context context;
     private SharedPreferences preferences;
     private Gson gson;
 
@@ -42,6 +44,7 @@ public class UserStateManager {
     }
 
     public UserStateManager(Context context) {
+        this.context = context;
         gson = new Gson();
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         apiToken = preferences.getString(AluviPreferences.API_TOKEN_KEY, null);
@@ -94,20 +97,8 @@ public class UserStateManager {
             @Override
             public void success(String token) {
                 setApiToken(token);
-
-                // CommuteManager.loadFromServer()
-
-                DevicesApi.updateUser(new DevicesApi.Callback() {
-                    @Override
-                    public void success() {
-                        callback.success();
-                    }
-
-                    @Override
-                    public void failure(int statusCode) {
-                        callback.failure("Could not update user");
-                    }
-                });
+                callback.success();
+                PushManager.setup(context);
             }
 
             @Override

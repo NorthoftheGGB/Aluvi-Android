@@ -3,7 +3,6 @@ package com.aluvi.android.application;
 import android.app.Application;
 
 import com.aluvi.android.api.AluviApi;
-import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.splunk.mint.Mint;
@@ -19,7 +18,6 @@ public class AluviApplication extends Application {
         Mint.initAndStartSession(this, "9a3f54d4");
 
         AluviRealm.initialize(this);
-        PushManager.setup(this);
         GlobalIdentifiers.initialize(this);
         AluviApi.initialize(this);
         UserStateManager.initialize(this);

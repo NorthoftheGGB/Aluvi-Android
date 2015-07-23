@@ -17,26 +17,27 @@ import java.util.Map;
  */
 public class DevicesApi {
 
-    public static final String ANDROID_PUSH_PLATFORM_NAME = "gcm" ;
+    public static final String ANDROID_PUSH_PLATFORM_NAME = "gcm";
 
     public interface Callback {
-        public void success();
-        public void failure(int statusCode);
+        void success();
+
+        void failure(int statusCode);
     }
 
-    public static void updatePushToken(String pushToken, Callback callback){
+    public static void updatePushToken(String pushToken, Callback callback) {
         DeviceData deviceData = new DeviceData();
         deviceData.setPushToken(pushToken);
         patchDevice(deviceData, callback);
     }
 
     // Send an empty device, the API token will identify and update the user of this device
-    public static void updateUser(Callback callback){
+    public static void updateUser(Callback callback) {
         DeviceData deviceData = new DeviceData();
         patchDevice(deviceData, callback);
     }
 
-    public static void patchDevice(DeviceData deviceData, final Callback callback){
+    public static void patchDevice(DeviceData deviceData, final Callback callback) {
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<DeviceData>(
                 Request.Method.POST,
                 AluviApi.API_DEVICES + GlobalIdentifiers.getInstance().getAndroidId(),
@@ -57,7 +58,7 @@ public class DevicesApi {
                         return SimpleType.construct(DeviceData.class);
                     }
                 }
-        ){
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = super.getHeaders();
