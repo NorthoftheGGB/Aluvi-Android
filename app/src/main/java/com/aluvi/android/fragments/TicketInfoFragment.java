@@ -35,7 +35,7 @@ public class TicketInfoFragment extends BaseButterFragment {
 
     public static TicketInfoFragment newInstance(Ticket ticket) {
         Bundle bundle = new Bundle();
-        bundle.putInt(TICKET_ID_KEY, ticket.getRideId());
+        bundle.putInt(TICKET_ID_KEY, ticket.getId());
 
         TicketInfoFragment infoFragment = new TicketInfoFragment();
         infoFragment.mTicket = ticket;
@@ -77,8 +77,8 @@ public class TicketInfoFragment extends BaseButterFragment {
     }
 
     private void initRidersUI() {
-        if (mTicket.getHovFare() != null) {
-            RealmList<Rider> riders = mTicket.getHovFare().getRiders();
+        if (mTicket.getState().equals(Ticket.StateScheduled)) {
+            RealmList<Rider> riders = mTicket.getRiders();
             if (riders != null) {
                 for (Rider rider : riders) {
                     addRider(rider);
