@@ -13,10 +13,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include= JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DeviceData extends AluviPayload {
-
-    @JsonProperty("user_id")
-    private Integer userId;
 
     @JsonProperty("push_token")
     private String pushToken;
@@ -34,14 +32,6 @@ public class DeviceData extends AluviPayload {
         appVersion = String.valueOf(BuildConfig.VERSION_CODE);
         appIdentifier = BuildConfig.APPLICATION_ID;
         platform = DevicesApi.ANDROID_PUSH_PLATFORM_NAME;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getPushToken() {

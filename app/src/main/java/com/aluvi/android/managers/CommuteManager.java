@@ -348,14 +348,17 @@ public class CommuteManager {
 
                     realm.commitTransaction();
 
-                    // and check for any tickets in Realm that are no longer relevant
+                    // TODO and check for any tickets in Realm that are no longer relevant
+                    /*
                     realm.beginTransaction();
                     RealmResults<Ticket> result =  realm.where(Ticket.class).lessThan("lastUpdated", lastUpdated).findAll();
-                    for(Ticket t : result){
+                    for(int i=0; i<result.size(); i++)
+                        Ticket t = result.get(i);
                         ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
                         t.removeFromRealm();
                     }
                     realm.commitTransaction();
+                    */
                 }
 
                 if (callback != null)

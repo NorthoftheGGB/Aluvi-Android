@@ -112,7 +112,6 @@ public class UserStateManager {
         setApiToken(null);
 
         DeviceData deviceData = new DeviceData();
-        deviceData.setUserId(Integer.valueOf(0));
         deviceData.setPushToken("");
         DevicesApi.patchDevice(deviceData, new DevicesApi.Callback() {
             @Override

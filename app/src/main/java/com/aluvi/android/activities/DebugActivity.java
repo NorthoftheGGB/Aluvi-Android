@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.aluvi.android.R;
+import com.aluvi.android.api.devices.DeviceData;
+import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
@@ -32,6 +34,7 @@ public class DebugActivity extends AppCompatActivity {
     @Bind(R.id.cancel_ticket_button) Button cancelTicketButton;
     @Bind(R.id.cancel_trip_button) Button cancelTripButton;
     @Bind(R.id.tickets_button) Button refreshTicketsButton;
+    @Bind(R.id.push_token_button) Button pushTokenButton;
 
 
     @Override
@@ -173,6 +176,24 @@ public class DebugActivity extends AppCompatActivity {
             @Override
             public void failure(String message) {
                 Toast.makeText(getApplicationContext(), "Did not work out!", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    @OnClick(R.id.push_token_button) public void pushToken() {
+        DeviceData device = new DeviceData();
+        device.setPushToken("yeh a push token");
+        DevicesApi.patchDevice(device, new DevicesApi.Callback() {
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Did!", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                Toast.makeText(getApplicationContext(), "Did not!", Toast.LENGTH_SHORT).show();
 
             }
         });
