@@ -8,23 +8,79 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CarData {
 
     @JsonProperty("id")
-    public Integer id;
+    private Integer id;
 
     @JsonProperty("state")
-    public String state;
+    private String state;
 
     @JsonProperty("make")
-    public String make;
+    private String make;
 
     @JsonProperty("model")
-    public String model;
+    private String model;
 
     @JsonProperty("year")
-    public String year;
+    private String year;
 
     @JsonProperty("license_plate")
-    public String licensePlate;
+    private String licensePlate;
 
     @JsonProperty("car_photo")
-    public String carPhoto;
+    private String carPhoto;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public String getCarPhoto() {
+        return carPhoto;
+    }
+
+    public void setCarPhoto(String carPhoto) {
+        this.carPhoto = carPhoto;
+    }
 }

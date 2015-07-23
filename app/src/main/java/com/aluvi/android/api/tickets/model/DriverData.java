@@ -8,23 +8,79 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DriverData {
 
     @JsonProperty("id")
-    public Integer id;
+    private Integer id;
 
     @JsonProperty("id")
-    public String firstName;
+    private String firstName;
 
     @JsonProperty("last_name")
-    public String lastName;
+    private String lastName;
 
     @JsonProperty("phone")
-    public String phone;
+    private String phone;
 
     @JsonProperty("drivers_license_number")
-    public String driversLicenseNumber;
+    private String driversLicenseNumber;
 
     @JsonProperty("large_image")
-    public String largeImage;
+    private String largeImage;
 
     @JsonProperty("small_image")
-    public String smallImage;
+    private String smallImage;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getDriversLicenseNumber() {
+        return driversLicenseNumber;
+    }
+
+    public void setDriversLicenseNumber(String driversLicenseNumber) {
+        this.driversLicenseNumber = driversLicenseNumber;
+    }
+
+    public String getLargeImage() {
+        return largeImage;
+    }
+
+    public void setLargeImage(String largeImage) {
+        this.largeImage = largeImage;
+    }
+
+    public String getSmallImage() {
+        return smallImage;
+    }
+
+    public void setSmallImage(String smallImage) {
+        this.smallImage = smallImage;
+    }
 }

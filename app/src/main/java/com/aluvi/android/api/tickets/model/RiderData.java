@@ -8,21 +8,68 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RiderData {
 
     @JsonProperty("id")
-    Integer id;
+    private Integer id;
 
     @JsonProperty("first_name")
-    Integer firstName;
+    private Integer firstName;
 
     @JsonProperty("last_name")
-    Integer lastName;
+    private Integer lastName;
 
     @JsonProperty("phone")
-    Integer phone;
+    private Integer phone;
 
     @JsonProperty("large_image")
-    Integer large_image;
+    private Integer large_image;
 
     @JsonProperty("small_image")
-    Integer smallImage;
+    private Integer smallImage;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(Integer firstName) {
+        this.firstName = firstName;
+    }
+
+    public Integer getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(Integer lastName) {
+        this.lastName = lastName;
+    }
+
+    public Integer getPhone() {
+        return phone;
+    }
+
+    public void setPhone(Integer phone) {
+        this.phone = phone;
+    }
+
+    public Integer getLarge_image() {
+        return large_image;
+    }
+
+    public void setLarge_image(Integer large_image) {
+        this.large_image = large_image;
+    }
+
+    public Integer getSmallImage() {
+        return smallImage;
+    }
+
+    public void setSmallImage(Integer smallImage) {
+        this.smallImage = smallImage;
+    }
 }

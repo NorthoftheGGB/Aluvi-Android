@@ -9,29 +9,101 @@ import java.util.ArrayList;
  */
 public class FareData {
     @JsonProperty("id")
-    Integer id;
+    private Integer id;
 
     @JsonProperty("state")
-    String state;
+    private String state;
 
     @JsonProperty("meeting_point_place_name")
-    String meetingPointPlaceName;
+    private String meetingPointPlaceName;
 
     @JsonProperty("meeting_point_latitude")
-    String meetingPointLatitude;
+    private String meetingPointLatitude;
 
     @JsonProperty("meeting_point_longitude")
-    String meetingPointLongitude;
+    private String meetingPointLongitude;
 
     @JsonProperty("drop_off_point_placename")
-    String dropOffPointPlaceName;
+    private String dropOffPointPlaceName;
 
     @JsonProperty("drop_off_point_latitude")
-    String dropOffPointLatitude;
+    private String dropOffPointLatitude;
 
     @JsonProperty("drop_off_point_longitude")
-    String dropOffPointLongitude;
+    private String dropOffPointLongitude;
 
     @JsonProperty("riders")
-    ArrayList<RiderData> riders;
+    private ArrayList<RiderData> riders;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getMeetingPointPlaceName() {
+        return meetingPointPlaceName;
+    }
+
+    public void setMeetingPointPlaceName(String meetingPointPlaceName) {
+        this.meetingPointPlaceName = meetingPointPlaceName;
+    }
+
+    public String getMeetingPointLatitude() {
+        return meetingPointLatitude;
+    }
+
+    public void setMeetingPointLatitude(String meetingPointLatitude) {
+        this.meetingPointLatitude = meetingPointLatitude;
+    }
+
+    public String getMeetingPointLongitude() {
+        return meetingPointLongitude;
+    }
+
+    public void setMeetingPointLongitude(String meetingPointLongitude) {
+        this.meetingPointLongitude = meetingPointLongitude;
+    }
+
+    public String getDropOffPointPlaceName() {
+        return dropOffPointPlaceName;
+    }
+
+    public void setDropOffPointPlaceName(String dropOffPointPlaceName) {
+        this.dropOffPointPlaceName = dropOffPointPlaceName;
+    }
+
+    public String getDropOffPointLatitude() {
+        return dropOffPointLatitude;
+    }
+
+    public void setDropOffPointLatitude(String dropOffPointLatitude) {
+        this.dropOffPointLatitude = dropOffPointLatitude;
+    }
+
+    public String getDropOffPointLongitude() {
+        return dropOffPointLongitude;
+    }
+
+    public void setDropOffPointLongitude(String dropOffPointLongitude) {
+        this.dropOffPointLongitude = dropOffPointLongitude;
+    }
+
+    public ArrayList<RiderData> getRiders() {
+        return riders;
+    }
+
+    public void setRiders(ArrayList<RiderData> riders) {
+        this.riders = riders;
+    }
 }
