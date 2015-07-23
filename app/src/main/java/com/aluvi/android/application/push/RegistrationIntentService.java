@@ -45,14 +45,11 @@ public class RegistrationIntentService extends IntentService {
             // In the (unlikely) event that multiple refresh operations occur simultaneously,
             // ensure that they are processed sequentially.
             synchronized (TAG) {
-                // [START register_for_gcm]
                 // Initially this call goes out to the network to retrieve the token, subsequent calls
                 // are local.
-                // [START get_token]
                 InstanceID instanceID = InstanceID.getInstance(this);
                 String token = instanceID.getToken(getString(R.string.gcm_sender_id),
                         GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-                // [END get_token]
                 Log.i(TAG, "GCM Registration Token: " + token);
 
                 sendRegistrationToServer(token);
@@ -64,14 +61,10 @@ public class RegistrationIntentService extends IntentService {
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(PushPreferences.SENT_TOKEN_TO_SERVER, false).apply();
         }
-
     }
 
     /**
      * Persist registration to third-party servers.
-     *
-     * Modify this method to associate the user's GCM registration token with any server-side account
-     * maintained by your application.
      *
      * @param token The new token.
      */
@@ -81,12 +74,7 @@ public class RegistrationIntentService extends IntentService {
             public void success() {
 
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(RegistrationIntentService.this);
-
-                // You should store a boolean that indicates whether the generated token has been
-                // sent to your server. If the boolean is false, send the token to your server,
-                // otherwise your server should have already received the token.
                 sharedPreferences.edit().putBoolean(PushPreferences.SENT_TOKEN_TO_SERVER, true).apply();
-                // [END register_for_gcm]
 
                 // Notify UI that registration has completed, so the progress indicator can be hidden.
                 Intent registrationComplete = new Intent(PushPreferences.REGISTRATION_COMPLETE);

@@ -36,4 +36,6 @@
     <string name="unable_log_in">Unable to log in</string>
     <string name="unable_log_out">Unable to log out</string>
     <string name="retry">Retry</string>
+    <string name="work">Work</string>
+    <string name="home">Home</string>
 </resources>

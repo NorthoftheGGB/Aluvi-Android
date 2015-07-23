@@ -23,9 +23,9 @@ public class RouteData {
                 return null;
 
             int shapePointTracker = 0;
-            LatLng[] coords = new LatLng[shapePoints.length / 2];
-            for (int i = 0; i < coords.length; i++) {
-                coords[i] = new LatLng(shapePoints[shapePointTracker], shapePoints[shapePointTracker + 1]);
+            coordinates = new LatLng[shapePoints.length / 2];
+            for (int i = 0; i < coordinates.length; i++) {
+                coordinates[i] = new LatLng(shapePoints[shapePointTracker], shapePoints[shapePointTracker + 1]);
                 shapePointTracker += 2;
             }
         }

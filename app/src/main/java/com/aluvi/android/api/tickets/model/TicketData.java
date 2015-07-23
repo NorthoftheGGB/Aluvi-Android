@@ -63,7 +63,7 @@ public class TicketData {
     @JsonProperty("driving")
     private boolean isDriving;
 
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'kk:mm:ss.SSSZZZZ")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'kk:mm:ss.SSSZZZZ")
     @JsonProperty("pickup_time")
     private Date pickUpTime;
 
@@ -205,6 +205,7 @@ public class TicketData {
         this.destinationShortName = destinationShortName;
     }
 
+<<<<<<< HEAD
 
     public double getMeetingPointPlaceName() {
         return meetingPointPlaceName;
@@ -254,6 +255,8 @@ public class TicketData {
         this.dropOffPointLongitude = dropOffPointLongitude;
     }
 
+=======
+>>>>>>> 09181906e15bda09f7ed639f94de566f7aed72ef
     public DriverData getDriver() {
         return driver;
     }
@@ -262,6 +265,16 @@ public class TicketData {
         this.driver = driver;
     }
 
+<<<<<<< HEAD
+=======
+    public FareData getFare() {
+        return fare;
+    }
+
+    public void setFare(FareData fare) {
+        this.fare = fare;
+    }
+>>>>>>> 09181906e15bda09f7ed639f94de566f7aed72ef
 
     public CarData getCar() {
         return car;
@@ -270,6 +283,7 @@ public class TicketData {
     public void setCar(CarData car) {
         this.car = car;
     }
+<<<<<<< HEAD
 
     public ArrayList<RiderData> getRiders() {
         return riders;
@@ -278,4 +292,6 @@ public class TicketData {
     public void setRiders(ArrayList<RiderData> riders) {
         this.riders = riders;
     }
+=======
+>>>>>>> 09181906e15bda09f7ed639f94de566f7aed72ef
 }
