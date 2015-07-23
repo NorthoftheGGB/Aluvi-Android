@@ -32,7 +32,7 @@ public class DeviceData extends AluviPayload {
 
     public DeviceData() {
         appVersion = String.valueOf(BuildConfig.VERSION_CODE);
-        appIdentifier = BuildConfig.VERSION_NAME;
+        appIdentifier = BuildConfig.APPLICATION_ID;
         platform = DevicesApi.ANDROID_PUSH_PLATFORM_NAME;
     }
 

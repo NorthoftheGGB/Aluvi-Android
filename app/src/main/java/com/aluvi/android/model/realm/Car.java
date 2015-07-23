@@ -1,5 +1,7 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.api.tickets.model.CarData;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -17,6 +19,16 @@ public class Car extends RealmObject {
     private String state;
     private String year;
     private String carPhotoUrl;
+
+    public static void updateCarWithCardata(Car car, CarData data) {
+        car.setId(data.getId());
+        car.setMake(data.getMake());
+        car.setModel(data.getModel());
+        car.setLicensePlate(data.getLicensePlate());
+        car.setState(data.getState());
+        car.setYear(data.getYear());
+        car.setCarPhotoUrl(data.getCarPhoto());
+    }
 
     public int getId() {
         return id;
@@ -85,4 +97,6 @@ public class Car extends RealmObject {
     public static String summary(Car car) {
         return car.getYear() + ' ' + car.getMake() + ' ' + car.getModel();
     }
+
+
 }

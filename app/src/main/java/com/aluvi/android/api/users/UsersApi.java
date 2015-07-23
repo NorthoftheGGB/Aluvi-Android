@@ -38,14 +38,16 @@ public class UsersApi
                     @Override
                     public void onResponse(LoginResponse response, int statusCode, VolleyError error)
                     {
-                        if (response != null)
+                        if (statusCode == 200)
                         {
                             Log.d("Login Success", response.token);
                             callback.success(response.token);
                         }
                         else
                         {
-                            Log.d("JSON", "Did not work " + error.getMessage());
+                            if(error != null) {
+                                Log.d("JSON", "Did not work " + error.getMessage());
+                            }
                             callback.failure(statusCode);
                         }
                     }

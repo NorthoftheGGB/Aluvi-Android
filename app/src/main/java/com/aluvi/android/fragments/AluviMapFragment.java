@@ -16,10 +16,12 @@ import android.widget.TextView;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.gis.RouteData;
+import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -29,6 +31,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 import org.joda.time.LocalDate;
 
 import java.util.HashSet;
+import java.util.List;
 
 import butterknife.Bind;
 import io.realm.RealmResults;
@@ -82,9 +85,9 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void refreshTickets() {
-        CommuteManager.getInstance().refreshTickets(new CommuteManager.Callback() {
+        CommuteManager.getInstance().refreshTickets(new CommuteManager.DataCallback<List<TicketStateTransition>>() {
             @Override
-            public void success() {
+            public void success(List<TicketStateTransition> stateTransitions) {
                 onTicketsRefreshed();
             }
 

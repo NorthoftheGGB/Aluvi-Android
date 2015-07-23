@@ -11,19 +11,19 @@ public class RiderData {
     private Integer id;
 
     @JsonProperty("first_name")
-    private Integer firstName;
+    private String firstName;
 
     @JsonProperty("last_name")
-    private Integer lastName;
+    private String lastName;
 
     @JsonProperty("phone")
-    private Integer phone;
+    private String phone;
 
     @JsonProperty("large_image")
-    private Integer large_image;
+    private String largeImage;
 
     @JsonProperty("small_image")
-    private Integer smallImage;
+    private String smallImage;
 
     public Integer getId() {
         return id;
@@ -33,43 +33,43 @@ public class RiderData {
         this.id = id;
     }
 
-    public Integer getFirstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(Integer firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public Integer getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(Integer lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public Integer getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public Integer getLarge_image() {
-        return large_image;
+    public String getLargeImage() {
+        return largeImage;
     }
 
-    public void setLarge_image(Integer large_image) {
-        this.large_image = large_image;
+    public void setLarge_image(String largeImage) {
+        this.largeImage = largeImage;
     }
 
-    public Integer getSmallImage() {
+    public String getSmallImage() {
         return smallImage;
     }
 
-    public void setSmallImage(Integer smallImage) {
+    public void setSmallImage(String smallImage) {
         this.smallImage = smallImage;
     }
 }

@@ -16,6 +16,7 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.helpers.GeocoderUtils;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
+import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -23,6 +24,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class CommuteManager {
 
         void failure(String message);
     }
+
 
     private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
@@ -224,11 +227,11 @@ public class CommuteManager {
                         realm.beginTransaction();
 
                         toWorkTicket.setTripId(response.tripId);
-                        toWorkTicket.setRideId(response.ticketToWorkRideId);
+                        toWorkTicket.setId(response.ticketToWorkRideId);
                         toWorkTicket.setState(Ticket.StateRequested);
 
                         fromWorkTicket.setTripId(response.tripId);
-                        fromWorkTicket.setRideId(response.ticketFromWorkRideId);
+                        fromWorkTicket.setId(response.ticketFromWorkRideId);
                         fromWorkTicket.setState(Ticket.StateRequested);
 
                         Trip trip = realm.createObject(Trip.class);
@@ -262,12 +265,12 @@ public class CommuteManager {
 
     public void cancelTicket(final Ticket ticket, final Callback callback) {
 
-        if (ticket.getRideId() != 0) {
+        if (ticket.getId() != 0) {
             if (ticket.isDriving()) {
                 // Driver Api - cancel driving
             } else {
 
-                if (ticket.getHovFare() == null) {
+                if ( ! ticket.getState().equals(Ticket.StateScheduled)) {
                     // ride has not been scheduled yet
                     TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
                         @Override
@@ -305,17 +308,21 @@ public class CommuteManager {
         }
     }
 
-    public void refreshTickets(final Callback callback) {
+    public void refreshTickets(final DataCallback<List<TicketStateTransition>> callback) {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
             public void success(List<TicketData> tickets) {
+                List<TicketStateTransition> ticketStateTransitions = new ArrayList < TicketStateTransition > ();
+
                 if (tickets != null) {
                     Realm realm = AluviRealm.getDefaultRealm();
                     realm.beginTransaction();
 
+                    Date lastUpdated = new Date();
+
                     for (TicketData ticket : tickets) {
                         Ticket savedTicket = realm.where(Ticket.class)
-                                .equalTo("rideId", ticket.getRideId())
+                                .equalTo("id", ticket.getRideId())
                                 .findFirst();
 
                         // If the ticket doesn't exist (because the device's memory was cleared, tickets created on another device, etc)
@@ -334,16 +341,35 @@ public class CommuteManager {
                             }
 
                             savedTicket.setTrip(tripForTicket);
+
+                            TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), null, ticket.getState());
+                            ticketStateTransitions.add(stateTransition);
+
+                        } else {
+                            if(! savedTicket.getState().equals(ticket.getState()) ){
+                                TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), savedTicket.getState(), ticket.getState());
+                                ticketStateTransitions.add(stateTransition);
+                            }
                         }
 
-                        Ticket.initTicketForData(savedTicket, ticket);
+                        Ticket.updateTicketWithTicketData(savedTicket, ticket, realm);
+                        savedTicket.setLastUpdated(lastUpdated);
                     }
 
+                    realm.commitTransaction();
+
+                    // and check for any tickets in Realm that are no longer relevant
+                    realm.beginTransaction();
+                    RealmResults<Ticket> result =  realm.where(Ticket.class).lessThan("lastUpdated", lastUpdated).findAll();
+                    for(Ticket t : result){
+                        ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
+                        t.removeFromRealm();
+                    }
                     realm.commitTransaction();
                 }
 
                 if (callback != null)
-                    callback.success();
+                    callback.success(ticketStateTransitions);
             }
 
             @Override
@@ -437,4 +463,6 @@ public class CommuteManager {
     public void setDriving(boolean driving) {
         this.driving = driving;
     }
+
+
 }

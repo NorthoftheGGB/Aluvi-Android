@@ -1,5 +1,11 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.api.tickets.model.DriverData;
+import com.aluvi.android.api.tickets.model.FareData;
+import com.aluvi.android.api.tickets.model.RiderData;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -25,6 +31,7 @@ public class Fare extends RealmObject {
     private Date desiredArrival;
     private Date pickupTime;
     private String state;
+
 
     public static String routeDescription(Fare fare) {
         return fare.getMeetingPointPlaceName() + ' ' + fare.getDropOffPointPlaceName();
@@ -142,4 +149,6 @@ public class Fare extends RealmObject {
     public void setState(String state) {
         this.state = state;
     }
+
+
 }

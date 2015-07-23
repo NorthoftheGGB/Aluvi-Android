@@ -12,8 +12,11 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,6 +31,7 @@ public class DebugActivity extends AppCompatActivity {
     @Bind(R.id.schedule_button) Button scheduleButton;
     @Bind(R.id.cancel_ticket_button) Button cancelTicketButton;
     @Bind(R.id.cancel_trip_button) Button cancelTripButton;
+    @Bind(R.id.tickets_button) Button refreshTicketsButton;
 
 
     @Override
@@ -153,6 +157,22 @@ public class DebugActivity extends AppCompatActivity {
             @Override
             public void failure(String message) {
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    @OnClick(R.id.tickets_button) public void refreshTickets(){
+        CommuteManager.getInstance().refreshTickets(new CommuteManager.DataCallback<List<TicketStateTransition>>() {
+            @Override
+            public void success(List<TicketStateTransition> result) {
+                Toast.makeText(getApplicationContext(), "Got them!", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void failure(String message) {
+                Toast.makeText(getApplicationContext(), "Did not work out!", Toast.LENGTH_SHORT).show();
 
             }
         });

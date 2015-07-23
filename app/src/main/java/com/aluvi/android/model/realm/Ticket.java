@@ -1,14 +1,20 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.api.tickets.model.RiderData;
 import com.aluvi.android.api.tickets.model.TicketData;
+import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.model.local.TicketLocation;
 
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
@@ -23,10 +29,11 @@ public class Ticket extends RealmObject {
     public static final String StateRiderCancelled = "rider_cancelled";
     public static final String StateComplete = "complete";
     public static final String StatePaymentProblem = "payment_problem";
+    public static final String StateIrrelevant = "irrelevant";
 
     public static String RideRequestTypeCommuter = "commuter";
 
-    private int rideId;
+    private int id;
     private int carId;   // These primary keys could be retrieved from related objects
     private int driverId;
     private int tripId;
@@ -56,11 +63,12 @@ public class Ticket extends RealmObject {
     private Date desiredArrival;
     private Date pickupTime;
     private String state;
+    private Date lastUpdated;
 
     private Driver driver;
     private Car car;
-    private Fare hovFare;
     private Trip trip;
+    private RealmList<Rider> riders;
 
     public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin,
                                         TicketLocation destination, boolean driving, int pickupTimeHour, int pickUpTimeMin) {
@@ -78,10 +86,12 @@ public class Ticket extends RealmObject {
         cal.add(Calendar.HOUR_OF_DAY, pickupTimeHour);
         cal.add(Calendar.MINUTE, pickUpTimeMin);
         ticket.setPickupTime(cal.getTime());
+
+        ticket.setLastUpdated(new Date());
         return ticket;
     }
 
-    public static void initTicketForData(Ticket ticket, TicketData data) {
+    public static void updateTicketWithTicketData(Ticket ticket, TicketData data, Realm realm) {
         ticket.setState(data.getState());
         ticket.setOriginLatitude(data.getOriginLatitude());
         ticket.setOriginLongitude(data.getOriginLatitude());
@@ -95,10 +105,70 @@ public class Ticket extends RealmObject {
                 .fromDateFields(data.getPickUpTime())
                 .toDateTimeAtStartOfDay()
                 .toDate());
+
+        // handle member classes
+        if(data.car != null) {
+            if (ticket.getCar() == null) {
+                Car car = realm.createObject(Car.class);
+                Car.updateCarWithCardata(car, data.car);
+                ticket.setCar(car);
+            } else {
+                Car car = ticket.getCar();
+                Car.updateCarWithCardata(car, data.car);
+            }
+        }
+
+        if(data.driver != null) {
+            if (ticket.getDriver() == null) {
+                Driver driver = realm.createObject(Driver.class);
+                Driver.updateWithDriverData(driver, data.driver);
+                ticket.setDriver(driver);
+            } else {
+                Driver driver = ticket.getDriver();
+                Driver.updateWithDriverData(driver, data.driver);
+            }
+        }
+
+        // update riders
+        List<Integer> riderIds = new ArrayList<Integer>();
+        if(data.getRiders() != null) {
+            for (RiderData r : data.getRiders()) {
+                Rider rider = ticket.getRiders().where().equalTo("id", r.getId()).findFirst();
+                if (rider == null) {
+                    rider = realm.createObject(Rider.class);
+                }
+                Rider.updateWithRiderData(rider, r);
+                ticket.getRiders().add(rider);
+                riderIds.add(rider.getId());
+            }
+
+            // remove riders if changed
+            RealmList<Rider> removeRiders = new RealmList<Rider>();
+            for (Rider rider : ticket.getRiders()) {
+                if (!riderIds.contains(rider.getId())) {
+                    removeRiders.add(rider);
+                }
+            }
+            for (Rider rider : removeRiders) {
+                ticket.getRiders().remove(rider);
+            }
+
+        }
+
     }
+
+
 
     public static String routeDescription(Ticket ticket) {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getFare_id() {
@@ -125,13 +195,6 @@ public class Ticket extends RealmObject {
         this.pickupTime = pickupTime;
     }
 
-    public int getRideId() {
-        return rideId;
-    }
-
-    public void setRideId(int rideId) {
-        this.rideId = rideId;
-    }
 
     public int getCarId() {
         return carId;
@@ -349,14 +412,6 @@ public class Ticket extends RealmObject {
         this.car = car;
     }
 
-    public Fare getHovFare() {
-        return hovFare;
-    }
-
-    public void setHovFare(Fare hovFare) {
-        this.hovFare = hovFare;
-    }
-
     public String getState() {
         return state;
     }
@@ -371,5 +426,21 @@ public class Ticket extends RealmObject {
 
     public void setTrip(Trip trip) {
         this.trip = trip;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public RealmList<Rider> getRiders() {
+        return riders;
+    }
+
+    public void setRiders(RealmList<Rider> riders) {
+        this.riders = riders;
     }
 }

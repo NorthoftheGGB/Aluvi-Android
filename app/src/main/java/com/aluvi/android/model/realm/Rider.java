@@ -1,5 +1,7 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.api.tickets.model.RiderData;
+
 import io.realm.RealmObject;
 import io.realm.RealmList;
 
@@ -7,8 +9,6 @@ import io.realm.RealmList;
  * Created by matthewxi on 7/13/15.
  */
 public class Rider extends RealmObject {
-
-    private RealmList<Fare> fares;
 
     private int id;
     private String firstName;
@@ -18,6 +18,15 @@ public class Rider extends RealmObject {
     private double longitude;
     private String smallImageUrl;
     private String largeImageUrl;
+
+    public static void updateWithRiderData(Rider rider, RiderData r) {
+        rider.setId(r.getId());
+        rider.setFirstName(r.getFirstName());
+        rider.setLastName(r.getLastName());
+        rider.setPhone(r.getPhone());
+        rider.setSmallImageUrl(r.getSmallImage());
+        rider.setLargeImageUrl(r.getLargeImage());
+    }
 
     public int getId() {
         return id;
@@ -83,11 +92,7 @@ public class Rider extends RealmObject {
         this.largeImageUrl = largeImageUrl;
     }
 
-    public RealmList<Fare> getFares() {
-        return fares;
-    }
 
-    public void setFares(RealmList<Fare> fares) {
-        this.fares = fares;
-    }
+
+
 }

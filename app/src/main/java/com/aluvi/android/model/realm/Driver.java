@@ -1,5 +1,7 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.api.tickets.model.DriverData;
+
 import io.realm.RealmObject;
 import io.realm.RealmList;
 
@@ -17,6 +19,16 @@ public class Driver extends RealmObject {
     private String phone;
     private String smallImageUrl;
     private String largeImageUrl;
+
+    public static void updateWithDriverData(Driver driver, DriverData data) {
+        driver.setId(data.getId());
+        driver.setFirstName(data.getFirstName());
+        driver.setLastName(data.getLastName());
+        driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
+        driver.setPhone(data.getPhone());
+        driver.setSmallImageUrl(data.getSmallImage());
+        driver.setLargeImageUrl(data.getLargeImage());
+    }
 
     public static String fullname(Driver driver) {
         return driver.getFirstName() + ' ' + driver.getLastName();
@@ -85,4 +97,6 @@ public class Driver extends RealmObject {
     public void setTickets(RealmList<Ticket> tickets) {
         this.tickets = tickets;
     }
+
+
 }

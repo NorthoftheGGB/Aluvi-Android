@@ -1,5 +1,7 @@
 package com.aluvi.android.api.tickets;
 
+import android.util.Log;
+
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
@@ -63,7 +65,7 @@ public class TicketsApi {
     public static void cancelRiderTicketRequest(Ticket ticket, final ApiCallback callback) {
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getRideId()));
+        params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.POST,
                 AluviApi.API_POST_REQUEST_CANCELLED,
@@ -92,7 +94,7 @@ public class TicketsApi {
     public static void cancelRiderScheduledTicket(Ticket ticket, final ApiCallback callback) {
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put(AluviApiKeys.FARE_KEY, String.valueOf(ticket.getHovFare().getId()));
+        params.put(AluviApiKeys.FARE_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.POST,
                 AluviApi.CANCEL_RIDER_SCHEDULED_TICKET,
@@ -151,9 +153,12 @@ public class TicketsApi {
                 new JacksonRequestListener<List<TicketData>>() {
                     @Override
                     public void onResponse(List<TicketData> response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                        if (statusCode == 200 && response != null) {
                             callback.success(response);
                         } else {
+                            if(error != null) {
+                                Log.d("JSON", "Did not work " + error.getMessage());
+                            }
                             callback.failure(statusCode);
                         }
                     }

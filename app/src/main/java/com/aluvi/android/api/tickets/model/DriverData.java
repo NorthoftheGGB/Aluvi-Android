@@ -10,7 +10,7 @@ public class DriverData {
     @JsonProperty("id")
     private Integer id;
 
-    @JsonProperty("id")
+    @JsonProperty("first_name")
     private String firstName;
 
     @JsonProperty("last_name")

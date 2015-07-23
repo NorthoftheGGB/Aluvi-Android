@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -35,6 +36,24 @@ public class TicketData {
     @JsonProperty("destination_longitude")
     private double destinationLongitude;
 
+    @JsonProperty("meeting_point_place_name")
+    private double meetingPointPlaceName;
+
+    @JsonProperty("meeting_point_latitude")
+    private double meetingPointLatitude;
+
+    @JsonProperty("meeting_point_longitude")
+    private double meetingPointLongitude;
+
+    @JsonProperty("drop_off_point_placename")
+    private double dropOffPointPlaceName;
+
+    @JsonProperty("drop_off_point_latitude")
+    private double dropOffPointLatitude;
+
+    @JsonProperty("drop_off_point_longitude")
+    private double dropOffPointLongitude;
+
     @JsonProperty("fixed_price")
     private double fixedPrice;
 
@@ -60,11 +79,11 @@ public class TicketData {
     @JsonProperty("driver")
     public DriverData driver;
 
-    @JsonProperty("fare")
-    public FareData fare;
-
     @JsonProperty("car")
     public CarData car;
+
+    @JsonProperty("riders")
+    private ArrayList<RiderData> riders;
 
     public int getRideId() {
         return rideId;
@@ -186,6 +205,55 @@ public class TicketData {
         this.destinationShortName = destinationShortName;
     }
 
+
+    public double getMeetingPointPlaceName() {
+        return meetingPointPlaceName;
+    }
+
+    public void setMeetingPointPlaceName(double meetingPointPlaceName) {
+        this.meetingPointPlaceName = meetingPointPlaceName;
+    }
+
+    public double getMeetingPointLatitude() {
+        return meetingPointLatitude;
+    }
+
+    public void setMeetingPointLatitude(double meetingPointLatitude) {
+        this.meetingPointLatitude = meetingPointLatitude;
+    }
+
+    public double getMeetingPointLongitude() {
+        return meetingPointLongitude;
+    }
+
+    public void setMeetingPointLongitude(double meetingPointLongitude) {
+        this.meetingPointLongitude = meetingPointLongitude;
+    }
+
+    public double getDropOffPointPlaceName() {
+        return dropOffPointPlaceName;
+    }
+
+    public void setDropOffPointPlaceName(double dropOffPointPlaceName) {
+        this.dropOffPointPlaceName = dropOffPointPlaceName;
+    }
+
+    public double getDropOffPointLatitude() {
+        return dropOffPointLatitude;
+    }
+
+    public void setDropOffPointLatitude(double dropOffPointLatitude) {
+        this.dropOffPointLatitude = dropOffPointLatitude;
+    }
+
+    public double getDropOffPointLongitude() {
+        return dropOffPointLongitude;
+    }
+
+    public void setDropOffPointLongitude(double dropOffPointLongitude) {
+        this.dropOffPointLongitude = dropOffPointLongitude;
+    }
+
     public DriverData getDriver() {
         return driver;
     }
@@ -194,13 +262,6 @@ public class TicketData {
         this.driver = driver;
     }
 
-    public FareData getFare() {
-        return fare;
-    }
-
-    public void setFare(FareData fare) {
-        this.fare = fare;
-    }
 
     public CarData getCar() {
         return car;
@@ -208,5 +269,13 @@ public class TicketData {
 
     public void setCar(CarData car) {
         this.car = car;
+    }
+
+    public ArrayList<RiderData> getRiders() {
+        return riders;
+    }
+
+    public void setRiders(ArrayList<RiderData> riders) {
+        this.riders = riders;
     }
 }
