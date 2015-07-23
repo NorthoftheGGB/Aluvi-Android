@@ -104,6 +104,61 @@ public class Ticket extends RealmObject {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();
     }
 
+    public static TicketBounds getBounds(Ticket ticket) {
+        double northLat = ticket.getDestinationLatitude() > ticket.getOriginLatitude() ?
+                ticket.getDestinationLatitude() : ticket.getOriginLatitude();
+        double southLat = ticket.getDestinationLatitude() < ticket.getOriginLatitude() ?
+                ticket.getDestinationLatitude() : ticket.getOriginLatitude();
+        double eastLon = ticket.getDestinationLongitude() < ticket.getOriginLongitude() ?
+                ticket.getDestinationLongitude() : ticket.getOriginLongitude();
+        double westLon = ticket.getDestinationLongitude() > ticket.getOriginLongitude() ?
+                ticket.getDestinationLongitude() : ticket.getOriginLongitude();
+        return new TicketBounds(northLat, eastLon, southLat, westLon);
+    }
+
+    public static class TicketBounds {
+        private double north, east, west, south;
+
+        public TicketBounds(double north, double east, double south, double west) {
+            this.north = north;
+            this.east = east;
+            this.west = west;
+            this.south = south;
+        }
+
+        public double getNorth() {
+            return north;
+        }
+
+        public void setNorth(double north) {
+            this.north = north;
+        }
+
+        public double getEast() {
+            return east;
+        }
+
+        public void setEast(double east) {
+            this.east = east;
+        }
+
+        public double getWest() {
+            return west;
+        }
+
+        public void setWest(double west) {
+            this.west = west;
+        }
+
+        public double getSouth() {
+            return south;
+        }
+
+        public void setSouth(double south) {
+            this.south = south;
+        }
+    }
+
     public int getFare_id() {
         return fare_id;
     }

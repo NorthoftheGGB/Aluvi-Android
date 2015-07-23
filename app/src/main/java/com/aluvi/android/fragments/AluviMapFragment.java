@@ -2,6 +2,7 @@ package com.aluvi.android.fragments;
 
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -23,11 +24,14 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.Icon;
+import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import org.joda.time.LocalDate;
 
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 
 import butterknife.Bind;
@@ -115,42 +119,62 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     private void onTicketsRefreshed() {
-        Log.i(TAG, "Realm path: " + AluviRealm.getDefaultRealm().getPath());
+        Ticket currentTicket = AluviRealm.getDefaultRealm()
+                .where(Ticket.class)
+                .greaterThan("rideDate", new LocalDate().toDate())
+                .beginGroup()
+                .equalTo("state", Ticket.StateRequested)
+                .or()
+                .equalTo("state", Ticket.StateScheduled)
+                .endGroup()
+                .findFirst(); // Show tickets for today and beyond
 
-        RealmResults<Trip> savedTrips = AluviRealm.getDefaultRealm()
-                .where(Trip.class)
-                .findAll();
-
-        if (savedTrips != null) {
-            for (Trip trip : savedTrips) {
-                RealmResults<Ticket> tickets = trip.getTickets()
-                        .where().greaterThan("rideDate", new LocalDate().toDate())
-                        .findAll(); // Show tickets for today and beyond
-
-                if (tickets != null) {
-                    for (Ticket ticket : tickets) {
-                        Log.i(TAG, "Ticket state: " + ticket.getState());
-                        switch (ticket.getState()) {
-                            case Ticket.StateRequested:
-                                onCommuteRequested();
-                                break;
-                            case Ticket.StateScheduled:
-                                break;
-                        }
-
-                        plotTicketRoute(ticket);
-                    }
-                }
+        if (currentTicket != null) {
+            switch (currentTicket.getState()) {
+                case Ticket.StateRequested:
+                    onCommuteRequested();
+                    break;
+                case Ticket.StateScheduled:
+                    if (currentTicket.isDriving())
+                        enableDriverOverlay(currentTicket);
+                    else
+                        enableRiderOverlay(currentTicket);
+                    break;
             }
+
+            plotTicketRoute(currentTicket);
         }
     }
 
     private void plotTicketRoute(final Ticket ticket) {
+        mMapView.clear();
+
+        String markerText = "";
+        if (ticket.getState().equals(Ticket.StateScheduled)) {
+            SimpleDateFormat pickupTime = new SimpleDateFormat("h:mm a");
+            markerText = "Be here at " + pickupTime.format(ticket.getPickupTime());
+        } else {
+            markerText = getString(R.string.home);
+        }
+
+        Marker homeMarker = new Marker(markerText, ticket.getOriginPlaceName(),
+                new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
+        homeMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+
+        Marker workMarker = new Marker(getString(R.string.work), ticket.getDestinationPlaceName(),
+                new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
+        workMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+
+        mMapView.addMarker(homeMarker);
+        mMapView.addMarker(workMarker);
+        mMapView.setCenter(homeMarker.getPoint());
+        mMapView.setZoom(15);
+
         CommuteManager.getInstance().loadRouteForTicket(ticket, new CommuteManager.DataCallback<RouteData>() {
             @Override
             public void success(RouteData result) {
                 if (result != null && mMapView != null) {
-                    PathOverlay overlay = new PathOverlay();
+                    PathOverlay overlay = new PathOverlay(Color.GREEN, 6);
 
                     LatLng[] coordinates = result.getCoordinates();
                     if (coordinates != null)
@@ -178,35 +202,14 @@ public class AluviMapFragment extends BaseButterFragment {
         });
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main_map, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    public void enableRiderOverlay(Ticket ticket) {
+        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
+                TicketInfoFragment.newInstance(ticket)).commit();
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        if (mIsCommutePending)
-            menu.findItem(R.id.action_schedule_ride)
-                    .setEnabled(false)
-                    .setTitle(R.string.action_commute_pending);
-
-        menu.findItem(R.id.action_cancel_pending_ride)
-                .setVisible(mIsCommutePending);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_schedule_ride:
-                mEventListener.onScheduleRideRequested();
-                break;
-            case R.id.action_cancel_pending_ride:
-                cancelTrip();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void enableDriverOverlay(Ticket ticket) {
+        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
+                TicketInfoFragment.newInstance(ticket)).commit();
     }
 
     /**
@@ -260,6 +263,37 @@ public class AluviMapFragment extends BaseButterFragment {
                 }
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main_map, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (mIsCommutePending)
+            menu.findItem(R.id.action_schedule_ride)
+                    .setEnabled(false)
+                    .setTitle(R.string.action_commute_pending);
+
+        menu.findItem(R.id.action_cancel_pending_ride)
+                .setVisible(mIsCommutePending);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_schedule_ride:
+                mEventListener.onScheduleRideRequested();
+                break;
+            case R.id.action_cancel_pending_ride:
+                cancelTrip();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

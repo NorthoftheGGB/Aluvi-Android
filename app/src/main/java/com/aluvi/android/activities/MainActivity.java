@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.AluviMapFragment;
-import com.aluvi.android.fragments.TicketAluviMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.views.BaseArrayAdapter;
 import com.aluvi.android.helpers.views.DialogUtils;
@@ -107,14 +106,6 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
     public void onCommuteScheduled() {
         supportInvalidateOptionsMenu();
         EventBus.getDefault().post(new CommuteScheduledEvent());
-    }
-
-    public void onRiderTicketSelected() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, TicketAluviMapFragment.newInstance()).commit();
-    }
-
-    public void onDriverTicketSelected() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, TicketAluviMapFragment.newInstance()).commit();
     }
 
     @Override

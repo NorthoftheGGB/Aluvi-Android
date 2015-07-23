@@ -11,4 +11,5 @@
     <color name="scheduleRideButtonBackgroundExtraLightClicked">#C8C8C8</color>
 
     <color name="transparent_white">#AAFFFFFF</color>
+    <color name="ticketInfoPriceBackground">#2360DD</color>
 </resources>
