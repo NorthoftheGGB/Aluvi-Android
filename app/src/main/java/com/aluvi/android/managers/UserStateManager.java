@@ -118,6 +118,8 @@ public class UserStateManager {
     }
 
     public void logout(final Callback callback) {
+        setApiToken(null);
+
         DeviceData deviceData = new DeviceData();
         deviceData.setUserId(Integer.valueOf(0));
         deviceData.setPushToken("");
