@@ -302,7 +302,7 @@ public class CommuteManager {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
             public void success(List<TicketData> tickets) {
-                List<TicketStateTransition> ticketStateTransitions = new ArrayList<TicketStateTransition>();
+                List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
 
                 if (tickets != null) {
                     Realm realm = AluviRealm.getDefaultRealm();

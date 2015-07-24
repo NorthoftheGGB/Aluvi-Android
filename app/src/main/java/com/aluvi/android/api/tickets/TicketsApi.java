@@ -119,7 +119,6 @@ public class TicketsApi {
 
         request.addAcceptedStatusCodes(new int[]{200, 403});
         AluviApi.getInstance().getRequestQueue().add(request);
-
     }
 
     public static void cancelTrip(Trip trip, final ApiCallback callback) {

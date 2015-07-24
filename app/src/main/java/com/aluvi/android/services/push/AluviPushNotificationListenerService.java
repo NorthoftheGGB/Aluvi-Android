@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aluvi.android.application.push;
+package com.aluvi.android.services.push;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;

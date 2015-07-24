@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.aluvi.android.application.push;
+package com.aluvi.android.services.push;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.devices.DevicesApi;
+import com.aluvi.android.application.push.PushPreferences;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 

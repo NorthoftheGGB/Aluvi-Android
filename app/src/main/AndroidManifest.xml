@@ -62,18 +62,18 @@
             </intent-filter>
         </receiver>
         <service
-            android:name="com.aluvi.android.application.push.RegistrationIntentService"
+            android:name=".services.push.RegistrationIntentService"
             android:exported="false">
         </service>
         <service
-            android:name=".application.push.AluviPushNotificationListenerService"
+            android:name=".services.push.AluviPushNotificationListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
         </service>
         <service
-            android:name="com.aluvi.android.application.push.InstanceIDListenerService"
+            android:name=".services.push.InstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>

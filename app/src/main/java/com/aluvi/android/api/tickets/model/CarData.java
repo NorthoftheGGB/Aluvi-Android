@@ -11,22 +11,25 @@ public class CarData {
     private Integer id;
 
     @JsonProperty("state")
-    private String state = "";
+    private String state;
 
     @JsonProperty("make")
-    private String make = "";
+    private String make;
 
     @JsonProperty("model")
-    private String model = "";
+    private String model;
 
     @JsonProperty("year")
-    private String year = "";
+    private String year;
 
     @JsonProperty("license_plate")
-    private String licensePlate = "";
+    private String licensePlate;
 
     @JsonProperty("car_photo")
-    private String carPhoto = "";
+    private String carPhoto;
+
+    public CarData() {
+    }
 
     public Integer getId() {
         return id;
@@ -37,7 +40,7 @@ public class CarData {
     }
 
     public String getState() {
-        return state;
+        return state == null ? "" : state;
     }
 
     public void setState(String state) {
@@ -45,7 +48,7 @@ public class CarData {
     }
 
     public String getMake() {
-        return make;
+        return make == null ? "" : make;
     }
 
     public void setMake(String make) {

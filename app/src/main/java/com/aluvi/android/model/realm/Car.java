@@ -25,6 +25,7 @@ public class Car extends RealmObject {
         car.setMake(data.getMake());
         car.setModel(data.getModel());
         car.setLicensePlate(data.getLicensePlate());
+
         car.setState(data.getState());
         car.setYear(data.getYear());
         car.setCarPhotoUrl(data.getCarPhoto());

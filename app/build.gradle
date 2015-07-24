@@ -66,4 +66,5 @@ dependencies {
     compile 'io.realm:realm-android:0.81.1'
     compile 'com.splunk.mint:mint:4.2.1'
     compile 'com.google.android.gms:play-services-gcm:7.5.0'
+    compile 'com.google.android.gms:play-services-location:7.5.0'
 }

@@ -38,7 +38,6 @@ public class TicketInfoFragment extends BaseButterFragment {
         bundle.putInt(TICKET_ID_KEY, ticket.getId());
 
         TicketInfoFragment infoFragment = new TicketInfoFragment();
-        infoFragment.mTicket = ticket;
         infoFragment.setArguments(bundle);
         return infoFragment;
     }
@@ -50,7 +49,7 @@ public class TicketInfoFragment extends BaseButterFragment {
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (getArguments() != null) {
             int ticketId = getArguments().getInt(TICKET_ID_KEY);
-            mTicket = AluviRealm.getDefaultRealm().where(Ticket.class).equalTo("rideId", ticketId).findFirst();
+            mTicket = AluviRealm.getDefaultRealm().where(Ticket.class).equalTo("id", ticketId).findFirst();
         }
 
         return inflater.inflate(R.layout.fragment_ticket_info, container, false);
