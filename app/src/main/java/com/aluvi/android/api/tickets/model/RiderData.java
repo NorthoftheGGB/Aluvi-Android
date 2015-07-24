@@ -11,19 +11,19 @@ public class RiderData {
     private Integer id;
 
     @JsonProperty("first_name")
-    private String firstName;
+    private String firstName = "";
 
     @JsonProperty("last_name")
-    private String lastName;
+    private String lastName = "";
 
     @JsonProperty("phone")
-    private String phone;
+    private String phone = "";
 
     @JsonProperty("large_image")
-    private String largeImage;
+    private String largeImage = "";
 
     @JsonProperty("small_image")
-    private String smallImage;
+    private String smallImage = "";
 
     public Integer getId() {
         return id;

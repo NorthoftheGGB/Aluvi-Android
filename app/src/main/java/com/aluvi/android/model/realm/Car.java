@@ -20,7 +20,7 @@ public class Car extends RealmObject {
     private String year;
     private String carPhotoUrl;
 
-    public static void updateCarWithCardata(Car car, CarData data) {
+    public static void updateCarWithCarData(Car car, CarData data) {
         car.setId(data.getId());
         car.setMake(data.getMake());
         car.setModel(data.getModel());

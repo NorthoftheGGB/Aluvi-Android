@@ -19,7 +19,7 @@ public class TicketData {
     private int tripId;
 
     @JsonProperty("origin_place_name")
-    private String originPlaceName;
+    private String originPlaceName = "";
 
     @JsonProperty("origin_latitude")
     private double originLatitude;
@@ -28,7 +28,7 @@ public class TicketData {
     private double originLongitude;
 
     @JsonProperty("destination_place_name")
-    private String destinationPlaceName;
+    private String destinationPlaceName = "";
 
     @JsonProperty("destination_latitude")
     private double destinationLatitude;
@@ -58,7 +58,7 @@ public class TicketData {
     private double fixedPrice;
 
     @JsonProperty("state")
-    private String state;
+    private String state = "";
 
     @JsonProperty("driving")
     private boolean isDriving;
@@ -68,13 +68,13 @@ public class TicketData {
     private Date pickUpTime;
 
     @JsonProperty("direction")
-    private String direction;
+    private String direction = "";
 
     @JsonProperty("origin_short_name")
-    private String originShortName;
+    private String originShortName = "";
 
     @JsonProperty("destination_short_name")
-    private String destinationShortName;
+    private String destinationShortName = "";
 
     @JsonProperty("driver")
     public DriverData driver;

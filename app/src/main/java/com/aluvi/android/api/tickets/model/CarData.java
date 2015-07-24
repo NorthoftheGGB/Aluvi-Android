@@ -11,22 +11,22 @@ public class CarData {
     private Integer id;
 
     @JsonProperty("state")
-    private String state;
+    private String state = "";
 
     @JsonProperty("make")
-    private String make;
+    private String make = "";
 
     @JsonProperty("model")
-    private String model;
+    private String model = "";
 
     @JsonProperty("year")
-    private String year;
+    private String year = "";
 
     @JsonProperty("license_plate")
-    private String licensePlate;
+    private String licensePlate = "";
 
     @JsonProperty("car_photo")
-    private String carPhoto;
+    private String carPhoto = "";
 
     public Integer getId() {
         return id;

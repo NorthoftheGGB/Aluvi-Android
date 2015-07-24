@@ -15,10 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.gis.RouteData;
-import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.application.AluviRealm;
+import com.aluvi.android.application.push.AluviPushNotificationListenerService;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
@@ -38,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import butterknife.Bind;
+import de.greenrobot.event.EventBus;
 import io.realm.RealmResults;
 
 public class AluviMapFragment extends BaseButterFragment {
@@ -86,6 +88,26 @@ public class AluviMapFragment extends BaseButterFragment {
     public void onResume() {
         super.onResume();
         refreshTickets();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
+        EventBus.getDefault().unregister(this);
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(AluviPushNotificationListenerService.PushNotificationEvent event) {
+        refreshTickets();
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.update)
+                .content(event.getPushData())
+                .positiveText(android.R.string.ok)
+                .build()
+                .show();
     }
 
     public void refreshTickets() {
@@ -297,11 +319,5 @@ public class AluviMapFragment extends BaseButterFragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
     }
 }

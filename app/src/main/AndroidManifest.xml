@@ -66,7 +66,7 @@
             android:exported="false">
         </service>
         <service
-            android:name="com.aluvi.android.application.push.GcmListenerService"
+            android:name=".application.push.AluviPushNotificationListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
