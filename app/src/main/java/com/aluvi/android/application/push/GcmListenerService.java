@@ -32,7 +32,7 @@ import com.aluvi.android.activities.MainActivity;
 public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerService {
 
     private static final String TAG = "AluviGcmListenerService";
-
+    private final int NOTIFICATION_ID = 2412;
     /**
      * Called when message is received.
      *
@@ -40,33 +40,14 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
      * @param data Data bundle containing message data as key/value pairs.
      *             For Set of keys use data.keySet().
      */
-    // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
-
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
-
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
         sendNotification(message);
     }
-    // [END receive_message]
 
-    /**
-     * Create and show a simple notification containing the received GCM message.
-     *
-     * @param message GCM message received.
-     */
     private void sendNotification(String message) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -84,7 +65,6 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 }

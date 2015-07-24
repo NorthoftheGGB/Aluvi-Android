@@ -26,7 +26,8 @@
 
         <activity
             android:name="com.aluvi.android.activities.MainActivity"
-            android:label="@string/title_activity_main">
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -36,7 +37,8 @@
 
         <activity
             android:name="com.aluvi.android.activities.DebugActivity"
-            android:label="Aluvi Debug">
+            android:label="Aluvi Debug"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -45,7 +47,8 @@
         </activity>
         <activity
             android:name="com.aluvi.android.activities.ScheduleRideActivity"
-            android:label="@string/title_activity_schedule_ride">
+            android:label="@string/title_activity_schedule_ride"
+            android:screenOrientation="portrait">
         </activity>
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

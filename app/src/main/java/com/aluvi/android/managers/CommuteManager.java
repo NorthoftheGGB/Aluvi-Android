@@ -260,7 +260,7 @@ public class CommuteManager {
                 // Driver Api - cancel driving
             } else {
 
-                if ( ! ticket.getState().equals(Ticket.StateScheduled)) {
+                if (!ticket.getState().equals(Ticket.StateScheduled)) {
                     // ride has not been scheduled yet
                     TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
                         @Override
@@ -302,7 +302,7 @@ public class CommuteManager {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
             public void success(List<TicketData> tickets) {
-                List<TicketStateTransition> ticketStateTransitions = new ArrayList < TicketStateTransition > ();
+                List<TicketStateTransition> ticketStateTransitions = new ArrayList<TicketStateTransition>();
 
                 if (tickets != null) {
                     Realm realm = AluviRealm.getDefaultRealm();
@@ -336,7 +336,7 @@ public class CommuteManager {
                             ticketStateTransitions.add(stateTransition);
 
                         } else {
-                            if(! savedTicket.getState().equals(ticket.getState()) ){
+                            if (!savedTicket.getState().equals(ticket.getState())) {
                                 TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), savedTicket.getState(), ticket.getState());
                                 ticketStateTransitions.add(stateTransition);
                             }
