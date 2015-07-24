@@ -1,5 +1,7 @@
 package com.aluvi.android.model.realm;
 
+import android.util.Log;
+
 import com.aluvi.android.api.tickets.model.RiderData;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.model.local.TicketLocation;
@@ -108,27 +110,21 @@ public class Ticket extends RealmObject {
                 .toDateTimeAtStartOfDay()
                 .toDate());
 
+        Log.e("Aluvi", "Fixed price: " + data.getFixedPrice());
+        ticket.setFixedPrice(data.getFixedPrice());
+        Log.e("Aluvi", "Update; Fixed price: " + ticket.getFixedPrice());
+
         // handle member classes
         if (data.car != null) {
-            if (ticket.getCar() == null) {
-                Car car = realm.createObject(Car.class);
-                Car.updateCarWithCarData(car, data.car);
-                ticket.setCar(car);
-            } else {
-                Car car = ticket.getCar();
-                Car.updateCarWithCarData(car, data.car);
-            }
+            Car car = ticket.getCar() == null ? realm.createObject(Car.class) : ticket.getCar();
+            Car.updateCarWithCarData(car, data.car);
+            ticket.setCar(car);
         }
 
         if (data.driver != null) {
-            if (ticket.getDriver() == null) {
-                Driver driver = realm.createObject(Driver.class);
-                Driver.updateWithDriverData(driver, data.driver);
-                ticket.setDriver(driver);
-            } else {
-                Driver driver = ticket.getDriver();
-                Driver.updateWithDriverData(driver, data.driver);
-            }
+            Driver driver = ticket.getDriver() == null ? realm.createObject(Driver.class) : ticket.getDriver();
+            Driver.updateWithDriverData(driver, data.driver);
+            ticket.setDriver(driver);
         }
 
         // update riders

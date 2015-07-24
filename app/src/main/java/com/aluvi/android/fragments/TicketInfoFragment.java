@@ -3,6 +3,7 @@ package com.aluvi.android.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class TicketInfoFragment extends BaseButterFragment {
     @Override
     public void initUI() {
         if (mTicket != null) {
+            Log.e("Aluvi", "Fixed price: " + mTicket.getFixedPrice());
             mTicketPriceTextView.setText(NumberFormat.getCurrencyInstance().format(mTicket.getFixedPrice()));
 
             if (mTicket.getCar() != null) {

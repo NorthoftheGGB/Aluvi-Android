@@ -19,20 +19,18 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.gis.RouteData;
 import com.aluvi.android.application.AluviRealm;
-import com.aluvi.android.services.push.AluviPushNotificationListenerService;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
+import com.aluvi.android.services.push.AluviPushNotificationListenerService;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
-
-import org.joda.time.LocalDate;
 
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -146,7 +144,6 @@ public class AluviMapFragment extends BaseButterFragment {
     private void onTicketsRefreshed() {
         Ticket currentTicket = AluviRealm.getDefaultRealm()
                 .where(Ticket.class)
-                .greaterThan("rideDate", new LocalDate().toDate())
                 .beginGroup()
                 .equalTo("state", Ticket.StateRequested)
                 .or()
@@ -228,6 +225,7 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void enableRiderOverlay(Ticket ticket) {
+        Log.e("Aluvi", "Map update: " + ticket.getFixedPrice());
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
     }
