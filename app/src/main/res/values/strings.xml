@@ -47,4 +47,11 @@
     <string name="ride_payment_problem">Error processing your payment</string>
     <string name="user_state_change">Your status on Aluvi has been updated</string>
     <string name="update">Update</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+
+    <string name="all_fields_required">All Fields Required</string>
+    <string name="auth_error">Authentication Error</string>
+    <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
 </resources>

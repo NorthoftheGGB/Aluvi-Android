@@ -21,7 +21,7 @@ import com.rey.material.app.TimePickerDialog;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class ScheduleRideActivity extends BaseToolBarActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
+public class ScheduleRideActivity extends AluviAuthActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
 
     @Bind(R.id.schedule_ride_root_view) View mRootView;
     @Bind(R.id.schedule_ride_button_from) Button mFromButton;

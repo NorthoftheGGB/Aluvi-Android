@@ -4,8 +4,7 @@ package com.aluvi.android.api;
  * Created by matthewxi on 7/17/15.
  */
 public interface ApiCallback {
+    void success();
 
-    public void success();
-    public void failure(int statusCode);
-
+    void failure(int statusCode);
 }

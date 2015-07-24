@@ -40,6 +40,9 @@ import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import io.realm.RealmResults;
 
+/**
+ * Created by usama on 7/13/15.
+ */
 public class AluviMapFragment extends BaseButterFragment {
     public interface OnMapEventListener {
         void onScheduleRideRequested();

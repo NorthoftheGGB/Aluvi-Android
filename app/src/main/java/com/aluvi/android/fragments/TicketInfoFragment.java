@@ -59,7 +59,6 @@ public class TicketInfoFragment extends BaseButterFragment {
     @Override
     public void initUI() {
         if (mTicket != null) {
-            Log.e("Aluvi", "Fixed price: " + mTicket.getFixedPrice());
             mTicketPriceTextView.setText(NumberFormat.getCurrencyInstance().format(mTicket.getFixedPrice()));
 
             if (mTicket.getCar() != null) {

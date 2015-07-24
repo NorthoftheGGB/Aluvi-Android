@@ -1,7 +1,5 @@
 package com.aluvi.android.model.realm;
 
-import android.util.Log;
-
 import com.aluvi.android.api.tickets.model.RiderData;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.model.local.TicketLocation;
@@ -110,9 +108,7 @@ public class Ticket extends RealmObject {
                 .toDateTimeAtStartOfDay()
                 .toDate());
 
-        Log.e("Aluvi", "Fixed price: " + data.getFixedPrice());
         ticket.setFixedPrice(data.getFixedPrice());
-        Log.e("Aluvi", "Update; Fixed price: " + ticket.getFixedPrice());
 
         // handle member classes
         if (data.car != null) {

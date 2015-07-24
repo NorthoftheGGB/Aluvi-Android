@@ -2,6 +2,7 @@ package com.aluvi.android.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
 import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
@@ -56,6 +57,7 @@ public class UserStateManager {
         }
     }
 
+    @Nullable
     public String getApiToken() {
         return apiToken;
     }

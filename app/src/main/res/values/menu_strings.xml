@@ -6,7 +6,7 @@
     <string name="action_cancel_schedule_ride">Cancel</string>
     <string name="action_rider_ticket">Rider Ticket</string>
     <string name="action_driver_ticket">Driver Ticket</string>
-    <string name="action_debug_users_log_in">Log In</string>
-    <string name="action_debug_users_log_out">Log Out</string>
+    <string name="action_log_in">Log In</string>
+    <string name="action_log_out">Log Out</string>
     <string name="action_home">Home</string>
 </resources>
