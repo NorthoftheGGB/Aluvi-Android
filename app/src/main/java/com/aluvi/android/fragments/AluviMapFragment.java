@@ -154,6 +154,8 @@ public class AluviMapFragment extends BaseButterFragment {
                 .endGroup()
                 .findFirst(); // Show tickets for today and beyond
 
+        onCommuteCancelled(); // Reset UI to original state
+
         if (currentTicket != null) {
             switch (currentTicket.getState()) {
                 case Ticket.StateRequested:

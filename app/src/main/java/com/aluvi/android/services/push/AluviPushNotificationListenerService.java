@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 
 import com.aluvi.android.R;
@@ -44,29 +45,12 @@ public class AluviPushNotificationListenerService extends com.google.android.gms
 
     private final int NOTIFICATION_ID = 2412;
 
-    public static class PushNotificationEvent {
-        private String pushType, pushData;
+    private Handler mMainThreadHandler;
 
-        public PushNotificationEvent(String pushType, String pushData) {
-            this.pushType = pushType;
-            this.pushData = pushData;
-        }
-
-        public String getPushType() {
-            return pushType;
-        }
-
-        public void setPushType(String pushType) {
-            this.pushType = pushType;
-        }
-
-        public String getPushData() {
-            return pushData;
-        }
-
-        public void setPushData(String pushData) {
-            this.pushData = pushData;
-        }
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mMainThreadHandler = new Handler();
     }
 
     /**
@@ -78,15 +62,17 @@ public class AluviPushNotificationListenerService extends com.google.android.gms
      */
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String type = data.getString("type");
-        String message = "";
-        if (type.equals(TRIP_STATE_GENERIC)) {
-            message = data.getString("message");
-        } else {
-            message = getString(getNotificationMessageForType(type));
-        }
+        final String type = data.getString("type");
+        final String message = type.equals(TRIP_STATE_GENERIC) ? data.getString("message")
+                : getString(getNotificationMessageForType(type));
 
-        EventBus.getDefault().post(new PushNotificationEvent(type, message));
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                EventBus.getDefault().post(new PushNotificationEvent(type, message));
+            }
+        });
+
         sendNotification(message);
     }
 
@@ -129,5 +115,30 @@ public class AluviPushNotificationListenerService extends com.google.android.gms
         }
 
         return -1;
+    }
+
+    public static class PushNotificationEvent {
+        private String pushType, pushData;
+
+        public PushNotificationEvent(String pushType, String pushData) {
+            this.pushType = pushType;
+            this.pushData = pushData;
+        }
+
+        public String getPushType() {
+            return pushType;
+        }
+
+        public void setPushType(String pushType) {
+            this.pushType = pushType;
+        }
+
+        public String getPushData() {
+            return pushData;
+        }
+
+        public void setPushData(String pushData) {
+            this.pushData = pushData;
+        }
     }
 }
