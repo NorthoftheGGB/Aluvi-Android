@@ -59,7 +59,6 @@ public class GeoCodingAutoCompleteTextView extends AppCompatAutoCompleteTextView
 
         final String enteredLocation = text.toString();
         if (enteredLocation.length() > MIN_SEARCH_LENGTH) {
-
             List<Address> cachedAddresses = mGeoCodeCache.get(enteredLocation);
             if (cachedAddresses != null) {
                 onAddressesFetched(cachedAddresses);
@@ -68,13 +67,13 @@ public class GeoCodingAutoCompleteTextView extends AppCompatAutoCompleteTextView
                 if (mLocationUpdateListener != null)
                     mLocationUpdateListener.onGeoCodeStarted();
 
-                GeocoderUtils.getAddressesForName(enteredLocation, 3, getContext(), new AsyncCallback<List<Address>>() {
+                GeocoderUtils.getAddressesForName(enteredLocation, new AsyncCallback<List<Address>>() {
                     @Override
                     public void onOperationCompleted(List<Address> result) {
-                        onAddressesFetched(result);
-
                         if (mGeoCodeCache != null)
                             mGeoCodeCache.put(enteredLocation, result);
+
+                        onAddressesFetched(result);
                     }
                 });
             }

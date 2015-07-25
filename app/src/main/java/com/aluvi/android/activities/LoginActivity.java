@@ -1,8 +1,8 @@
 package com.aluvi.android.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,7 +16,7 @@ import butterknife.OnClick;
 /**
  * Created by usama on 7/24/15.
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.login_edit_text_username) EditText mUsernameEditText;
     @Bind(R.id.log_in_edit_text_password) EditText mPasswordEditText;
 

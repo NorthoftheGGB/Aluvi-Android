@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.AuthFailEvent;
+import com.aluvi.android.managers.UserStateManager;
 
 import de.greenrobot.event.EventBus;
 
@@ -31,6 +32,7 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
 
     @SuppressWarnings("unused")
     public void onEvent(AuthFailEvent event) {
+        UserStateManager.getInstance().logout(null);
         new MaterialDialog.Builder(this)
                 .title(R.string.auth_error)
                 .content(R.string.sign_back_in)

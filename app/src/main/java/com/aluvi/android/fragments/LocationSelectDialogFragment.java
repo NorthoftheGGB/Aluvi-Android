@@ -187,35 +187,34 @@ public class LocationSelectDialogFragment extends DialogFragment {
         Log.d(TAG, "Looking for address for custom marker location");
 
         onLocationSearchStarted();
-        GeocoderUtils.getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), 1,
-                getActivity(), new AsyncCallback<List<Address>>() {
-                    @Override
-                    public void onOperationCompleted(List<Address> result) {
-                        Log.d(TAG, "Found addresses for custom marker location");
+        GeocoderUtils.getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), new AsyncCallback<List<Address>>() {
+            @Override
+            public void onOperationCompleted(List<Address> result) {
+                Log.d(TAG, "Found addresses for custom marker location");
 
-                        if (result != null && result.size() > 0) {
-                            Address address = result.get(0);
+                if (result != null && result.size() > 0) {
+                    Address address = result.get(0);
 
-                            float[] distanceArr = new float[3];
-                            Location.distanceBetween(address.getLatitude(), address.getLongitude(), latLng.getLatitude(), latLng.getLongitude(), distanceArr);
-                            float distance = distanceArr[0];
+                    float[] distanceArr = new float[3];
+                    Location.distanceBetween(address.getLatitude(), address.getLongitude(), latLng.getLatitude(), latLng.getLongitude(), distanceArr);
+                    float distance = distanceArr[0];
 
-                            if (distance > 10) // Store the address only if its less than 10 meters away from the placed pin
-                            {
-                                Log.d(TAG, "Custom location is far away from fetched address");
-                                address.setLocality(null);
-                            }
-
-                            TicketLocation parsedAddress = new TicketLocation(address);
-                            addMarkerForAddress(parsedAddress);
-                            mLocationSearchAutoCompleteTextView.updateAddresses(result);
-                            if (address != null && mLocationSearchAutoCompleteTextView != null)
-                                mLocationSearchAutoCompleteTextView.setText(GeocoderUtils.getFormattedAddress(address));
-
-                            mCurrentlySelectedLocation = parsedAddress;
-                        }
+                    if (distance > 10) // Store the address only if its less than 10 meters away from the placed pin
+                    {
+                        Log.d(TAG, "Custom location is far away from fetched address");
+                        address.setLocality(null);
                     }
-                });
+
+                    TicketLocation parsedAddress = new TicketLocation(address);
+                    addMarkerForAddress(parsedAddress);
+                    mLocationSearchAutoCompleteTextView.updateAddresses(result);
+                    if (address != null && mLocationSearchAutoCompleteTextView != null)
+                        mLocationSearchAutoCompleteTextView.setText(GeocoderUtils.getFormattedAddress(address));
+
+                    mCurrentlySelectedLocation = parsedAddress;
+                }
+            }
+        });
     }
 
     private void onLocationSearchStarted() {
