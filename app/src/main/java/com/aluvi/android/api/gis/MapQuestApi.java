@@ -1,6 +1,7 @@
 package com.aluvi.android.api.gis;
 
 import com.aluvi.android.api.AluviApi;
+import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
 import com.aluvi.android.api.request.GetRequestBuilder;
 import com.android.volley.Request;
@@ -21,7 +22,7 @@ public class MapQuestApi {
         void onFailure(int statusCode);
     }
 
-    private static final String MAPQUEST_BASE_URL = "http://open.mapquestapi.com/",
+    public static final String MAPQUEST_BASE_URL = "http://open.mapquestapi.com/",
             MAP_QUEST_API_KEY = "Fmjtd|luur2guan0,b5=o5-9azxgz",
             DIRECTIONS_ENDPOINT = "directions/v2/route";
 

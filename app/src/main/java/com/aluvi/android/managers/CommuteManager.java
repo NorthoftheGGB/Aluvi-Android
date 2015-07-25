@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.gis.MapQuestApi;
-import com.aluvi.android.api.gis.RouteData;
+import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
@@ -13,7 +13,7 @@ import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
-import com.aluvi.android.helpers.GeocoderUtils;
+import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.local.TicketStateTransition;
@@ -77,10 +77,10 @@ public class CommuteManager {
     }
 
     private void load() {
-        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
 
         String homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         String workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
@@ -131,10 +131,10 @@ public class CommuteManager {
 
     public void clear() {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
         editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
         editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
@@ -156,10 +156,10 @@ public class CommuteManager {
     public boolean routeIsSet() {
 
         boolean locationsIncorrect =
-                homeLocation.getLatitude() == GeocoderUtils.INVALID_LOCATION ||
-                        homeLocation.getLongitude() == GeocoderUtils.INVALID_LOCATION ||
-                        workLocation.getLatitude() == GeocoderUtils.INVALID_LOCATION ||
-                        workLocation.getLongitude() == GeocoderUtils.INVALID_LOCATION;
+                homeLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
+                        homeLocation.getLongitude() == GeocodingApi.INVALID_LOCATION ||
+                        workLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
+                        workLocation.getLongitude() == GeocodingApi.INVALID_LOCATION;
 
         boolean timesIncorrect = pickupTimeHour == -1 || pickupTimeMinute == -1 ||
                 returnTimeHour == -1 || returnTimeMinute == -1;

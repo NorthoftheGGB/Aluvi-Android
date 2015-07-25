@@ -4,7 +4,7 @@ import android.location.Address;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.aluvi.android.helpers.GeocoderUtils;
+import com.aluvi.android.api.gis.GeocodingApi;
 
 /**
  * Created by matthewxi on 7/16/15.
@@ -24,7 +24,7 @@ public class TicketLocation implements Parcelable
     public TicketLocation(Address address)
     {
         this((float) address.getLatitude(), (float) address.getLongitude(),
-                GeocoderUtils.getFormattedAddress(address));
+                GeocodingApi.getFormattedAddress(address));
     }
 
     public TicketLocation(Parcel source)

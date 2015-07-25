@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
-import com.aluvi.android.api.gis.RouteData;
+import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;

@@ -8,8 +8,7 @@ import android.util.Log;
 import android.widget.Filter;
 import android.widget.TextView;
 
-import com.aluvi.android.helpers.AsyncCallback;
-import com.aluvi.android.helpers.GeocoderUtils;
+import com.aluvi.android.api.gis.GeocodingApi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,13 +66,18 @@ public class GeoCodingAutoCompleteTextView extends AppCompatAutoCompleteTextView
                 if (mLocationUpdateListener != null)
                     mLocationUpdateListener.onGeoCodeStarted();
 
-                GeocoderUtils.getAddressesForName(enteredLocation, new AsyncCallback<List<Address>>() {
+                GeocodingApi.getAddressesForName(enteredLocation, new GeocodingApi.GeocodingApiCallback() {
                     @Override
-                    public void onOperationCompleted(List<Address> result) {
+                    public void onAddressesFound(List<Address> data) {
                         if (mGeoCodeCache != null)
-                            mGeoCodeCache.put(enteredLocation, result);
+                            mGeoCodeCache.put(enteredLocation, data);
 
-                        onAddressesFetched(result);
+                        onAddressesFetched(data);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode) {
+                        Log.e(TAG, "Error fetching geocode data. Status code: " + statusCode);
                     }
                 });
             }
@@ -124,13 +128,13 @@ public class GeoCodingAutoCompleteTextView extends AppCompatAutoCompleteTextView
         @Override
         protected void initView(ViewHolder holder, int position) {
             TextView addressTextView = (TextView) holder.getView(android.R.id.text1);
-            addressTextView.setText(GeocoderUtils.getFormattedAddress(getItem(position)));
+            addressTextView.setText(GeocodingApi.getFormattedAddress(getItem(position)));
         }
 
         private final NoFilter<Address> NO_FILTER = new NoFilter<Address>() {
             @Override
             public CharSequence convertToString(Address resultValue) {
-                return GeocoderUtils.getFormattedAddress(resultValue);
+                return GeocodingApi.getFormattedAddress(resultValue);
             }
         };
 
