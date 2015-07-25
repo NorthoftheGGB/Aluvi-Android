@@ -5,6 +5,8 @@ import android.app.Application;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.location.DriverLocationManager;
+import com.aluvi.android.managers.location.RiderLocationManager;
 import com.splunk.mint.Mint;
 
 /**
@@ -22,6 +24,8 @@ public class AluviApplication extends Application {
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
         CommuteManager.initialize(this);
+        DriverLocationManager.initialize(this);
+        RiderLocationManager.initialize(this);
     }
 
     @Override

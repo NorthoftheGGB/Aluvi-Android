@@ -33,10 +33,10 @@ public class AluviApi {
     public static final String API_ROUTE = "rides/route";
 
     // geo API
-    public static final String API_GEO_DRIVER_PATH = "geo/drivers/:objectId";
-    public static final String API_GEO_DRIVERS = "geo/drivers";
-    public static final String API_GEO_RIDER_PATH = "geo/rider";
-    public static final String API_GEO_RIDERS = "geo/riders";
+    public static final String API_GET_DRIVER_LOCATION = "geo/driver/";
+    public static final String API_UPDATE_DRIVER_LOCATION = "geo/driver";
+    public static final String API_GET_RIDER_LOCATION = "geo/rider/";
+    public static final String API_UPDATE_RIDER_LOCATION = "geo/rider";
 
     // devices API - RESTfl
     public static final String API_DEVICES = "devices/";

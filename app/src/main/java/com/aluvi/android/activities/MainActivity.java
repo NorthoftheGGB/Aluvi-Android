@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
+import com.aluvi.android.managers.location.DriverLocationManager;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
