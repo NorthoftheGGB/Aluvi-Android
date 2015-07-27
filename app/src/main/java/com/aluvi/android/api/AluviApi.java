@@ -12,7 +12,7 @@ import com.spothero.volley.JacksonRequest;
  */
 public class AluviApi {
     //        public static final String API_BASE_URL = "http://52.25.169.216:3000/api/"; // AWS, single worker
-    public static final String API_BASE_URL = "http://52.26.200.141:3000/api/"; // Testing server
+    public static final String API_BASE_URL = "http://52.24.74.155:3000/api/"; // Testing server
 
     public static final String API_POST_REQUEST_COMMUTER_TICKETS = "rides/commute";
     public static final String API_POST_RIDE_REQUEST = "rides/request";
