@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequestListener;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +77,7 @@ public class GeocodingApi {
                 new JacksonRequestListener<GeocodeData>() {
                     @Override
                     public void onResponse(GeocodeData response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
                             List<Address> out = new ArrayList<>();
                             GeocodeData.GeocodedLocation[] locations = response.getLocations();
                             if (locations != null) {
@@ -99,7 +100,7 @@ public class GeocodingApi {
                 });
 
         geoCodeRequest.setShouldCache(true);
-        geoCodeRequest.addAcceptedStatusCodes(new int[]{200, 400});
+        geoCodeRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         mRequestQueue.add(geoCodeRequest);
     }
 
@@ -130,9 +131,12 @@ public class GeocodingApi {
         StringBuilder out = new StringBuilder();
         int addressLines = Math.min(2, address.getMaxAddressLineIndex());
         for (int i = 0; i < addressLines; i++) {
-            out.append(address.getAddressLine(i));
-            if (i + 1 < addressLines)
-                out.append(", ");
+            String line = address.getAddressLine(i);
+            if (line != null && !"".equals(line)) {
+                out.append(address.getAddressLine(i));
+                if (i + 1 < addressLines)
+                    out.append(", ");
+            }
         }
 
         return out.toString();

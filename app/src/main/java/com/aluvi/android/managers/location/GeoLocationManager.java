@@ -11,7 +11,8 @@ import de.greenrobot.event.EventBus;
 
 /**
  * Created by usama on 7/25/15.
- * Package private on purpose - clients should not be have access to this class.
+ * Package private on purpose - clients should not be have access to this class because
+ * they should only be allowed to access subclasses of this class via singletons.
  */
 abstract class GeoLocationManager {
 

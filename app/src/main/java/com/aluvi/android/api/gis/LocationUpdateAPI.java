@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import java.net.HttpURLConnection;
+
 /**
  * Created by usama on 7/25/15.
  */
@@ -45,7 +47,7 @@ public class LocationUpdateAPI {
                     @Override
                     public void onAuthenticatedResponse(Object response, int statusCode, VolleyError error) {
                         if (listener != null) {
-                            if (statusCode == 200) {
+                            if (statusCode == HttpURLConnection.HTTP_OK) {
                                 listener.onLocationUpdated(newLocation);
                             } else {
                                 listener.onFailure(statusCode);
@@ -59,7 +61,7 @@ public class LocationUpdateAPI {
                     }
                 });
 
-        locationRequest.addAcceptedStatusCodes(new int[]{200, 400});
+        locationRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(locationRequest);
     }
 
@@ -79,7 +81,7 @@ public class LocationUpdateAPI {
                     @Override
                     public void onAuthenticatedResponse(LocationUpdateResponse response, int statusCode, VolleyError error) {
                         if (listener != null) {
-                            if (statusCode == 200) {
+                            if (statusCode == HttpURLConnection.HTTP_OK) {
                                 listener.onLocationFetched(response);
                             } else {
                                 listener.onFailure(statusCode);
@@ -94,7 +96,7 @@ public class LocationUpdateAPI {
                 }
         );
 
-        locationRequest.addAcceptedStatusCodes(new int[]{200, 400});
+        locationRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(locationRequest);
     }
 

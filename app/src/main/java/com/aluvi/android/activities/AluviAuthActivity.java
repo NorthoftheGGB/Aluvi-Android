@@ -32,7 +32,6 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
 
     @SuppressWarnings("unused")
     public void onEvent(AuthFailEvent event) {
-        UserStateManager.getInstance().logout(null);
         new MaterialDialog.Builder(this)
                 .title(R.string.auth_error)
                 .content(R.string.sign_back_in)
@@ -49,6 +48,7 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
     }
 
     protected void logOut() {
+        UserStateManager.getInstance().logout(null);
         Intent logInIntent = new Intent(this, LoginActivity.class);
         logInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(logInIntent);

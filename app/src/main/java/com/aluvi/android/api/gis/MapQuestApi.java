@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.spothero.volley.JacksonRequestListener;
 
+import java.net.HttpURLConnection;
+
 /**
  * Created by usama on 7/21/15.
  */
@@ -39,7 +41,7 @@ public class MapQuestApi {
                 new JacksonRequestListener<RouteData>() {
                     @Override
                     public void onResponse(RouteData response, int statusCode, VolleyError error) {
-                        if (statusCode == 200)
+                        if (statusCode == HttpURLConnection.HTTP_OK)
                             callback.onRouteFound(response);
                         else
                             callback.onFailure(statusCode);
@@ -51,7 +53,7 @@ public class MapQuestApi {
                     }
                 });
 
-        routeRequest.addAcceptedStatusCodes(new int[]{200, 400});
+        routeRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(routeRequest);
     }
 }

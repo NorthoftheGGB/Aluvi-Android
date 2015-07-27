@@ -43,8 +43,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ticket_info_image_view_driver_profile"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/ticket_info_text_view_car_name"
@@ -52,8 +52,9 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_toEndOf="@+id/ticket_info_text_view_car_license_number"
         android:layout_toRightOf="@+id/ticket_info_text_view_car_license_number"
-        app:border_color="#FF000000"
-        app:border_width="2dp"/>
+        app:border_color="@color/ticketInfoProfileOutlineColor"
+        app:border_width="2dp"
+        android:src="@mipmap/test_profile_pic"/>
 
     <TextView
         android:id="@+id/ticket_info_text_view_driver_name"

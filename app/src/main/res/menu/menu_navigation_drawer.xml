@@ -6,7 +6,7 @@
             android:title="@string/action_home"/>
 
         <item
-            android:id="@+id/action_log_in_toggle"
+            android:id="@+id/action_log_out"
             android:title="@string/action_log_out">
         </item>
     </group>

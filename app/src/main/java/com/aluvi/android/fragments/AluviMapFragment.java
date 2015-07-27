@@ -2,7 +2,6 @@ package com.aluvi.android.fragments;
 
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -33,6 +32,7 @@ import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class AluviMapFragment extends BaseButterFragment {
     private final String TAG = "AluviMapFragment",
             MAP_STATE_KEY = "map_fragment_main";
 
-    private boolean mIsCommutePending;
+    private String mCurrentTicketState;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -133,20 +133,20 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void onCommuteRequested() {
-        mIsCommutePending = true;
         mCommutePendingTextView.setVisibility(View.VISIBLE);
-        getActivity().supportInvalidateOptionsMenu();
     }
 
     public void onCommuteCancelled() {
-        mIsCommutePending = false;
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
-        getActivity().supportInvalidateOptionsMenu();
     }
 
     private void onTicketsRefreshed() {
-        Ticket currentTicket = AluviRealm.getDefaultRealm()
+        Date currentTicketDate = AluviRealm.getDefaultRealm()
                 .where(Ticket.class)
+                .minimumDate("rideDate");
+
+        Ticket currentTicket = AluviRealm.getDefaultRealm().where(Ticket.class)
+                .equalTo("rideDate", currentTicketDate)
                 .beginGroup()
                 .equalTo("state", Ticket.StateRequested)
                 .or()
@@ -169,6 +169,8 @@ public class AluviMapFragment extends BaseButterFragment {
                     break;
             }
 
+            mCurrentTicketState = currentTicket.getState();
+            getActivity().supportInvalidateOptionsMenu();
             plotTicketRoute(currentTicket);
         }
     }
@@ -201,7 +203,7 @@ public class AluviMapFragment extends BaseButterFragment {
             @Override
             public void success(RouteData result) {
                 if (result != null && mMapView != null) {
-                    PathOverlay overlay = new PathOverlay(Color.GREEN, 6);
+                    PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
 
                     LatLng[] coordinates = result.getCoordinates();
                     if (coordinates != null)
@@ -301,13 +303,19 @@ public class AluviMapFragment extends BaseButterFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mIsCommutePending)
-            menu.findItem(R.id.action_schedule_ride)
-                    .setEnabled(false)
-                    .setTitle(R.string.action_commute_pending);
+        if (mCurrentTicketState != null) {
+            if (mCurrentTicketState.equals(Ticket.StateRequested) || mCurrentTicketState.equals(Ticket.StateScheduled)) {
+                menu.findItem(R.id.action_cancel_pending_ride).setVisible(true);
 
-        menu.findItem(R.id.action_cancel_pending_ride)
-                .setVisible(mIsCommutePending);
+                if (mCurrentTicketState.equals(Ticket.StateRequested))
+                    menu.findItem(R.id.action_schedule_ride)
+                            .setVisible(true)
+                            .setEnabled(false)
+                            .setTitle(R.string.action_commute_pending);
+                else
+                    menu.findItem(R.id.action_schedule_ride).setVisible(false);
+            }
+        }
     }
 
     @Override

@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/rider_information_image_view_profile"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="@dimen/small_profile_picture_width"
+        android:layout_height="@dimen/small_profile_picture_height"
         android:layout_alignParentTop="true"
-        />
+        android:src="@mipmap/test_profile_pic"
+        app:border_color="@color/black"
+        app:border_width="2dp"/>
 
-    <TextView
-        android:id="@+id/rider_information_text_view_name"
-        android:layout_width="wrap_content"
+    <!-- Wrap in a linear layout b/c of gravity issues on Samsung Galaxy -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignEnd="@+id/rider_information_image_view_profile"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/rider_information_image_view_profile"
         android:layout_alignRight="@+id/rider_information_image_view_profile"
-        android:layout_alignEnd="@+id/rider_information_image_view_profile"
-        android:gravity="center_horizontal"/>
+        android:layout_below="@+id/rider_information_image_view_profile"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/rider_information_text_view_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
 </RelativeLayout>

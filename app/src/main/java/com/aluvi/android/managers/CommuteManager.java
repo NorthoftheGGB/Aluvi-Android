@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.aluvi.android.api.ApiCallback;
+import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.api.gis.MapQuestApi;
 import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
@@ -13,7 +14,6 @@ import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
-import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.local.TicketStateTransition;
@@ -48,7 +48,7 @@ public class CommuteManager {
         void failure(String message);
     }
 
-
+    public final static int INVALID_TIME = -1;
     private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
 
@@ -88,11 +88,11 @@ public class CommuteManager {
         homeLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
         workLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
 
-        pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
-        returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
+        pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, INVALID_TIME);
+        returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, INVALID_TIME);
 
-        pickupTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, -1);
-        returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
+        pickupTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, INVALID_TIME);
+        returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
 
         driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
     }
@@ -137,10 +137,10 @@ public class CommuteManager {
         editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
         editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, -1);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, INVALID_TIME);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, INVALID_TIME);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, INVALID_TIME);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
         editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
         editor.commit();
         load(); // Reset by pulling default values from shared prefs
@@ -161,8 +161,8 @@ public class CommuteManager {
                         workLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
                         workLocation.getLongitude() == GeocodingApi.INVALID_LOCATION;
 
-        boolean timesIncorrect = pickupTimeHour == -1 || pickupTimeMinute == -1 ||
-                returnTimeHour == -1 || returnTimeMinute == -1;
+        boolean timesIncorrect = pickupTimeHour == INVALID_TIME || pickupTimeMinute == INVALID_TIME ||
+                returnTimeHour == INVALID_TIME || returnTimeMinute == INVALID_TIME;
 
         return !locationsIncorrect && !timesIncorrect;
     }

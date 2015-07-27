@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
-import com.aluvi.android.managers.location.DriverLocationManager;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
@@ -50,8 +49,8 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
                     case R.id.action_drawer_home:
                         onHomeClicked();
                         break;
-                    case R.id.action_log_in_toggle:
-                        onLoginToggleClicked();
+                    case R.id.action_log_out:
+                        logOut();
                         break;
                 }
 
