@@ -7,8 +7,9 @@
         android:title="@string/action_schedule_ride"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/action_cancel_pending_ride"
+        android:id="@+id/action_cancel"
         android:orderInCategory="100"
         android:title="@string/action_cancel_schedule_ride"
+        android:visible="false"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aluvi.android.R;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.UserStateManager;
 
 import butterknife.Bind;
@@ -36,15 +38,22 @@ public class LoginActivity extends AppCompatActivity {
         String username = mUsernameEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
 
+        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this);
         if (!"".equals(username) && !"".equals(password)) {
             UserStateManager.getInstance().login(username, password, new UserStateManager.Callback() {
                 @Override
                 public void success() {
+                    if(progressDialog != null)
+                        progressDialog.cancel();
+
                     onLoggedIn();
                 }
 
                 @Override
                 public void failure(String message) {
+                    if(progressDialog != null)
+                        progressDialog.cancel();
+
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             });
