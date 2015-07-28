@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
+    sothree:umanoFadeColor="@android:color/transparent"
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="68dp"
     sothree:umanoShadowHeight="0dp"
@@ -52,5 +53,5 @@
     <FrameLayout
         android:id="@+id/map_sliding_panel_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -89,5 +89,8 @@
             </intent-filter>
         </service>
         <service android:name=".services.LocationTrackingService"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="531b451b5ea5c0dc8f72ba102e736a6a2edb31c0" />
     </application>
 </manifest>

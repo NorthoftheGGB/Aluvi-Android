@@ -20,6 +20,7 @@ import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
+import com.aluvi.android.helpers.views.ViewUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
@@ -30,6 +31,7 @@ import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -47,6 +49,7 @@ public class AluviMapFragment extends BaseButterFragment {
         void onScheduleRideRequested();
     }
 
+    @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
     @Bind(R.id.mapview) MapView mMapView;
     @Bind(R.id.map_text_view_commute_pending) TextView mCommutePendingTextView;
 
@@ -231,11 +234,30 @@ public class AluviMapFragment extends BaseButterFragment {
         Log.e("Aluvi", "Map update: " + ticket.getFixedPrice());
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
+
+        onSlidingPanelEnabled();
     }
 
     public void enableDriverOverlay(Ticket ticket) {
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
+
+        onSlidingPanelEnabled();
+    }
+
+    private void onSlidingPanelEnabled() {
+        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        ViewUtils.registerOnLayoutCallback(mSlidingLayout, new ViewUtils.OnLayoutListener() {
+            @Override
+            public void onDimensReady(int width, int height) {
+                final float rootHeight = mSlidingLayout.getRootView().getHeight();
+                final float anchorY = mSlidingLayout.getPanelHeight() / rootHeight;
+//                mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+//                mSlidingLayout.setAnchorPoint(anchorY);
+
+                mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            }
+        });
     }
 
     /**

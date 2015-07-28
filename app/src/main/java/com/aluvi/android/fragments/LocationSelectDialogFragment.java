@@ -19,7 +19,7 @@ import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.GeocodingAutoCompleteBinder;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
-import com.aluvi.android.helpers.views.ViewHelpers;
+import com.aluvi.android.helpers.views.ViewUtils;
 import com.aluvi.android.model.local.TicketLocation;
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -144,7 +144,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
         mLocationSearchAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                ViewHelpers.hideKeyboardFragment(getActivity(), rootView); // Can't hide using the parent activity because of focus issues
+                ViewUtils.hideKeyboardFragment(getActivity(), rootView); // Can't hide using the parent activity because of focus issues
 
                 Address clickedAddress = mGeocodingAutoCompleteBinder.getAdapter().getItem(position);
                 TicketLocation parsedAddress = new TicketLocation(clickedAddress);

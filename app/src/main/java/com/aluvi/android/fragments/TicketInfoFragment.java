@@ -84,13 +84,12 @@ public class TicketInfoFragment extends BaseButterFragment {
     }
 
     private void addRider(Rider rider) {
-        View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, null);
+        View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, mRiderProfilePictureContainer);
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
 
 //        Picasso.with(getActivity()).load(rider.getSmallImageUrl())
 //                .fit().centerCrop().into(riderProfileImageView);
         riderNameTextView.setText(rider.getFirstName());
-        mRiderProfilePictureContainer.addView(riderInfoView);
     }
 }
