@@ -53,4 +53,10 @@
     <string name="please_fill_fields">Please fill out all the fields</string>
     <string name="auth_error">Authentication Error</string>
     <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
+
+    <string name="contact_driver">Contact Driver</string>
+    <string-array name="contact_options">
+        <item>Call</item>
+        <item>Text</item>
+    </string-array>
 </resources>

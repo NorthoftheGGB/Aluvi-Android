@@ -6,11 +6,9 @@ import com.aluvi.android.model.local.TicketLocation;
 
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -91,6 +89,7 @@ public class Ticket extends RealmObject {
     }
 
     public static void updateTicketWithTicketData(Ticket ticket, TicketData data, Realm realm) {
+        ticket.setId(data.getTicketId());
         ticket.setState(data.getState());
 
         ticket.setOriginLatitude(data.getOriginLatitude());
@@ -110,7 +109,6 @@ public class Ticket extends RealmObject {
 
         ticket.setFixedPrice(data.getFixedPrice());
 
-        // handle member classes
         if (data.car != null) {
             Car car = ticket.getCar() == null ? realm.createObject(Car.class) : ticket.getCar();
             Car.updateCarWithCarData(car, data.car);
@@ -123,29 +121,17 @@ public class Ticket extends RealmObject {
             ticket.setDriver(driver);
         }
 
-        // update riders
-        List<Integer> riderIds = new ArrayList<Integer>();
         if (data.getRiders() != null) {
-            for (RiderData r : data.getRiders()) {
-                Rider rider = ticket.getRiders().where().equalTo("id", r.getId()).findFirst();
-                if (rider == null) {
-                    rider = realm.createObject(Rider.class);
-                }
-                Rider.updateWithRiderData(rider, r);
+            // Clear out any saved riders - faster and simpler than figuring out which ones to update
+            RealmList<Rider> riders = ticket.getRiders();
+            for (Rider rider : riders) {
+                rider.removeFromRealm();
+            }
+
+            for (RiderData apiRider : data.getRiders()) {
+                Rider rider = realm.createObject(Rider.class);
                 ticket.getRiders().add(rider);
-                riderIds.add(rider.getId());
-            }
-
-            // remove riders if changed
-            RealmList<Rider> removeRiders = new RealmList<Rider>();
-            for (Rider rider : ticket.getRiders()) {
-                if (!riderIds.contains(rider.getId())) {
-                    removeRiders.add(rider);
-                }
-            }
-
-            for (Rider rider : removeRiders) {
-                ticket.getRiders().remove(rider);
+                Rider.updateWithRiderData(rider, apiRider);
             }
         }
     }

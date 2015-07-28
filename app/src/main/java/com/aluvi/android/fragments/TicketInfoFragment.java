@@ -1,15 +1,20 @@
 package com.aluvi.android.fragments;
 
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.model.realm.Rider;
@@ -18,9 +23,14 @@ import com.aluvi.android.model.realm.Ticket;
 import java.text.NumberFormat;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import io.realm.RealmList;
 
 public class TicketInfoFragment extends BaseButterFragment {
+
+    public interface OnTicketInfoLayoutListener {
+        void onTicketInfoUIMeasured(int headerHeight, int panelHeight);
+    }
 
     @Bind(R.id.ticket_info_text_view_price_info) TextView mTicketPriceTextView;
     @Bind(R.id.ticket_info_text_view_car_name) TextView mCarNameTextView;
@@ -31,6 +41,7 @@ public class TicketInfoFragment extends BaseButterFragment {
 
     private final static String TICKET_ID_KEY = "ticketId";
     private Ticket mTicket;
+    private OnTicketInfoLayoutListener mListener;
 
     public static TicketInfoFragment newInstance(Ticket ticket) {
         Bundle bundle = new Bundle();
@@ -42,6 +53,17 @@ public class TicketInfoFragment extends BaseButterFragment {
     }
 
     public TicketInfoFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (getParentFragment() != null) {
+            mListener = (OnTicketInfoLayoutListener) getParentFragment();
+        } else {
+            mListener = (OnTicketInfoLayoutListener) activity;
+        }
     }
 
     @Override
@@ -66,12 +88,19 @@ public class TicketInfoFragment extends BaseButterFragment {
 
             if (mTicket.getDriver() != null) {
                 mDriverNameTextView.setText(mTicket.getDriver().getFirstName());
-//                Picasso.with(getActivity()).load(mTicket.getDriver()
-//                        .getSmallImageUrl()).fit().centerCrop().into(mDriverProfileImageView);
             }
 
             initRidersUI();
         }
+
+        getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                if (mListener != null)
+                    mListener.onTicketInfoUIMeasured(mTicketPriceTextView.getHeight(), getView().getHeight());
+            }
+        });
     }
 
     private void initRidersUI() {
@@ -87,9 +116,47 @@ public class TicketInfoFragment extends BaseButterFragment {
         View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, mRiderProfilePictureContainer);
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
-
-//        Picasso.with(getActivity()).load(rider.getSmallImageUrl())
-//                .fit().centerCrop().into(riderProfileImageView);
         riderNameTextView.setText(rider.getFirstName());
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.ticket_info_image_view_driver_profile)
+    public void onDriveProfilePictureClicked() {
+        final int CALL_POS = 0, TEXT_POS = 1;
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.contact_driver)
+                .items(R.array.contact_options)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                        switch (i) {
+                            case CALL_POS:
+                                callDriver(getDriverPhoneNumber());
+                                break;
+                            case TEXT_POS:
+                                textDriver(getDriverPhoneNumber());
+                                break;
+                        }
+                    }
+                })
+                .show();
+    }
+
+    private void textDriver(String phoneNumber) {
+        Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+        smsIntent.setType("vnd.android-dir/mms-sms");
+        smsIntent.putExtra("address", phoneNumber);
+        startActivity(smsIntent);
+    }
+
+    private void callDriver(String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
+        startActivity(intent);
+    }
+
+    @Nullable
+    private String getDriverPhoneNumber() {
+        return mTicket.getDriver() != null ? mTicket.getDriver().getPhone() : null;
     }
 }

@@ -8,7 +8,7 @@
     android:gravity="bottom"
     sothree:umanoFadeColor="@android:color/transparent"
     sothree:umanoOverlay="true"
-    sothree:umanoPanelHeight="68dp"
+    sothree:umanoPanelHeight="@dimen/sliding_panel_header_height"
     sothree:umanoShadowHeight="0dp"
     tools:context="com.aluvi.android.fragments.AluviMapFragment">
 
@@ -50,8 +50,20 @@
             android:visibility="gone"/>
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/map_sliding_panel_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--<View-->
+            <!--android:id="@+id/toolbar_place_holder_sliding_panel"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="?attr/actionBarSize"/>-->
+
+        <FrameLayout
+            android:id="@+id/map_sliding_panel_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"/>
+    </LinearLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -312,7 +312,7 @@ public class CommuteManager {
 
                     for (TicketData ticket : tickets) {
                         Ticket savedTicket = realm.where(Ticket.class)
-                                .equalTo("id", ticket.getRideId())
+                                .equalTo("id", ticket.getTicketId())
                                 .findFirst();
 
                         // If the ticket doesn't exist (because the device's memory was cleared, tickets created on another device, etc)
@@ -349,16 +349,6 @@ public class CommuteManager {
                     realm.commitTransaction();
 
                     // TODO and check for any tickets in Realm that are no longer relevant
-                    /*
-                    realm.beginTransaction();
-                    RealmResults<Ticket> result =  realm.where(Ticket.class).lessThan("lastUpdated", lastUpdated).findAll();
-                    for(int i=0; i<result.size(); i++)
-                        Ticket t = result.get(i);
-                        ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
-                        t.removeFromRealm();
-                    }
-                    realm.commitTransaction();
-                    */
                 }
 
                 if (callback != null)

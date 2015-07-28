@@ -1,19 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                tools:context="com.aluvi.android.fragments.TicketInfoFragment">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    tools:context="com.aluvi.android.fragments.TicketInfoFragment">
 
     <TextView
         android:id="@+id/ticket_info_text_view_price_info"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/sliding_panel_header_height"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="@color/ticketInfoPriceBackground"
+        android:gravity="center_vertical"
         android:paddingBottom="5dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
@@ -29,63 +31,78 @@
         android:layout_alignStart="@+id/ticket_info_text_view_price_info"
         android:layout_below="@+id/ticket_info_text_view_price_info"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_toLeftOf="@+id/ticket_info_image_view_driver_profile"
+        android:layout_toStartOf="@+id/ticket_info_image_view_driver_profile"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <TextView
         android:id="@+id/ticket_info_text_view_car_license_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ticket_info_text_view_car_name"
         android:layout_alignLeft="@+id/ticket_info_text_view_car_name"
+        android:layout_alignRight="@+id/ticket_info_text_view_car_name"
         android:layout_alignStart="@+id/ticket_info_text_view_car_name"
         android:layout_below="@+id/ticket_info_text_view_car_name"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ticket_info_image_view_driver_profile"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/ticket_info_text_view_car_name"
+        android:layout_width="@dimen/large_profile_picture_width"
+        android:layout_height="@dimen/large_profile_picture_height"
+        android:layout_alignEnd="@+id/driver_divider"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/driver_divider"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:src="@mipmap/test_profile_pic"
+        app:border_color="@color/ticketInfoProfileOutlineColor"
+        app:border_width="2dp"/>
+
+    <View
+        android:id="@+id/driver_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@id/ticket_info_image_view_driver_profile"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_toEndOf="@+id/ticket_info_text_view_car_license_number"
-        android:layout_toRightOf="@+id/ticket_info_text_view_car_license_number"
-        app:border_color="@color/ticketInfoProfileOutlineColor"
-        app:border_width="2dp"
-        android:src="@mipmap/test_profile_pic"/>
+        android:layout_marginTop="10dp"
+        android:background="#99888888">
+    </View>
 
     <TextView
         android:id="@+id/ticket_info_text_view_driver_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ticket_info_text_view_car_license_number"
         android:layout_alignLeft="@+id/ticket_info_text_view_car_license_number"
+        android:layout_alignRight="@+id/ticket_info_text_view_car_license_number"
         android:layout_alignStart="@+id/ticket_info_text_view_car_license_number"
         android:layout_below="@+id/ticket_info_text_view_car_license_number"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"/>
 
     <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/horizontalScrollView"
-        android:layout_alignLeft="@+id/ticket_info_text_view_driver_name"
-        android:layout_alignStart="@+id/ticket_info_text_view_driver_name"
-        android:layout_below="@+id/ticket_info_image_view_driver_profile"
-        android:layout_alignRight="@+id/ticket_info_image_view_driver_profile"
         android:layout_alignEnd="@+id/ticket_info_image_view_driver_profile"
-        android:layout_marginTop="20dp">
+        android:layout_alignLeft="@+id/ticket_info_text_view_driver_name"
+        android:layout_alignRight="@+id/ticket_info_image_view_driver_profile"
+        android:layout_alignStart="@+id/ticket_info_text_view_driver_name"
+        android:layout_below="@+id/driver_divider"
+        android:layout_marginTop="5dp">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:id="@+id/ticket_info_container_rider_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/ticket_info_image_view_driver_profile"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_below="@+id/ticket_info_image_view_driver_profile"
             android:layout_marginTop="20dp"
-            android:id="@+id/ticket_info_container_rider_info">
+            android:orientation="horizontal">
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -13,7 +13,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class TicketData {
     @JsonProperty("ride_id")
-    private int rideId;
+    private int ticketId;
 
     @JsonProperty("trip_id")
     private int tripId;
@@ -85,12 +85,12 @@ public class TicketData {
     @JsonProperty("riders")
     private ArrayList<RiderData> riders;
 
-    public int getRideId() {
-        return rideId;
+    public int getTicketId() {
+        return ticketId;
     }
 
-    public void setRideId(int rideId) {
-        this.rideId = rideId;
+    public void setTicketId(int ticketId) {
+        this.ticketId = ticketId;
     }
 
     public int getTripId() {

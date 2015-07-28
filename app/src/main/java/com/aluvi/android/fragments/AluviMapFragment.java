@@ -2,6 +2,7 @@ package com.aluvi.android.fragments;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -19,8 +20,8 @@ import com.aluvi.android.R;
 import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
-import com.aluvi.android.helpers.views.ViewUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
@@ -34,6 +35,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -44,7 +46,7 @@ import io.realm.RealmResults;
 /**
  * Created by usama on 7/13/15.
  */
-public class AluviMapFragment extends BaseButterFragment {
+public class AluviMapFragment extends BaseButterFragment implements TicketInfoFragment.OnTicketInfoLayoutListener {
     public interface OnMapEventListener {
         void onScheduleRideRequested();
     }
@@ -52,6 +54,7 @@ public class AluviMapFragment extends BaseButterFragment {
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
     @Bind(R.id.mapview) MapView mMapView;
     @Bind(R.id.map_text_view_commute_pending) TextView mCommutePendingTextView;
+    @Bind(R.id.map_sliding_panel_container) View mSlidingPanelContainer;
 
     private final String TAG = "AluviMapFragment",
             MAP_STATE_KEY = "map_fragment_main";
@@ -114,9 +117,13 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void refreshTickets() {
+        final Dialog refreshProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
         CommuteManager.getInstance().refreshTickets(new CommuteManager.DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {
+                if (refreshProgressDialog != null)
+                    refreshProgressDialog.cancel();
+
                 onTicketsRefreshed();
             }
 
@@ -130,6 +137,9 @@ public class AluviMapFragment extends BaseButterFragment {
                             }
                         })
                         .show();
+
+                if (refreshProgressDialog != null)
+                    refreshProgressDialog.cancel();
             }
         });
     }
@@ -138,20 +148,23 @@ public class AluviMapFragment extends BaseButterFragment {
         mCommutePendingTextView.setVisibility(View.VISIBLE);
     }
 
-    public void onCommuteCancelled() {
+    public void resetUI() {
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
+        mSlidingPanelContainer.setVisibility(View.INVISIBLE);
     }
 
     private void onTicketsRefreshed() {
-        onCommuteCancelled(); // Reset UI to original state
+        resetUI(); // Reset UI to original state
 
-        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm().where(Ticket.class)
+        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
+                .where(Ticket.class)
+                .greaterThan("pickupTime", new Date())
                 .beginGroup()
                 .equalTo("state", Ticket.StateRequested)
                 .or()
                 .equalTo("state", Ticket.StateScheduled)
                 .endGroup()
-                .findAllSorted("rideDate");
+                .findAllSorted("pickupTime");
 
         if (tickets != null && tickets.size() > 0) {
             Ticket currentTicket = tickets.get(0);
@@ -231,31 +244,48 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void enableRiderOverlay(Ticket ticket) {
-        Log.e("Aluvi", "Map update: " + ticket.getFixedPrice());
+        mSlidingPanelContainer.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
-
-        onSlidingPanelEnabled();
     }
 
     public void enableDriverOverlay(Ticket ticket) {
+        mSlidingPanelContainer.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
-
-        onSlidingPanelEnabled();
     }
 
-    private void onSlidingPanelEnabled() {
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-        ViewUtils.registerOnLayoutCallback(mSlidingLayout, new ViewUtils.OnLayoutListener() {
-            @Override
-            public void onDimensReady(int width, int height) {
-                final float rootHeight = mSlidingLayout.getRootView().getHeight();
-                final float anchorY = mSlidingLayout.getPanelHeight() / rootHeight;
-//                mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-//                mSlidingLayout.setAnchorPoint(anchorY);
+    @Override
+    public void onTicketInfoUIMeasured(int headerHeight, int panelHeight) {
+        float rootHeight = getView().getHeight();
+        float anchor = panelHeight / rootHeight;
 
-                mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        mSlidingLayout.setAnchorPoint(anchor);
+        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+        mSlidingLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+
+            }
+
+            @Override
+            public void onPanelCollapsed(View view) {
+
+            }
+
+            @Override
+            public void onPanelExpanded(View view) {
+
+            }
+
+            @Override
+            public void onPanelAnchored(View view) {
+
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
+
             }
         });
     }
