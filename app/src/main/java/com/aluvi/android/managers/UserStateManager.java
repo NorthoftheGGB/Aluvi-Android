@@ -2,6 +2,7 @@ package com.aluvi.android.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
 import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
@@ -56,6 +57,7 @@ public class UserStateManager {
         }
     }
 
+    @Nullable
     public String getApiToken() {
         return apiToken;
     }
@@ -116,14 +118,16 @@ public class UserStateManager {
         DevicesApi.patchDevice(deviceData, new DevicesApi.Callback() {
             @Override
             public void success() {
-                callback.success();
+                if (callback != null)
+                    callback.success();
             }
 
             @Override
             public void failure(int statusCode) {
                 // we will probably translate the status code to a message here
                 // using a strings file.
-                callback.failure("Logout Failed for some reason");
+                if (callback != null)
+                    callback.failure("Logout Failed for some reason");
             }
         });
 

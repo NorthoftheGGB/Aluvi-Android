@@ -28,6 +28,9 @@ public class CarData {
     @JsonProperty("car_photo")
     private String carPhoto;
 
+    public CarData() {
+    }
+
     public Integer getId() {
         return id;
     }
@@ -37,7 +40,7 @@ public class CarData {
     }
 
     public String getState() {
-        return state;
+        return state == null ? "" : state;
     }
 
     public void setState(String state) {
@@ -45,7 +48,7 @@ public class CarData {
     }
 
     public String getMake() {
-        return make;
+        return make == null ? "" : make;
     }
 
     public void setMake(String make) {

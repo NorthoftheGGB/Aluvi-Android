@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.aluvi.android.api.ApiCallback;
+import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.api.gis.MapQuestApi;
-import com.aluvi.android.api.gis.RouteData;
+import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
@@ -13,7 +14,6 @@ import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
-import com.aluvi.android.helpers.GeocoderUtils;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.local.TicketStateTransition;
@@ -48,7 +48,7 @@ public class CommuteManager {
         void failure(String message);
     }
 
-
+    public final static int INVALID_TIME = -1;
     private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
 
@@ -77,10 +77,10 @@ public class CommuteManager {
     }
 
     private void load() {
-        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
 
         String homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         String workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
@@ -88,11 +88,11 @@ public class CommuteManager {
         homeLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
         workLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
 
-        pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
-        returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
+        pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, INVALID_TIME);
+        returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, INVALID_TIME);
 
-        pickupTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, -1);
-        returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
+        pickupTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, INVALID_TIME);
+        returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
 
         driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
     }
@@ -131,16 +131,16 @@ public class CommuteManager {
 
     public void clear() {
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocoderUtils.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
         editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
         editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, -1);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, -1);
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, -1);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, -1);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, INVALID_TIME);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, INVALID_TIME);
+        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, INVALID_TIME);
+        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
         editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
         editor.commit();
         load(); // Reset by pulling default values from shared prefs
@@ -156,13 +156,13 @@ public class CommuteManager {
     public boolean routeIsSet() {
 
         boolean locationsIncorrect =
-                homeLocation.getLatitude() == GeocoderUtils.INVALID_LOCATION ||
-                        homeLocation.getLongitude() == GeocoderUtils.INVALID_LOCATION ||
-                        workLocation.getLatitude() == GeocoderUtils.INVALID_LOCATION ||
-                        workLocation.getLongitude() == GeocoderUtils.INVALID_LOCATION;
+                homeLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
+                        homeLocation.getLongitude() == GeocodingApi.INVALID_LOCATION ||
+                        workLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
+                        workLocation.getLongitude() == GeocodingApi.INVALID_LOCATION;
 
-        boolean timesIncorrect = pickupTimeHour == -1 || pickupTimeMinute == -1 ||
-                returnTimeHour == -1 || returnTimeMinute == -1;
+        boolean timesIncorrect = pickupTimeHour == INVALID_TIME || pickupTimeMinute == INVALID_TIME ||
+                returnTimeHour == INVALID_TIME || returnTimeMinute == INVALID_TIME;
 
         return !locationsIncorrect && !timesIncorrect;
     }
@@ -260,7 +260,7 @@ public class CommuteManager {
                 // Driver Api - cancel driving
             } else {
 
-                if ( ! ticket.getState().equals(Ticket.StateScheduled)) {
+                if (!ticket.getState().equals(Ticket.StateScheduled)) {
                     // ride has not been scheduled yet
                     TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
                         @Override
@@ -302,7 +302,7 @@ public class CommuteManager {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
             public void success(List<TicketData> tickets) {
-                List<TicketStateTransition> ticketStateTransitions = new ArrayList < TicketStateTransition > ();
+                List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
 
                 if (tickets != null) {
                     Realm realm = AluviRealm.getDefaultRealm();
@@ -336,7 +336,7 @@ public class CommuteManager {
                             ticketStateTransitions.add(stateTransition);
 
                         } else {
-                            if(! savedTicket.getState().equals(ticket.getState()) ){
+                            if (!savedTicket.getState().equals(ticket.getState())) {
                                 TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), savedTicket.getState(), ticket.getState());
                                 ticketStateTransitions.add(stateTransition);
                             }

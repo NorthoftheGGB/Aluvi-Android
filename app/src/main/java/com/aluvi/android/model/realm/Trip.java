@@ -11,7 +11,6 @@ import io.realm.RealmObject;
  * Created by matthewxi on 7/17/15.
  */
 public class Trip extends RealmObject {
-
     private int tripId;
 
     private RealmList<Ticket> tickets;

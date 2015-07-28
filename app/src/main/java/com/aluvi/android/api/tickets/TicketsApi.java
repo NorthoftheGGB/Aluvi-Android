@@ -6,6 +6,7 @@ import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
+import com.aluvi.android.api.request.AluviRequestListener;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -14,8 +15,8 @@ import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequest;
-import com.spothero.volley.JacksonRequestListener;
 
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +40,9 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.API_POST_REQUEST_COMMUTER_TICKETS,
                 requestParams,
-                new JacksonRequestListener<CommuterTicketsResponse>() {
-
+                new AluviRequestListener<CommuterTicketsResponse>() {
                     @Override
-                    public void onResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
+                    public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
                         if (response != null) {
                             callback.success(response);
                         } else {
@@ -57,7 +57,7 @@ public class TicketsApi {
                 }
         );
 
-        request.addAcceptedStatusCodes(new int[]{201, 403});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_FORBIDDEN});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
@@ -70,10 +70,10 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.API_POST_REQUEST_CANCELLED,
                 params,
-                new JacksonRequestListener<Void>() {
+                new AluviRequestListener<Void>() {
                     @Override
-                    public void onResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
@@ -86,7 +86,8 @@ public class TicketsApi {
                     }
                 }
         );
-        request.addAcceptedStatusCodes(new int[]{200, 403});
+
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
         AluviApi.getInstance().getRequestQueue().add(request);
 
     }
@@ -99,10 +100,10 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.CANCEL_RIDER_SCHEDULED_TICKET,
                 params,
-                new JacksonRequestListener<Void>() {
+                new AluviRequestListener<Void>() {
                     @Override
-                    public void onResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
@@ -116,19 +117,18 @@ public class TicketsApi {
                 }
         );
 
-        request.addAcceptedStatusCodes(new int[]{200, 403});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
         AluviApi.getInstance().getRequestQueue().add(request);
-
     }
 
     public static void cancelTrip(Trip trip, final ApiCallback callback) {
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.DELETE,
                 AluviApi.API_DELETE_TRIP + trip.getTripId(),
-                new JacksonRequestListener<Void>() {
+                new AluviRequestListener<Void>() {
                     @Override
-                    public void onResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
@@ -142,7 +142,7 @@ public class TicketsApi {
                 }
         );
 
-        request.addAcceptedStatusCodes(new int[]{200, 400});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(request);
 
     }
@@ -151,13 +151,13 @@ public class TicketsApi {
         AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.GET,
                 AluviApi.API_GET_ACTIVE_TICKETS,
-                new JacksonRequestListener<List<TicketData>>() {
+                new AluviRequestListener<List<TicketData>>() {
                     @Override
-                    public void onResponse(List<TicketData> response, int statusCode, VolleyError error) {
-                        if (statusCode == 200 && response != null) {
+                    public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK && response != null) {
                             callback.success(response);
                         } else {
-                            if(error != null) {
+                            if (error != null) {
                                 Log.d("JSON", "Did not work " + error.getMessage());
                             }
                             callback.failure(statusCode);
@@ -171,7 +171,7 @@ public class TicketsApi {
                 }
         );
 
-        request.addAcceptedStatusCodes(new int[]{200, 400});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 }

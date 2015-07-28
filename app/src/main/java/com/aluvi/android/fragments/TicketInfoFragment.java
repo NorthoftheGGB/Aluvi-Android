@@ -14,7 +14,6 @@ import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
-import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 
@@ -38,7 +37,6 @@ public class TicketInfoFragment extends BaseButterFragment {
         bundle.putInt(TICKET_ID_KEY, ticket.getId());
 
         TicketInfoFragment infoFragment = new TicketInfoFragment();
-        infoFragment.mTicket = ticket;
         infoFragment.setArguments(bundle);
         return infoFragment;
     }
@@ -50,7 +48,7 @@ public class TicketInfoFragment extends BaseButterFragment {
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (getArguments() != null) {
             int ticketId = getArguments().getInt(TICKET_ID_KEY);
-            mTicket = AluviRealm.getDefaultRealm().where(Ticket.class).equalTo("rideId", ticketId).findFirst();
+            mTicket = AluviRealm.getDefaultRealm().where(Ticket.class).equalTo("id", ticketId).findFirst();
         }
 
         return inflater.inflate(R.layout.fragment_ticket_info, container, false);
@@ -68,8 +66,8 @@ public class TicketInfoFragment extends BaseButterFragment {
 
             if (mTicket.getDriver() != null) {
                 mDriverNameTextView.setText(mTicket.getDriver().getFirstName());
-                Picasso.with(getActivity()).load(mTicket.getDriver()
-                        .getSmallImageUrl()).fit().centerCrop().into(mDriverProfileImageView);
+//                Picasso.with(getActivity()).load(mTicket.getDriver()
+//                        .getSmallImageUrl()).fit().centerCrop().into(mDriverProfileImageView);
             }
 
             initRidersUI();
@@ -77,12 +75,10 @@ public class TicketInfoFragment extends BaseButterFragment {
     }
 
     private void initRidersUI() {
-        if (mTicket.getState().equals(Ticket.StateScheduled)) {
-            RealmList<Rider> riders = mTicket.getRiders();
-            if (riders != null) {
-                for (Rider rider : riders) {
-                    addRider(rider);
-                }
+        RealmList<Rider> riders = mTicket.getRiders();
+        if (riders != null) {
+            for (Rider rider : riders) {
+                addRider(rider);
             }
         }
     }
@@ -92,8 +88,8 @@ public class TicketInfoFragment extends BaseButterFragment {
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
 
-        Picasso.with(getActivity()).load(rider.getSmallImageUrl())
-                .fit().centerCrop().into(riderProfileImageView);
+//        Picasso.with(getActivity()).load(rider.getSmallImageUrl())
+//                .fit().centerCrop().into(riderProfileImageView);
         riderNameTextView.setText(rider.getFirstName());
         mRiderProfilePictureContainer.addView(riderInfoView);
     }

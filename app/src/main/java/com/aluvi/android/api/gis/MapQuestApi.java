@@ -1,6 +1,7 @@
 package com.aluvi.android.api.gis;
 
 import com.aluvi.android.api.AluviApi;
+import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
 import com.aluvi.android.api.request.GetRequestBuilder;
 import com.android.volley.Request;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.spothero.volley.JacksonRequestListener;
+
+import java.net.HttpURLConnection;
 
 /**
  * Created by usama on 7/21/15.
@@ -21,7 +24,7 @@ public class MapQuestApi {
         void onFailure(int statusCode);
     }
 
-    private static final String MAPQUEST_BASE_URL = "http://open.mapquestapi.com/",
+    public static final String MAPQUEST_BASE_URL = "http://open.mapquestapi.com/",
             MAP_QUEST_API_KEY = "Fmjtd|luur2guan0,b5=o5-9azxgz",
             DIRECTIONS_ENDPOINT = "directions/v2/route";
 
@@ -38,7 +41,7 @@ public class MapQuestApi {
                 new JacksonRequestListener<RouteData>() {
                     @Override
                     public void onResponse(RouteData response, int statusCode, VolleyError error) {
-                        if (statusCode == 200)
+                        if (statusCode == HttpURLConnection.HTTP_OK)
                             callback.onRouteFound(response);
                         else
                             callback.onFailure(statusCode);
@@ -50,7 +53,7 @@ public class MapQuestApi {
                     }
                 });
 
-        routeRequest.addAcceptedStatusCodes(new int[]{200, 400});
+        routeRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(routeRequest);
     }
 }

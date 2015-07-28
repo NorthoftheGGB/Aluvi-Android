@@ -10,14 +10,14 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
-import com.aluvi.android.helpers.AsyncCallback;
+import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.helpers.EasyILatLang;
-import com.aluvi.android.helpers.GeocoderUtils;
-import com.aluvi.android.helpers.views.GeoCodingAutoCompleteTextView;
+import com.aluvi.android.helpers.views.GeocodingAutoCompleteBinder;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.helpers.views.ViewHelpers;
 import com.aluvi.android.model.local.TicketLocation;
@@ -42,7 +42,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
     }
 
     @Bind(R.id.location_select_progress_bar) ProgressBar mSearchProgressBar;
-    @Bind(R.id.location_select_auto_complete_search) GeoCodingAutoCompleteTextView mLocationSearchAutoCompleteTextView;
+    @Bind(R.id.location_select_auto_complete_search) AutoCompleteTextView mLocationSearchAutoCompleteTextView;
     @Bind(R.id.location_select_map_view) MapView mMapView;
 
     private final static String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map",
@@ -50,6 +50,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
 
     private OnLocationSelectedListener mLocationSelectedListener;
     private TicketLocation mCurrentlySelectedLocation;
+    private GeocodingAutoCompleteBinder mGeocodingAutoCompleteBinder;
 
     public static LocationSelectDialogFragment newInstance(TicketLocation currentlySelectionLocation) {
         Bundle args = new Bundle();
@@ -101,8 +102,8 @@ public class LocationSelectDialogFragment extends DialogFragment {
         MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
 
         if (mCurrentlySelectedLocation != null &&
-                mCurrentlySelectedLocation.getLatitude() != GeocoderUtils.INVALID_LOCATION &&
-                mCurrentlySelectedLocation.getLongitude() != GeocoderUtils.INVALID_LOCATION)
+                mCurrentlySelectedLocation.getLatitude() != GeocodingApi.INVALID_LOCATION &&
+                mCurrentlySelectedLocation.getLongitude() != GeocodingApi.INVALID_LOCATION)
             mMapView.setCenter(new EasyILatLang(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude()));
         else if (mMapView.getUserLocation() != null)
             mMapView.setCenter(mMapView.getUserLocation());
@@ -139,12 +140,13 @@ public class LocationSelectDialogFragment extends DialogFragment {
         if (mCurrentlySelectedLocation != null)
             mLocationSearchAutoCompleteTextView.setText(mCurrentlySelectedLocation.getPlaceName());
 
+        mGeocodingAutoCompleteBinder = new GeocodingAutoCompleteBinder(mLocationSearchAutoCompleteTextView);
         mLocationSearchAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 ViewHelpers.hideKeyboardFragment(getActivity(), rootView); // Can't hide using the parent activity because of focus issues
 
-                Address clickedAddress = mLocationSearchAutoCompleteTextView.getAutoCompleteAdapter().getItem(position);
+                Address clickedAddress = mGeocodingAutoCompleteBinder.getAdapter().getItem(position);
                 TicketLocation parsedAddress = new TicketLocation(clickedAddress);
                 addMarkerForAddress(parsedAddress);
 
@@ -153,7 +155,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
             }
         });
 
-        mLocationSearchAutoCompleteTextView.setLocationUpdateListener(new GeoCodingAutoCompleteTextView.OnGeoLocationUpdateListener() {
+        mGeocodingAutoCompleteBinder.setLocationUpdateListener(new GeocodingAutoCompleteBinder.OnGeoLocationUpdateListener() {
             @Override
             public void onGeoCodeStarted() {
                 onLocationSearchStarted();
@@ -185,37 +187,45 @@ public class LocationSelectDialogFragment extends DialogFragment {
         mMapView.addMarker(getDefaultMarker(null, null, new LatLng(latLng.getLatitude(), latLng.getLongitude())));
 
         Log.d(TAG, "Looking for address for custom marker location");
-
         onLocationSearchStarted();
-        GeocoderUtils.getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), 1,
-                getActivity(), new AsyncCallback<List<Address>>() {
+        GeocodingApi.getInstance(getActivity())
+                .getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), new GeocodingApi.GeocodingApiCallback() {
                     @Override
-                    public void onOperationCompleted(List<Address> result) {
-                        Log.d(TAG, "Found addresses for custom marker location");
+                    public void onAddressesFound(String query, List<Address> data) {
+                        onAddressesFoundForLocation(latLng.getLatitude(), latLng.getLongitude(), data);
+                    }
 
-                        if (result != null && result.size() > 0) {
-                            Address address = result.get(0);
-
-                            float[] distanceArr = new float[3];
-                            Location.distanceBetween(address.getLatitude(), address.getLongitude(), latLng.getLatitude(), latLng.getLongitude(), distanceArr);
-                            float distance = distanceArr[0];
-
-                            if (distance > 10) // Store the address only if its less than 10 meters away from the placed pin
-                            {
-                                Log.d(TAG, "Custom location is far away from fetched address");
-                                address.setLocality(null);
-                            }
-
-                            TicketLocation parsedAddress = new TicketLocation(address);
-                            addMarkerForAddress(parsedAddress);
-                            mLocationSearchAutoCompleteTextView.updateAddresses(result);
-                            if (address != null && mLocationSearchAutoCompleteTextView != null)
-                                mLocationSearchAutoCompleteTextView.setText(GeocoderUtils.getFormattedAddress(address));
-
-                            mCurrentlySelectedLocation = parsedAddress;
-                        }
+                    @Override
+                    public void onFailure(int statusCode) {
+                        Log.e(TAG, "Error geocoding latlng. Status code: " + statusCode);
                     }
                 });
+    }
+
+    private void onAddressesFoundForLocation(double lat, double lng, List<Address> data) {
+        Log.d(TAG, "Found addresses for custom marker location");
+
+        if (data != null && data.size() > 0) {
+            Address address = data.get(0);
+
+            float[] distanceArr = new float[3];
+            Location.distanceBetween(address.getLatitude(), address.getLongitude(), lat, lng, distanceArr);
+            float distance = distanceArr[0];
+
+            if (distance > 10) // Store the address only if its less than 10 meters away from the placed pin
+            {
+                Log.d(TAG, "Custom location is far away from fetched address");
+                address.setLocality(null);
+            }
+
+            TicketLocation parsedAddress = new TicketLocation(address);
+            addMarkerForAddress(parsedAddress);
+            mGeocodingAutoCompleteBinder.updateAddresses(data);
+            if (address != null && mLocationSearchAutoCompleteTextView != null)
+                mLocationSearchAutoCompleteTextView.setText(GeocodingApi.getFormattedAddress(address));
+
+            mCurrentlySelectedLocation = parsedAddress;
+        }
     }
 
     private void onLocationSearchStarted() {

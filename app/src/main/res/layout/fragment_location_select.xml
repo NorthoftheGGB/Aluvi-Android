@@ -25,7 +25,7 @@
         android:paddingRight="10dp"
         android:paddingTop="5dp">
 
-        <com.aluvi.android.helpers.views.GeoCodingAutoCompleteTextView
+        <AutoCompleteTextView
             android:id="@+id/location_select_auto_complete_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

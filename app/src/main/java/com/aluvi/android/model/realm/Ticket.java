@@ -2,7 +2,6 @@ package com.aluvi.android.model.realm;
 
 import com.aluvi.android.api.tickets.model.RiderData;
 import com.aluvi.android.api.tickets.model.TicketData;
-import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.model.local.TicketLocation;
 
 import org.joda.time.LocalDate;
@@ -109,32 +108,24 @@ public class Ticket extends RealmObject {
                 .toDateTimeAtStartOfDay()
                 .toDate());
 
+        ticket.setFixedPrice(data.getFixedPrice());
+
         // handle member classes
-        if(data.car != null) {
-            if (ticket.getCar() == null) {
-                Car car = realm.createObject(Car.class);
-                Car.updateCarWithCardata(car, data.car);
-                ticket.setCar(car);
-            } else {
-                Car car = ticket.getCar();
-                Car.updateCarWithCardata(car, data.car);
-            }
+        if (data.car != null) {
+            Car car = ticket.getCar() == null ? realm.createObject(Car.class) : ticket.getCar();
+            Car.updateCarWithCarData(car, data.car);
+            ticket.setCar(car);
         }
 
-        if(data.driver != null) {
-            if (ticket.getDriver() == null) {
-                Driver driver = realm.createObject(Driver.class);
-                Driver.updateWithDriverData(driver, data.driver);
-                ticket.setDriver(driver);
-            } else {
-                Driver driver = ticket.getDriver();
-                Driver.updateWithDriverData(driver, data.driver);
-            }
+        if (data.driver != null) {
+            Driver driver = ticket.getDriver() == null ? realm.createObject(Driver.class) : ticket.getDriver();
+            Driver.updateWithDriverData(driver, data.driver);
+            ticket.setDriver(driver);
         }
 
         // update riders
         List<Integer> riderIds = new ArrayList<Integer>();
-        if(data.getRiders() != null) {
+        if (data.getRiders() != null) {
             for (RiderData r : data.getRiders()) {
                 Rider rider = ticket.getRiders().where().equalTo("id", r.getId()).findFirst();
                 if (rider == null) {
@@ -152,14 +143,12 @@ public class Ticket extends RealmObject {
                     removeRiders.add(rider);
                 }
             }
+
             for (Rider rider : removeRiders) {
                 ticket.getRiders().remove(rider);
             }
-
         }
-
     }
-
 
 
     public static String routeDescription(Ticket ticket) {
@@ -172,7 +161,7 @@ public class Ticket extends RealmObject {
 
     public void setId(int id) {
         this.id = id;
-		}
+    }
 
     public static TicketBounds getBounds(Ticket ticket) {
         double northLat = ticket.getDestinationLatitude() > ticket.getOriginLatitude() ?

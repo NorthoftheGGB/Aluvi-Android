@@ -1,34 +1,22 @@
 package com.aluvi.android.activities;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
-import com.aluvi.android.helpers.views.BaseArrayAdapter;
-import com.aluvi.android.helpers.views.DialogUtils;
-import com.aluvi.android.helpers.views.ViewHolder;
-import com.aluvi.android.managers.UserStateManager;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
-public class MainActivity extends BaseToolBarActivity implements AluviMapFragment.OnMapEventListener {
+public class MainActivity extends AluviAuthActivity implements AluviMapFragment.OnMapEventListener {
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
@@ -61,11 +49,8 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
                     case R.id.action_drawer_home:
                         onHomeClicked();
                         break;
-                    case R.id.action_debug_user_log_in:
-                        debugLogInSelected();
-                        break;
-                    case R.id.action_debug_user_log_out:
-                        debugLogOutSelected();
+                    case R.id.action_log_out:
+                        logOut();
                         break;
                 }
 
@@ -76,17 +61,7 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
 
     @Override
     public void onScheduleRideRequested() {
-        if (UserStateManager.getInstance().getApiToken() != null)
-            startActivityForResult(new Intent(this, ScheduleRideActivity.class), SCHEDULE_RIDE_REQUEST_CODE);
-        else
-            Snackbar.make(mDrawerLayout.getRootView(), R.string.log_in_required, Snackbar.LENGTH_LONG)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            debugLogInSelected();
-                        }
-                    })
-                    .show();
+        startActivityForResult(new Intent(this, ScheduleRideActivity.class), SCHEDULE_RIDE_REQUEST_CODE);
     }
 
     @Override
@@ -101,6 +76,10 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
 
     public void onHomeClicked() {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, AluviMapFragment.newInstance()).commit();
+    }
+
+    public void onLoginToggleClicked() {
+        logOut();
     }
 
     public void onCommuteScheduled() {
@@ -124,105 +103,5 @@ public class MainActivity extends BaseToolBarActivity implements AluviMapFragmen
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    class DebugUser {
-        String username, password;
-
-        public DebugUser(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-    }
-
-    private void debugLogInSelected() {
-        DebugUser[] testUsers = {
-//                new DebugUser("paypal@fromthegut.org", "martian"),
-//                new DebugUser("joe@joe.com", "tiny123")
-
-                new DebugUser("test@test.com", "tiny123"),
-                new DebugUser("joe@joe.com", "tiny123")
-        };
-
-        class DebugAdapter extends BaseArrayAdapter<DebugUser> {
-            public DebugAdapter(Context context, DebugUser[] data) {
-                super(context, android.R.layout.simple_list_item_1, data);
-            }
-
-            @Override
-            protected void initView(ViewHolder holder, int position) {
-                ((TextView) holder.getView(android.R.id.text1)).setText(getItem(position).username);
-            }
-        }
-
-        final DebugAdapter adapter = new DebugAdapter(this, testUsers);
-        new MaterialDialog.Builder(this)
-                .adapter(adapter, new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        logUserIn(adapter.getItem(i));
-                        materialDialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    private void debugLogOutSelected() {
-        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this);
-        UserStateManager.getInstance().logout(new UserStateManager.Callback() {
-            @Override
-            public void success() {
-                if (progressDialog != null) {
-                    progressDialog.cancel();
-                }
-            }
-
-            @Override
-            public void failure(String message) {
-                Log.e(TAG, message);
-                if (progressDialog != null) {
-                    progressDialog.cancel();
-                }
-
-                if (mDrawerLayout != null)
-                    Snackbar.make(mDrawerLayout.getRootView(), R.string.unable_log_out, Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.retry, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    debugLogOutSelected();
-                                }
-                            }).show();
-            }
-        });
-    }
-
-    private void logUserIn(DebugUser user) {
-        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this);
-        UserStateManager.getInstance().login(user.username, user.password, new UserStateManager.Callback() {
-            @Override
-            public void success() {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                Toast.makeText(getApplicationContext(), R.string.logged_in, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void failure(String message) {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                Log.e(TAG, message);
-
-                if (mDrawerLayout != null)
-                    Snackbar.make(mDrawerLayout.getRootView(), R.string.unable_log_in, Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.retry, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    debugLogInSelected();
-                                }
-                            }).show();
-            }
-        });
     }
 }

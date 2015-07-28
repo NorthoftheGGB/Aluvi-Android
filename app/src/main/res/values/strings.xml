@@ -38,4 +38,21 @@
     <string name="retry">Retry</string>
     <string name="work">Work</string>
     <string name="home">Home</string>
+    
+    <string name="trip_fulfilled">Trip request successful</string>
+    <string name="trip_unfulfilled">Trip request unsuccessful</string>
+    <string name="fare_cancelled_by_rider">Trip cancelled by rider</string>
+    <string name="fare_cancelled_by_driver">Trip cancelled by driver</string>
+    <string name="commute_reminder">Buzz! You haven\'t scheduled a commute for tomorrow</string>
+    <string name="ride_payment_problem">Error processing your payment</string>
+    <string name="user_state_change">Your status on Aluvi has been updated</string>
+    <string name="update">Update</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+
+    <string name="all_fields_required">All Fields Required</string>
+    <string name="please_fill_fields">Please fill out all the fields</string>
+    <string name="auth_error">Authentication Error</string>
+    <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
 </resources>

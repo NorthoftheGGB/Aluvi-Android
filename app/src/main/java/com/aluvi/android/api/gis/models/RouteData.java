@@ -1,4 +1,4 @@
-package com.aluvi.android.api.gis;
+package com.aluvi.android.api.gis.models;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;

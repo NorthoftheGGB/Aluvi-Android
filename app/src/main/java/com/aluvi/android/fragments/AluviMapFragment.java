@@ -2,7 +2,6 @@ package com.aluvi.android.fragments;
 
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -15,9 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
-import com.aluvi.android.api.gis.RouteData;
-import com.aluvi.android.api.tickets.TicketsApi;
+import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
@@ -25,21 +24,24 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
+import com.aluvi.android.services.push.AluviPushNotificationListenerService;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 
-import org.joda.time.LocalDate;
-
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.List;
 
 import butterknife.Bind;
+import de.greenrobot.event.EventBus;
 import io.realm.RealmResults;
 
+/**
+ * Created by usama on 7/13/15.
+ */
 public class AluviMapFragment extends BaseButterFragment {
     public interface OnMapEventListener {
         void onScheduleRideRequested();
@@ -51,7 +53,7 @@ public class AluviMapFragment extends BaseButterFragment {
     private final String TAG = "AluviMapFragment",
             MAP_STATE_KEY = "map_fragment_main";
 
-    private boolean mIsCommutePending;
+    private String mCurrentTicketState;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -86,6 +88,26 @@ public class AluviMapFragment extends BaseButterFragment {
     public void onResume() {
         super.onResume();
         refreshTickets();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
+        EventBus.getDefault().unregister(this);
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(AluviPushNotificationListenerService.PushNotificationEvent event) {
+        refreshTickets();
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.update)
+                .content(event.getPushData())
+                .positiveText(android.R.string.ok)
+                .build()
+                .show();
     }
 
     public void refreshTickets() {
@@ -110,29 +132,26 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void onCommuteRequested() {
-        mIsCommutePending = true;
         mCommutePendingTextView.setVisibility(View.VISIBLE);
-        getActivity().supportInvalidateOptionsMenu();
     }
 
     public void onCommuteCancelled() {
-        mIsCommutePending = false;
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
-        getActivity().supportInvalidateOptionsMenu();
     }
 
     private void onTicketsRefreshed() {
-        Ticket currentTicket = AluviRealm.getDefaultRealm()
-                .where(Ticket.class)
-                .greaterThan("rideDate", new LocalDate().toDate())
+        onCommuteCancelled(); // Reset UI to original state
+
+        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm().where(Ticket.class)
                 .beginGroup()
                 .equalTo("state", Ticket.StateRequested)
                 .or()
                 .equalTo("state", Ticket.StateScheduled)
                 .endGroup()
-                .findFirst(); // Show tickets for today and beyond
+                .findAllSorted("rideDate");
 
-        if (currentTicket != null) {
+        if (tickets != null && tickets.size() > 0) {
+            Ticket currentTicket = tickets.get(0);
             switch (currentTicket.getState()) {
                 case Ticket.StateRequested:
                     onCommuteRequested();
@@ -145,8 +164,11 @@ public class AluviMapFragment extends BaseButterFragment {
                     break;
             }
 
+            mCurrentTicketState = currentTicket.getState();
             plotTicketRoute(currentTicket);
         }
+
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     private void plotTicketRoute(final Ticket ticket) {
@@ -177,7 +199,7 @@ public class AluviMapFragment extends BaseButterFragment {
             @Override
             public void success(RouteData result) {
                 if (result != null && mMapView != null) {
-                    PathOverlay overlay = new PathOverlay(Color.GREEN, 6);
+                    PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
 
                     LatLng[] coordinates = result.getCoordinates();
                     if (coordinates != null)
@@ -206,6 +228,7 @@ public class AluviMapFragment extends BaseButterFragment {
     }
 
     public void enableRiderOverlay(Ticket ticket) {
+        Log.e("Aluvi", "Map update: " + ticket.getFixedPrice());
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
     }
@@ -243,7 +266,7 @@ public class AluviMapFragment extends BaseButterFragment {
 
                             if (getActivity() != null) {
                                 Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
-                                onCommuteCancelled();
+                                onTicketsRefreshed();
                             }
                         }
 
@@ -276,13 +299,19 @@ public class AluviMapFragment extends BaseButterFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mIsCommutePending)
-            menu.findItem(R.id.action_schedule_ride)
-                    .setEnabled(false)
-                    .setTitle(R.string.action_commute_pending);
+        if (mCurrentTicketState != null) {
+            if (mCurrentTicketState.equals(Ticket.StateRequested) || mCurrentTicketState.equals(Ticket.StateScheduled)) {
+                menu.findItem(R.id.action_cancel).setVisible(true);
 
-        menu.findItem(R.id.action_cancel_pending_ride)
-                .setVisible(mIsCommutePending);
+                if (mCurrentTicketState.equals(Ticket.StateRequested))
+                    menu.findItem(R.id.action_schedule_ride)
+                            .setVisible(true)
+                            .setEnabled(false)
+                            .setTitle(R.string.action_commute_pending);
+                else
+                    menu.findItem(R.id.action_schedule_ride).setVisible(false);
+            }
+        }
     }
 
     @Override
@@ -291,17 +320,11 @@ public class AluviMapFragment extends BaseButterFragment {
             case R.id.action_schedule_ride:
                 mEventListener.onScheduleRideRequested();
                 break;
-            case R.id.action_cancel_pending_ride:
+            case R.id.action_cancel:
                 cancelTrip();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
     }
 }

@@ -2,13 +2,13 @@ package com.aluvi.android.api.devices;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
+import com.aluvi.android.api.request.AluviRequestListener;
 import com.aluvi.android.application.GlobalIdentifiers;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.spothero.volley.JacksonRequestListener;
 
 import java.util.Map;
 
@@ -42,10 +42,9 @@ public class DevicesApi {
                 Request.Method.POST,
                 AluviApi.API_DEVICES + GlobalIdentifiers.getInstance().getAndroidId(),
                 deviceData,
-                new JacksonRequestListener<DeviceData>() {
-
+                new AluviRequestListener<DeviceData>() {
                     @Override
-                    public void onResponse(DeviceData response, int statusCode, VolleyError error) {
+                    public void onAuthenticatedResponse(DeviceData response, int statusCode, VolleyError error) {
                         if (response != null) {
                             callback.success();
                         } else {

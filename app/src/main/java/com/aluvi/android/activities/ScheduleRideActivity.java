@@ -21,7 +21,7 @@ import com.rey.material.app.TimePickerDialog;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class ScheduleRideActivity extends BaseToolBarActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
+public class ScheduleRideActivity extends AluviAuthActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
 
     @Bind(R.id.schedule_ride_root_view) View mRootView;
     @Bind(R.id.schedule_ride_button_from) Button mFromButton;
@@ -96,7 +96,7 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
                     @Override
                     public void onTimeSet(int hour, int min) {
                         mStartHour = hour;
-                        mStartMin = min;
+                        mStartMin = min == CommuteManager.INVALID_TIME ? 0 : min;
                         updateStartTimeButton();
                     }
                 });
@@ -108,54 +108,65 @@ public class ScheduleRideActivity extends BaseToolBarActivity implements Locatio
             @Override
             public void onTimeSet(int hour, int min) {
                 mEndHour = hour;
-                mEndMin = min;
+                mEndMin = min == CommuteManager.INVALID_TIME ? 0 : min;
                 updateEndTimeButton();
             }
         });
     }
 
     public void updateEndTimeButton() {
-        if (mEndHour != -1 && mEndMin != -1)
+        if (mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME)
             mEndTimeButton.setText(getString(R.string.return_home) + " " + getAmPm(mEndHour, mEndMin));
     }
 
     public void updateStartTimeButton() {
-        if (mStartHour != -1 && mStartMin != -1)
+        if (mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME)
             mStartTimeButton.setText(getString(R.string.at) + " " + getAmPm(mStartHour, mStartMin));
     }
 
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked() {
-        final CommuteManager manager = CommuteManager.getInstance();
-        manager.setDriving(mDriveThereCheckbox.isChecked());
+        if (isCommuteReady()) {
+            final CommuteManager manager = CommuteManager.getInstance();
+            manager.setDriving(mDriveThereCheckbox.isChecked());
 
-        manager.setHomeLocation(mStartLocation);
-        manager.setWorkLocation(mEndLocation);
+            manager.setHomeLocation(mStartLocation);
+            manager.setWorkLocation(mEndLocation);
 
-        manager.setPickupTimeHour(mStartHour);
-        manager.setPickupTimeMinute(mStartMin);
+            manager.setPickupTimeHour(mStartHour);
+            manager.setPickupTimeMinute(mStartMin);
 
-        manager.setReturnTimeHour(mEndHour);
-        manager.setReturnTimeMinute(mEndMin);
-        manager.save(null);
+            manager.setReturnTimeHour(mEndHour);
+            manager.setReturnTimeMinute(mEndMin);
+            manager.save(null);
 
-        try {
-            manager.requestRidesForTomorrow(new CommuteManager.Callback() {
-                @Override
-                public void success() {
-                    onCommuteRequestSuccess();
-                }
+            try {
+                manager.requestRidesForTomorrow(new CommuteManager.Callback() {
+                    @Override
+                    public void success() {
+                        onCommuteRequestSuccess();
+                    }
 
-                @Override
-                public void failure(String message) {
-                    Log.e(TAG, message);
-                    onCommuteRequestFail();
-                }
-            });
-        } catch (UserRecoverableSystemError error) {
-            error.printStackTrace();
-            onCommuteRequestFail();
+                    @Override
+                    public void failure(String message) {
+                        Log.e(TAG, message);
+                        onCommuteRequestFail();
+                    }
+                });
+            } catch (UserRecoverableSystemError error) {
+                error.printStackTrace();
+                onCommuteRequestFail();
+            }
+        } else {
+            Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    private boolean isCommuteReady() {
+        return mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME
+                && mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME
+                && mStartLocation.getPlaceName() != null && !mStartLocation.getPlaceName().equals("")
+                && mEndLocation != null && !mEndLocation.equals("");
     }
 
     public void onCommuteRequestFail() {

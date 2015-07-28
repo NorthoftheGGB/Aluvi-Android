@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.aluvi.android"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.aluvi.android"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -8,7 +9,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
@@ -16,27 +16,21 @@
     <permission
         android:name="com.aluvi.android.permission.C2D_MESSAGE"
         android:protectionLevel="signature"/>
+
     <uses-permission android:name="com.aluvi.android.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
     <application
         android:name=".application.AluviApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name="com.aluvi.android.activities.MainActivity"
-            android:label="@string/title_activity_main">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="com.aluvi.android.activities.DebugActivity"
-            android:label="Aluvi Debug">
+            android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -44,9 +38,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.aluvi.android.activities.ScheduleRideActivity"
-            android:label="@string/title_activity_schedule_ride">
+            android:name=".activities.MainActivity"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".activities.DebugActivity"
+            android:label="Aluvi Debug"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.ScheduleRideActivity"
+            android:label="@string/title_activity_schedule_ride"
+            android:screenOrientation="portrait">
+        </activity>
+
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -58,23 +69,25 @@
                 <category android:name="com.aluvi.android"/>
             </intent-filter>
         </receiver>
+
         <service
-            android:name="com.aluvi.android.application.push.RegistrationIntentService"
+            android:name=".services.push.RegistrationIntentService"
             android:exported="false">
         </service>
         <service
-            android:name="com.aluvi.android.application.push.GcmListenerService"
+            android:name=".services.push.AluviPushNotificationListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
         </service>
         <service
-            android:name="com.aluvi.android.application.push.InstanceIDListenerService"
+            android:name=".services.push.InstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
             </intent-filter>
         </service>
+        <service android:name=".services.LocationTrackingService"/>
     </application>
 </manifest>

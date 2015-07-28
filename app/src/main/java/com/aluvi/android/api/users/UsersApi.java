@@ -16,36 +16,27 @@ import java.util.HashMap;
 /**
  * Created by matthewxi on 7/14/15.
  */
-public class UsersApi
-{
-    public interface Callback
-    {
+public class UsersApi {
+    public interface Callback {
         void success(String token);
 
         void failure(int statusCode);
     }
 
-    static public void login(String email, String password, final Callback callback)
-    {
+    static public void login(String email, String password, final Callback callback) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.EMAIL_KEY, email);
         params.put(AluviApiKeys.PASSWORD_KEY, password);
         AluviUnauthenticatedRequest request = new AluviUnauthenticatedRequest(
                 Request.Method.POST, AluviApi.API_LOGIN, params,
-                new JacksonRequestListener<LoginResponse>()
-                {
-
+                new JacksonRequestListener<LoginResponse>() {
                     @Override
-                    public void onResponse(LoginResponse response, int statusCode, VolleyError error)
-                    {
-                        if (statusCode == 200)
-                        {
+                    public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
+                        if (statusCode == 200) {
                             Log.d("Login Success", response.token);
                             callback.success(response.token);
-                        }
-                        else
-                        {
-                            if(error != null) {
+                        } else {
+                            if (error != null) {
                                 Log.d("JSON", "Did not work " + error.getMessage());
                             }
                             callback.failure(statusCode);
@@ -53,8 +44,7 @@ public class UsersApi
                     }
 
                     @Override
-                    public JavaType getReturnType()
-                    {
+                    public JavaType getReturnType() {
                         return SimpleType.construct(LoginResponse.class);
                     }
                 }

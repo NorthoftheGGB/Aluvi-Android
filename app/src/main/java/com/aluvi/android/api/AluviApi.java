@@ -12,7 +12,7 @@ import com.spothero.volley.JacksonRequest;
  */
 public class AluviApi {
     //        public static final String API_BASE_URL = "http://52.25.169.216:3000/api/"; // AWS, single worker
-    public static final String API_BASE_URL = "http://52.24.74.155:3000/api/"; // Testing server
+    public static final String API_BASE_URL = "http://52.24.74.155:4000/api/"; // Testing server
 
     public static final String API_POST_REQUEST_COMMUTER_TICKETS = "rides/commute";
     public static final String API_POST_RIDE_REQUEST = "rides/request";
@@ -33,10 +33,10 @@ public class AluviApi {
     public static final String API_ROUTE = "rides/route";
 
     // geo API
-    public static final String API_GEO_DRIVER_PATH = "geo/drivers/:objectId";
-    public static final String API_GEO_DRIVERS = "geo/drivers";
-    public static final String API_GEO_RIDER_PATH = "geo/rider";
-    public static final String API_GEO_RIDERS = "geo/riders";
+    public static final String API_GET_DRIVER_LOCATION = "geo/driver/";
+    public static final String API_UPDATE_DRIVER_LOCATION = "geo/driver";
+    public static final String API_GET_RIDER_LOCATION = "geo/rider/";
+    public static final String API_UPDATE_RIDER_LOCATION = "geo/rider";
 
     // devices API - RESTfl
     public static final String API_DEVICES = "devices/";
