@@ -86,8 +86,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mMapView.setUserLocationEnabled(true);
 
         if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY))
+        {
             if (mMapView.getUserLocation() != null)
                 mMapView.setCenter(new EasyILatLang(mMapView.getUserLocation()), false);
+            else // Hover over NASA if we have neither location nor saved map data
+                mMapView.setCenter(new EasyILatLang(37.420654, -122.064938), false);
+
+            mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
+        }
     }
 
     @Override

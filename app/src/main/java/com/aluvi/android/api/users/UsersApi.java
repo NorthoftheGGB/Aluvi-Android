@@ -32,9 +32,9 @@ public class UsersApi {
                 new JacksonRequestListener<LoginResponse>() {
                     @Override
                     public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
-                            Log.d("Login Success", response.token);
-                            callback.success(response.token);
+                        if (statusCode == 200 && response.getToken() != null) {
+                            Log.d("Login Success", "Received token: " + response.getToken());
+                            callback.success(response.getToken());
                         } else {
                             if (error != null) {
                                 Log.d("JSON", "Did not work " + error.getMessage());

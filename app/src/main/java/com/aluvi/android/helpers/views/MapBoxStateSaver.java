@@ -16,7 +16,7 @@ public class MapBoxStateSaver {
             MAP_PAN_LON_KEY = "map_pan_lon",
             ZOOM_KEY = "zoom";
 
-    private static final int DEFAULT_ZOOM = 17;
+    public static final int DEFAULT_ZOOM = 17;
 
     public static void saveMapState(MapView mapView, String key) {
         LatLng center = mapView.getCenter();

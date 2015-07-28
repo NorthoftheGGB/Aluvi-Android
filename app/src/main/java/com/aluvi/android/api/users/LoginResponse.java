@@ -15,4 +15,27 @@ public class LoginResponse {
     @JsonProperty("driver_state")
     public String driverState;
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getRiderState() {
+        return riderState;
+    }
+
+    public void setRiderState(String riderState) {
+        this.riderState = riderState;
+    }
+
+    public String getDriverState() {
+        return driverState;
+    }
+
+    public void setDriverState(String driverState) {
+        this.driverState = driverState;
+    }
 }

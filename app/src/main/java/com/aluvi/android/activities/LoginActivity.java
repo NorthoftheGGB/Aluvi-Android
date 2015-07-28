@@ -3,7 +3,6 @@ package com.aluvi.android.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,25 +11,27 @@ import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.UserStateManager;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * Created by usama on 7/24/15.
  */
-public class LoginActivity extends AppCompatActivity {
-    @Bind(R.id.login_edit_text_username) EditText mUsernameEditText;
+public class LoginActivity extends BaseToolBarActivity {
+    @Bind(R.id.log_in_edit_text_username) EditText mUsernameEditText;
     @Bind(R.id.log_in_edit_text_password) EditText mPasswordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if (UserStateManager.getInstance().getApiToken() != null) {
             onLoggedIn();
-        } else {
-            setContentView(R.layout.activity_login);
-            ButterKnife.bind(this);
         }
+
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_login;
     }
 
     @OnClick(R.id.login_button)
@@ -43,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
             UserStateManager.getInstance().login(username, password, new UserStateManager.Callback() {
                 @Override
                 public void success() {
-                    if(progressDialog != null)
+                    if (progressDialog != null)
                         progressDialog.cancel();
 
                     onLoggedIn();
@@ -51,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void failure(String message) {
-                    if(progressDialog != null)
+                    if (progressDialog != null)
                         progressDialog.cancel();
 
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
