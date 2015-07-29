@@ -10,54 +10,7 @@ import com.spothero.volley.JacksonRequest;
 /**
  * Created by matthewxi on 7/14/15.
  */
-public class AluviApi {
-//    public static final String API_BASE_URL = "http://52.24.74.155:4000/api/"; // Testing server
-    public static final String API_BASE_URL = "http://54.148.6.205:3000/api/"; // Nightly build server
-
-    public static final String API_POST_REQUEST_COMMUTER_TICKETS = "rides/commute";
-    public static final String API_POST_RIDE_REQUEST = "rides/request";
-    public static final String API_POST_REQUEST_CANCELLED = "rides/request/cancel";
-    public static final String API_GET_RIDES_STATE = "rides/state";
-    public static final String API_POST_DRIVER_CANCELLED = "rides/driver_cancelled";
-    public static final String CANCEL_RIDER_SCHEDULED_TICKET = "v2/rides/rider_cancelled";
-    public static final String API_POST_RIDE_PICKUP = "rides/pickup";
-    public static final String API_POST_FARE_COMPLETED = "rides/arrived";
-    public static final String API_DELETE_TRIP = "rides/trips/";
-
-    public static final String API_GET_ACTIVE_TICKETS = "v2/rides/tickets"; // this path uses v2 API
-    public static final String API_GET_ACTIVE_FARES = "rides/fares";
-
-    public static final String API_GET_PAYMENTS = "rides/payments";
-    public static final String API_GET_EARNINGS = "rides/earnings";
-
-    public static final String API_ROUTE = "rides/route";
-
-    // geo API
-    public static final String API_GET_DRIVER_LOCATION = "geo/driver/";
-    public static final String API_UPDATE_DRIVER_LOCATION = "geo/driver";
-    public static final String API_GET_RIDER_LOCATION = "geo/rider/";
-    public static final String API_UPDATE_RIDER_LOCATION = "geo/rider";
-
-    // devices API - RESTfl
-    public static final String API_DEVICES = "devices/";
-
-    // users API
-    public static final String API_USERS = "users";
-    public static final String API_LOGIN = "users/login";
-    public static final String API_FORGOT_PASSWORD = "users/forgot_password";
-    public static final String API_DRIVER_INTERESTED = "users/driver_interested";
-    public static final String API_USER_STATE = "users/state";
-    public static final String API_USER_PROFILE = "users/profile";
-    public static final String API_FILL_COMMUTER_PASS = "users/fill_commuter_pass";
-    public static final String API_CREATE_SUPPORT_REQUEST = "users/support";
-
-    // drivers
-    public static final String API_DRIVER_REGISTRATION = "drivers/driver_registration";
-    public static final String API_GET_DRIVER_FARE_PATH_PATTERN = "drivers/fares/:id";
-
-    // state
-    public static final String API_TOKEN_KEY = "API_TOKEN";
-
+public class AluviApi implements AluviApiConstants {
     //Singleton
     private static AluviApi mInstance;
 

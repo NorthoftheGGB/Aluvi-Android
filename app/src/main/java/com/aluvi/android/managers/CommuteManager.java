@@ -154,7 +154,6 @@ public class CommuteManager {
     }
 
     public boolean routeIsSet() {
-
         boolean locationsIncorrect =
                 homeLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
                         homeLocation.getLongitude() == GeocodingApi.INVALID_LOCATION ||
@@ -168,35 +167,12 @@ public class CommuteManager {
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
-        Date rideDate = new LocalDate()
-                .plus(Period.days(1))
-                .toDateTimeAtStartOfDay()
-                .toDate();
-
-        Realm realm = AluviRealm.getDefaultRealm();
-        RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
-                .greaterThan("rideDate", rideDate) // Rides that are tomorrow or later which have been created, requested, or scheduled
-                .beginGroup()
-                .equalTo("state", Ticket.StateCreated)
-                .or()
-                .equalTo("state", Ticket.StateRequested)
-                .or()
-                .equalTo("state", Ticket.StateScheduled)
-                .endGroup()
-                .findAll();
-
-        if (results.size() >= 2) {
+        Date rideDate = new LocalDate().plus(Period.days(1)).toDateTimeAtStartOfDay().toDate();
+        if (!checkExistingTickets(rideDate))
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
                     "This is a system error but can be recovered by canceling your commuter rides and requesting again");
-        } else {
-            realm.beginTransaction();
-            for (Ticket result : results) {
-                result.removeFromRealm();
-            }
-            realm.commitTransaction();
-        }
 
-        // Go ahead and create the tickets, then request with the server
+        Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
 
         final Ticket toWorkTicket = realm.createObject(Ticket.class);
@@ -249,17 +225,41 @@ public class CommuteManager {
                 });
     }
 
+    private boolean checkExistingTickets(Date startDate) {
+        Realm realm = AluviRealm.getDefaultRealm();
+        RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
+                .greaterThan("rideDate", startDate) // Rides that are tomorrow or later which have been created, requested, or scheduled
+                .beginGroup()
+                .equalTo("state", Ticket.StateCreated)
+                .or()
+                .equalTo("state", Ticket.StateRequested)
+                .or()
+                .equalTo("state", Ticket.StateScheduled)
+                .endGroup()
+                .findAll();
+
+        if (results.size() >= 2) {
+            return false;
+        } else {
+            realm.beginTransaction();
+            for (Ticket result : results) {
+                result.removeFromRealm();
+            }
+            realm.commitTransaction();
+        }
+
+        return true;
+    }
+
     public boolean isDriving() {
         return driving;
     }
 
     public void cancelTicket(final Ticket ticket, final Callback callback) {
-
         if (ticket.getId() != 0) {
             if (ticket.isDriving()) {
                 // Driver Api - cancel driving
             } else {
-
                 if (!ticket.getState().equals(Ticket.StateScheduled)) {
                     // ride has not been scheduled yet
                     TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
@@ -313,7 +313,7 @@ public class CommuteManager {
                     }
 
                     realm.commitTransaction();
-                    // TODO and check for any tickets in Realm that are no longer relevant
+                    // TODO check for any tickets in Realm that are no longer relevant
                 }
 
                 if (callback != null)
