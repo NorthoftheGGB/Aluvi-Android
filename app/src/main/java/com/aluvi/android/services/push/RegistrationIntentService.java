@@ -53,6 +53,7 @@ public class RegistrationIntentService extends IntentService {
                 String token = instanceID.getToken(senderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
                 Log.i(TAG, "GCM Registration Token: " + token);
 
+                Toast.makeText(getApplicationContext(), "Got token", Toast.LENGTH_SHORT).show();
                 sendRegistrationToServer(token);
             }
         } catch (Exception e) {
