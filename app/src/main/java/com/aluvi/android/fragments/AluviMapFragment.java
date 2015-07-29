@@ -36,7 +36,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import butterknife.Bind;
@@ -48,7 +47,7 @@ import io.realm.RealmResults;
  */
 public class AluviMapFragment extends BaseButterFragment implements TicketInfoFragment.OnTicketInfoLayoutListener {
     public interface OnMapEventListener {
-        void onScheduleRideRequested();
+        void onCommuteSchedulerRequested(Trip trip);
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
@@ -59,7 +58,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     private final String TAG = "AluviMapFragment",
             MAP_STATE_KEY = "map_fragment_main";
 
-    private String mCurrentTicketState;
+    private Ticket mCurrentTicket;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -85,8 +84,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     public void initUI() {
         mMapView.setUserLocationEnabled(true);
 
-        if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY))
-        {
+        if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY)) {
             if (mMapView.getUserLocation() != null)
                 mMapView.setCenter(new EasyILatLang(mMapView.getUserLocation()), false);
             else // Hover over NASA if we have neither location nor saved map data
@@ -157,6 +155,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     public void resetUI() {
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
+        mMapView.clear();
     }
 
     private void onTicketsRefreshed() {
@@ -173,21 +172,20 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 .findAllSorted("pickupTime");
 
         if (tickets != null && tickets.size() > 0) {
-            Ticket currentTicket = tickets.get(0);
-            switch (currentTicket.getState()) {
+            mCurrentTicket = tickets.get(0);
+            switch (mCurrentTicket.getState()) {
                 case Ticket.StateRequested:
                     onCommuteRequested();
                     break;
                 case Ticket.StateScheduled:
-                    if (currentTicket.isDriving())
-                        enableDriverOverlay(currentTicket);
+                    if (mCurrentTicket.isDriving())
+                        enableDriverOverlay(mCurrentTicket);
                     else
-                        enableRiderOverlay(currentTicket);
+                        enableRiderOverlay(mCurrentTicket);
                     break;
             }
 
-            mCurrentTicketState = currentTicket.getState();
-            plotTicketRoute(currentTicket);
+            plotTicketRoute(mCurrentTicket);
         }
 
         getActivity().supportInvalidateOptionsMenu();
@@ -296,57 +294,26 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         });
     }
 
-    /**
-     * The name of this method is somewhat misleading. Besides deleting the most recently scheduled trip, this method also gets rid
-     * of junk trip data that has persisted across scheduling failures.
-     */
-    private void cancelTrip() {
-        RealmResults<Ticket> ticketsToCancel = AluviRealm.getDefaultRealm()
-                .where(Ticket.class)
-                .equalTo("state", Ticket.StateScheduled)
-                .or()
-                .equalTo("state", Ticket.StateRequested)
-                .or()
-                .equalTo("state", Ticket.StateCreated)
-                .findAll();
+    private void cancelTrip(Trip trip) {
+        CommuteManager.getInstance().cancelTrip(trip, new CommuteManager.Callback() {
+            @Override
+            public void success() {
+                Log.d(TAG, "Successfully cancelled trips");
 
-        if (ticketsToCancel != null) {
-            HashSet<Integer> deletedTrips = new HashSet<>();
-            for (Ticket ticket : ticketsToCancel) {
-                Trip parentTrip = ticket.getTrip();
-                if (parentTrip != null && !deletedTrips.contains(parentTrip.getTripId())) {
-                    deletedTrips.add(parentTrip.getTripId());
-
-                    CommuteManager.getInstance().cancelTrip(parentTrip, new CommuteManager.Callback() {
-                        @Override
-                        public void success() {
-                            Log.d(TAG, "Successfully cancelled trips");
-
-                            if (getActivity() != null) {
-                                Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
-                                onTicketsRefreshed();
-                            }
-                        }
-
-                        @Override
-                        public void failure(String message) {
-                            Log.e(TAG, message);
-
-                            if (getActivity() != null) {
-                                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
-                                        .setAction(R.string.retry, new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                cancelTrip();
-                                            }
-                                        })
-                                        .show();
-                            }
-                        }
-                    });
+                if (getActivity() != null) {
+                    Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+                    refreshTickets();
                 }
             }
-        }
+
+            @Override
+            public void failure(String message) {
+                Log.e(TAG, message);
+
+                if (getActivity() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -357,14 +324,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mCurrentTicketState != null) {
-            if (mCurrentTicketState.equals(Ticket.StateRequested) || mCurrentTicketState.equals(Ticket.StateScheduled)) {
+        if (mCurrentTicket != null) {
+            if (mCurrentTicket.getState().equals(Ticket.StateRequested)
+                    || mCurrentTicket.getState().equals(Ticket.StateScheduled)) {
                 menu.findItem(R.id.action_cancel).setVisible(true);
 
-                if (mCurrentTicketState.equals(Ticket.StateRequested))
+                if (mCurrentTicket.getState().equals(Ticket.StateRequested))
                     menu.findItem(R.id.action_schedule_ride)
                             .setVisible(true)
-                            .setEnabled(false)
                             .setTitle(R.string.action_commute_pending);
                 else
                     menu.findItem(R.id.action_schedule_ride).setVisible(false);
@@ -376,10 +343,11 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_schedule_ride:
-                mEventListener.onScheduleRideRequested();
+                Trip currentlySelectedTrip = mCurrentTicket != null ? mCurrentTicket.getTrip() : null;
+                mEventListener.onCommuteSchedulerRequested(currentlySelectedTrip);
                 break;
             case R.id.action_cancel:
-                cancelTrip();
+                cancelTrip(mCurrentTicket.getTrip());
                 break;
         }
 

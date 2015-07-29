@@ -105,11 +105,11 @@ public class CommuteManager {
     private void store() {
         SharedPreferences.Editor editor = preferences.edit();
 
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, homeLocation.getLatitude());
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, homeLocation.getLongitude());
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, (float) homeLocation.getLatitude());
+        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, (float) homeLocation.getLongitude());
 
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, workLocation.getLatitude());
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, workLocation.getLongitude());
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, (float) workLocation.getLatitude());
+        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, (float) workLocation.getLongitude());
 
         editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, homeLocation.getPlaceName());
         editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, workLocation.getPlaceName());
@@ -242,9 +242,7 @@ public class CommuteManager {
             return false;
         } else {
             realm.beginTransaction();
-            for (Ticket result : results) {
-                result.removeFromRealm();
-            }
+            results.clear();
             realm.commitTransaction();
         }
 

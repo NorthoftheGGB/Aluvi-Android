@@ -25,10 +25,9 @@ public class Trip extends RealmObject {
         Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
 
-        if (trip.getTickets() != null)
-            for (Ticket ticket : trip.getTickets()) {
-                ticket.removeFromRealm();
-            }
+        if (trip.getTickets() != null) {
+            trip.getTickets().clear();
+        }
 
         realm.commitTransaction();
     }

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Aluvi</string>
-
+    <string name="scheduled_commute">Scheduled Commute</string>
     <string name="title_activity_main">@string/app_name</string>
 
     <!--- User Recoverable Exceptions -->
@@ -53,6 +53,7 @@
     <string name="please_fill_fields">Please fill out all the fields</string>
     <string name="auth_error">Authentication Error</string>
     <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
+    <string name="close">Close</string>
 
     <string name="contact_driver">Contact Driver</string>
     <string-array name="contact_options">

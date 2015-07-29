@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
+import com.aluvi.android.model.realm.Trip;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
@@ -60,8 +61,11 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
     }
 
     @Override
-    public void onScheduleRideRequested() {
-        startActivityForResult(new Intent(this, ScheduleRideActivity.class), SCHEDULE_RIDE_REQUEST_CODE);
+    public void onCommuteSchedulerRequested(Trip commuteToView) {
+        Intent scheduleRideIntent = new Intent(this, ScheduleRideActivity.class);
+        if (commuteToView != null)
+            scheduleRideIntent.putExtra(ScheduleRideActivity.COMMUTE_TO_VIEW_ID_KEY, commuteToView.getTripId());
+        startActivityForResult(scheduleRideIntent, SCHEDULE_RIDE_REQUEST_CODE);
     }
 
     @Override
