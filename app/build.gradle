@@ -22,7 +22,7 @@ android {
     }
     defaultConfig {
         applicationId "com.aluvi.android"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -84,19 +84,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:7.5.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
         transitive = true;
-    }
-}
-
-gradle.taskGraph.beforeTask { Task task ->
-    if(task.name ==~ /process.*GoogleServices/) {
-        android.applicationVariants.all { variant ->
-            if(task.name ==~ /(?i)process${variant.name}GoogleServices/){
-                copy {
-                    from "/src/${variant.flavorName}"
-                    into '../mobile'
-                    include 'google-services.json'
-                }
-            }
-        }
     }
 }
