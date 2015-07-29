@@ -308,46 +308,11 @@ public class CommuteManager {
                     Realm realm = AluviRealm.getDefaultRealm();
                     realm.beginTransaction();
 
-                    Date lastUpdated = new Date();
-
                     for (TicketData ticket : tickets) {
-                        Ticket savedTicket = realm.where(Ticket.class)
-                                .equalTo("id", ticket.getTicketId())
-                                .findFirst();
-
-                        // If the ticket doesn't exist (because the device's memory was cleared, tickets created on another device, etc)
-                        // then create it and copy over data from the TicketData object
-                        if (savedTicket == null) {
-                            savedTicket = realm.createObject(Ticket.class);
-
-                            Trip tripForTicket = realm.where(Trip.class).equalTo("tripId", ticket.getTripId())
-                                    .findFirst();
-                            if (tripForTicket != null) {
-                                tripForTicket.getTickets().add(savedTicket);
-                            } else {
-                                Trip trip = realm.createObject(Trip.class);
-                                trip.setTripId(ticket.getTripId());
-                                trip.getTickets().add(savedTicket);
-                            }
-
-                            savedTicket.setTrip(tripForTicket);
-
-                            TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), null, ticket.getState());
-                            ticketStateTransitions.add(stateTransition);
-
-                        } else {
-                            if (!savedTicket.getState().equals(ticket.getState())) {
-                                TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), savedTicket.getState(), ticket.getState());
-                                ticketStateTransitions.add(stateTransition);
-                            }
-                        }
-
-                        Ticket.updateTicketWithTicketData(savedTicket, ticket, realm);
-                        savedTicket.setLastUpdated(lastUpdated);
+                        updateTicketForData(ticket, ticketStateTransitions);
                     }
 
                     realm.commitTransaction();
-
                     // TODO and check for any tickets in Realm that are no longer relevant
                 }
 
@@ -360,6 +325,44 @@ public class CommuteManager {
                 callback.failure("Unable to refresh tickets");
             }
         });
+    }
+
+    private void updateTicketForData(TicketData ticket, List<TicketStateTransition> ticketStateTransitions) {
+        Realm realm = AluviRealm.getDefaultRealm();
+        Ticket savedTicket = realm.where(Ticket.class)
+                .equalTo("id", ticket.getTicketId())
+                .findFirst();
+
+        // If the ticket doesn't exist (because the device's memory was cleared, tickets created on another device, etc)
+        // then create it and copy over data from the TicketData object
+        if (savedTicket == null) {
+            savedTicket = realm.createObject(Ticket.class);
+
+            Trip tripForTicket = realm.where(Trip.class).equalTo("tripId", ticket.getTripId())
+                    .findFirst();
+            if (tripForTicket != null) {
+                tripForTicket.getTickets().add(savedTicket);
+            } else {
+                Trip trip = realm.createObject(Trip.class);
+                trip.setTripId(ticket.getTripId());
+                trip.getTickets().add(savedTicket);
+            }
+
+            savedTicket.setTrip(tripForTicket);
+
+            TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), null, ticket.getState());
+            ticketStateTransitions.add(stateTransition);
+
+        } else {
+            if (!savedTicket.getState().equals(ticket.getState())) {
+                TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), savedTicket.getState(),
+                        ticket.getState());
+                ticketStateTransitions.add(stateTransition);
+            }
+        }
+
+        Ticket.updateTicketWithTicketData(savedTicket, ticket, realm);
+        savedTicket.setLastUpdated(new Date());
     }
 
     public void cancelTrip(final Trip trip, final Callback callback) {
