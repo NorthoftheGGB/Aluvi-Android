@@ -8,6 +8,7 @@ import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviRequestListener;
 import com.aluvi.android.api.tickets.model.TicketData;
+import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.android.volley.Request;
@@ -174,4 +175,63 @@ public class TicketsApi {
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
+
+    // public static void ridersPickedUp(Ticket ticket, Rider rider){
+
+    public static void ridersPickedUp(Ticket ticket, final ApiCallback callback){
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+                Request.Method.POST,
+                AluviApi.API_POST_RIDER_PICKUP,
+                params,
+                new AluviRequestListener<Void>() {
+                    @Override
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                            callback.success();
+                        } else {
+                            callback.failure(statusCode);
+                        }
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Void.class);
+                    }
+                }
+        );
+
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
+        AluviApi.getInstance().getRequestQueue().add(request);
+    }
+
+    public static void ridersDroppedOff(Ticket ticket, final ApiCallback callback){
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+                Request.Method.POST,
+                AluviApi.API_POST_RIDER_DROPOFF,
+                params,
+                new AluviRequestListener<Void>() {
+                    @Override
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                            callback.success();
+                        } else {
+                            callback.failure(statusCode);
+                        }
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Void.class);
+                    }
+                }
+        );
+
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
+        AluviApi.getInstance().getRequestQueue().add(request);
+    }
+
 }

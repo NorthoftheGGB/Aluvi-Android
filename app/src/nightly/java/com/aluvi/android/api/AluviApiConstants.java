@@ -12,12 +12,11 @@ public interface AluviApiConstants {
     String API_GET_RIDES_STATE = "rides/state";
     String API_POST_DRIVER_CANCELLED = "rides/driver_cancelled";
     String CANCEL_RIDER_SCHEDULED_TICKET = "v2/rides/rider_cancelled";
-    String API_POST_RIDE_PICKUP = "rides/pickup";
-    String API_POST_FARE_COMPLETED = "rides/arrived";
+    String API_POST_RIDER_PICKUP = "v2/rides/pickup";
+    String API_POST_RIDER_DROPOFF = "v2/rides/arrived";
     String API_DELETE_TRIP = "rides/trips/";
 
     String API_GET_ACTIVE_TICKETS = "v2/rides/tickets"; // this path uses v2 API
-    String API_GET_ACTIVE_FARES = "rides/fares";
 
     String API_GET_PAYMENTS = "rides/payments";
     String API_GET_EARNINGS = "rides/earnings";

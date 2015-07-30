@@ -381,6 +381,38 @@ public class CommuteManager {
         });
     }
 
+    public void ridersPickedUp(Ticket ticket, final Callback callback){
+        TicketsApi.ridersPickedUp(ticket, new ApiCallback() {
+            @Override
+            public void success() {
+                // TODO update ticket state
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Problem communicating with server");
+
+            }
+        });
+    }
+
+    public void ridersDroppedOff(Ticket ticket, final Callback callback){
+        TicketsApi.ridersDroppedOff(ticket, new ApiCallback() {
+            @Override
+            public void success() {
+                // TODO update ticket state to irrelevant
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Problem communicating with server");
+
+            }
+        });
+    }
+
     public void loadRouteForTicket(Ticket ticket, final DataCallback<RouteData> callback) {
         LatLng start = new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude());
         LatLng end = new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude());
