@@ -2,6 +2,7 @@ package com.aluvi.android.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.gis.GeocodingApi;
@@ -11,12 +12,14 @@ import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.api.tickets.model.TicketData;
+import com.aluvi.android.api.users.RoutesApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.local.TicketStateTransition;
+import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -95,11 +98,23 @@ public class CommuteManager {
         returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
 
         driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
+        refreshRoutePreferences();
     }
 
-    public void loadFromServer() {
-        // routes API
-        // implement RoutesApi library file
+    public void refreshRoutePreferences() {
+        RoutesApi.getSavedRoute(new RoutesApi.OnRouteFetchedListener() {
+            @Override
+            public void onFetched(Route route) {
+                Log.e(TAG, "Fetched route");
+                Log.e(TAG, "Route home: " + route.getHomePlaceName());
+                Log.e(TAG, "Route work: " + route.getWorkPlaceName());
+            }
+
+            @Override
+            public void onFailure(int statusCode) {
+                Log.e(TAG, "Error fetching route. Status code: " + statusCode);
+            }
+        });
     }
 
     private void store() {

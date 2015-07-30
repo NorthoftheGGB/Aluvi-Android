@@ -5,7 +5,7 @@ import android.location.Address;
 
 import com.aluvi.android.api.gis.models.GeocodeData;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
-import com.aluvi.android.api.request.GetRequestBuilder;
+import com.aluvi.android.api.request.utils.GetRequestBuilder;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;

@@ -95,7 +95,7 @@ public class UserStateManager {
     }
 
     public void login(String email, String password, final Callback callback) {
-        UsersApi.login(email, password, new UsersApi.Callback() {
+        UsersApi.login(email, password, new UsersApi.LoginCallback() {
             @Override
             public void success(String token) {
                 setApiToken(token);

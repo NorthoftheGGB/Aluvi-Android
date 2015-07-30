@@ -1,4 +1,4 @@
-package com.aluvi.android.api.request;
+package com.aluvi.android.api.request.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

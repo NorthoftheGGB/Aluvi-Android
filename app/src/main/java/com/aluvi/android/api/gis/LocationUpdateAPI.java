@@ -3,7 +3,7 @@ package com.aluvi.android.api.gis;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviPayload;
-import com.aluvi.android.api.request.AluviRequestListener;
+import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -43,7 +43,7 @@ public class LocationUpdateAPI {
                 Request.Method.PUT,
                 apiPath,
                 new LocationUpdateRequest(newLocation),
-                new AluviRequestListener() {
+                new AluviAuthRequestListener() {
                     @Override
                     public void onAuthenticatedResponse(Object response, int statusCode, VolleyError error) {
                         if (listener != null) {
@@ -77,7 +77,7 @@ public class LocationUpdateAPI {
         AluviAuthenticatedRequest<LocationUpdateResponse> locationRequest = new AluviAuthenticatedRequest<>(
                 Request.Method.GET,
                 apiPath,
-                new AluviRequestListener<LocationUpdateResponse>() {
+                new AluviAuthRequestListener<LocationUpdateResponse>() {
                     @Override
                     public void onAuthenticatedResponse(LocationUpdateResponse response, int statusCode, VolleyError error) {
                         if (listener != null) {
