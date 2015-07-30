@@ -39,8 +39,8 @@ public class LoginActivity extends BaseToolBarActivity {
         String username = mUsernameEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
 
-        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this);
         if (!"".equals(username) && !"".equals(password)) {
+            final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
             UserStateManager.getInstance().login(username, password, new UserStateManager.Callback() {
                 @Override
                 public void success() {

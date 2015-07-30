@@ -1,5 +1,7 @@
 package com.aluvi.android.model.realm;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.realm.RealmObject;
 
 /**
@@ -7,46 +9,41 @@ import io.realm.RealmObject;
  */
 public class Route extends RealmObject {
 
-    private double homeLatitude;
-    private double homeLongitude;
-    private double workLatitude;
-    private double workLongitude;
+    @JsonProperty("origin")
+    private LocationWrapper origin;
+
+    @JsonProperty("destination")
+    private LocationWrapper destination;
+
+    @JsonProperty("origin_place_name")
     private String homePlaceName;
+
+    @JsonProperty("destination_place_name")
     private String workPlaceName;
+
+    @JsonProperty("pickup_time")
     private String pickupTime;
+
+    @JsonProperty("return_time")
     private String returnTime;
+
+    @JsonProperty("driving")
     private boolean driving;
 
-    public double getHomeLatitude() {
-        return homeLatitude;
+    public LocationWrapper getOrigin() {
+        return origin;
     }
 
-    public void setHomeLatitude(double homeLatitude) {
-        this.homeLatitude = homeLatitude;
+    public void setOrigin(LocationWrapper origin) {
+        this.origin = origin;
     }
 
-    public double getHomeLongitude() {
-        return homeLongitude;
+    public LocationWrapper getDestination() {
+        return destination;
     }
 
-    public void setHomeLongitude(double homeLongitude) {
-        this.homeLongitude = homeLongitude;
-    }
-
-    public double getWorkLatitude() {
-        return workLatitude;
-    }
-
-    public void setWorkLatitude(double workLatitude) {
-        this.workLatitude = workLatitude;
-    }
-
-    public double getWorkLongitude() {
-        return workLongitude;
-    }
-
-    public void setWorkLongitude(double workLongitude) {
-        this.workLongitude = workLongitude;
+    public void setDestination(LocationWrapper destination) {
+        this.destination = destination;
     }
 
     public String getHomePlaceName() {

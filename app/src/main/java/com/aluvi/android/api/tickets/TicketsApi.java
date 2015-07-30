@@ -6,7 +6,7 @@ import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
-import com.aluvi.android.api.request.AluviRequestListener;
+import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
@@ -25,8 +25,6 @@ import java.util.Map;
 /**
  * Created by matthewxi on 7/16/15.
  */
-
-
 public class TicketsApi {
 
     public interface RefreshTicketsCallback {
@@ -41,7 +39,7 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.API_POST_REQUEST_COMMUTER_TICKETS,
                 requestParams,
-                new AluviRequestListener<CommuterTicketsResponse>() {
+                new AluviAuthRequestListener<CommuterTicketsResponse>() {
                     @Override
                     public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
                         if (response != null) {
@@ -64,14 +62,13 @@ public class TicketsApi {
 
 
     public static void cancelRiderTicketRequest(Ticket ticket, final ApiCallback callback) {
-
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+        AluviAuthenticatedRequest<Void> request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.API_POST_REQUEST_CANCELLED,
                 params,
-                new AluviRequestListener<Void>() {
+                new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {
@@ -94,14 +91,13 @@ public class TicketsApi {
     }
 
     public static void cancelRiderScheduledTicket(Ticket ticket, final ApiCallback callback) {
-
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.FARE_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.POST,
                 AluviApi.CANCEL_RIDER_SCHEDULED_TICKET,
                 params,
-                new AluviRequestListener<Void>() {
+                new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {
@@ -126,7 +122,7 @@ public class TicketsApi {
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.DELETE,
                 AluviApi.API_DELETE_TRIP + trip.getTripId(),
-                new AluviRequestListener<Void>() {
+                new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {
@@ -152,7 +148,7 @@ public class TicketsApi {
         AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.GET,
                 AluviApi.API_GET_ACTIVE_TICKETS,
-                new AluviRequestListener<List<TicketData>>() {
+                new AluviAuthRequestListener<List<TicketData>>() {
                     @Override
                     public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK && response != null) {

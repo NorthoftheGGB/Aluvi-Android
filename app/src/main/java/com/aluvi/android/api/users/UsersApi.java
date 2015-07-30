@@ -17,13 +17,13 @@ import java.util.HashMap;
  * Created by matthewxi on 7/14/15.
  */
 public class UsersApi {
-    public interface Callback {
+    public interface LoginCallback {
         void success(String token);
 
         void failure(int statusCode);
     }
 
-    static public void login(String email, String password, final Callback callback) {
+    public static void login(String email, String password, final LoginCallback loginCallback) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.EMAIL_KEY, email);
         params.put(AluviApiKeys.PASSWORD_KEY, password);
@@ -34,12 +34,12 @@ public class UsersApi {
                     public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
                         if (statusCode == 200 && response.getToken() != null) {
                             Log.d("Login Success", "Received token: " + response.getToken());
-                            callback.success(response.getToken());
+                            loginCallback.success(response.getToken());
                         } else {
                             if (error != null) {
                                 Log.d("JSON", "Did not work " + error.getMessage());
                             }
-                            callback.failure(statusCode);
+                            loginCallback.failure(statusCode);
                         }
                     }
 

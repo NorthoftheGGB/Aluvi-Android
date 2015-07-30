@@ -1,6 +1,7 @@
 package com.aluvi.android.activities;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.Menu;
@@ -11,15 +12,24 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.aluvi.android.R;
+import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketLocation;
+import com.aluvi.android.model.realm.Ticket;
+import com.aluvi.android.model.realm.Trip;
 import com.rey.material.app.DialogFragment;
 import com.rey.material.app.TimePickerDialog;
 
+import org.joda.time.LocalDateTime;
+
+import java.util.List;
+
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.RealmResults;
 
 public class ScheduleRideActivity extends AluviAuthActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
 
@@ -29,8 +39,15 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     @Bind(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
     @Bind(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
     @Bind(R.id.schedule_ride_button_drive_there) CheckBox mDriveThereCheckbox;
+    @Bind(R.id.schedule_ride_button_commute_tomorrow) Button mCommuteTomorrowButton;
+
+    @Bind({R.id.schedule_ride_button_from, R.id.schedule_ride_button_to, R.id.schedule_ride_button_start_time,
+            R.id.schedule_ride_button_end_time, R.id.schedule_ride_button_drive_there, R.id.schedule_ride_button_commute_tomorrow})
+    List<View> mScheduleEditViews;
 
     public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354, RESULT_ERROR = 431;
+    public final static String COMMUTE_TO_VIEW_ID_KEY = "commute_view__id_key";
+
     private final String TAG = "ScheduleRideActivity",
             FROM_LOCATION_TAG = "from_location",
             TO_LOCATION_TAG = "to_location";
@@ -40,6 +57,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
     private TicketLocation mStartLocation, mEndLocation;
+    private boolean mIsInViewMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,26 +71,87 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     }
 
     public void initUI() {
-        CommuteManager manager = CommuteManager.getInstance();
-
-        mStartLocation = manager.getHomeLocation();
-        mEndLocation = manager.getWorkLocation();
+        if (!initUISavedTrip())
+            initUICommuteManager();
 
         String homeAddress = mStartLocation.getPlaceName();
         String workAddress = mEndLocation.getPlaceName();
-
-        mStartHour = manager.getPickupTimeHour();
-        mStartMin = manager.getPickupTimeMinute();
-        mEndHour = manager.getReturnTimeHour();
-        mEndMin = manager.getReturnTimeMinute();
-
-        updateStartTimeButton();
-        updateEndTimeButton();
 
         if (homeAddress != null && !"".equals(homeAddress))
             mFromButton.setText(homeAddress);
         if (workAddress != null && !"".equals(workAddress))
             mToButton.setText(workAddress);
+
+        updateStartTimeButton();
+        updateEndTimeButton();
+    }
+
+    private boolean initUISavedTrip() {
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            int tripId = getIntent().getExtras().getInt(COMMUTE_TO_VIEW_ID_KEY);
+            RealmResults<Ticket> tickets = getTicketsForTripId(tripId);
+            if (tickets.size() == 2) {
+                Ticket homeTicket = tickets.get(0);
+                Ticket workTicket = tickets.get(1);
+
+                mStartLocation = new TicketLocation(homeTicket.getOriginLatitude(),
+                        homeTicket.getOriginLatitude(), homeTicket.getOriginPlaceName());
+
+                mEndLocation = new TicketLocation(homeTicket.getDestinationLatitude(),
+                        homeTicket.getDestinationLongitude(), homeTicket.getDestinationPlaceName());
+
+                LocalDateTime pickupTime = LocalDateTime.fromDateFields(homeTicket.getPickupTime());
+                mStartHour = pickupTime.getHourOfDay();
+                mStartMin = pickupTime.getMinuteOfHour();
+
+                LocalDateTime pickupTimeWork = LocalDateTime.fromDateFields(workTicket.getPickupTime());
+                mEndHour = pickupTimeWork.getHourOfDay();
+                mEndMin = pickupTimeWork.getMinuteOfHour();
+
+                mDriveThereCheckbox.setChecked(homeTicket.isDriving());
+                ButterKnife.apply(mScheduleEditViews, new ButterKnife.Action<View>() {
+                    @Override
+                    public void apply(View view, int index) {
+                        view.setEnabled(false);
+                    }
+                });
+
+                mIsInViewMode = true;
+                mCommuteTomorrowButton.setText(R.string.action_commute_pending);
+                getToolbar().setTitle(R.string.scheduled_commute);
+                supportInvalidateOptionsMenu();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Nullable
+    private RealmResults<Ticket> getTicketsForTripId(int tripId) {
+        Trip trip = AluviRealm.getDefaultRealm().where(Trip.class)
+                .equalTo("tripId", tripId)
+                .findFirst();
+        if (trip != null) {
+            return trip.getTickets().where()
+                    .findAllSorted("pickupTime");
+
+        }
+
+        return null;
+    }
+
+    private void initUICommuteManager() {
+        CommuteManager manager = CommuteManager.getInstance();
+
+        mStartLocation = manager.getHomeLocation();
+        mEndLocation = manager.getWorkLocation();
+
+        mStartHour = manager.getPickupTimeHour();
+        mStartMin = manager.getPickupTimeMinute();
+
+        mEndHour = manager.getReturnTimeHour();
+        mEndMin = manager.getReturnTimeMinute();
 
         mDriveThereCheckbox.setChecked(manager.isDriving());
     }
@@ -212,6 +291,15 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mIsInViewMode)
+            menu.findItem(R.id.action_cancel_schedule_ride)
+                    .setTitle(R.string.close);
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public void showTimePicker(int startHour, int startMin, final OnTimeSetListener listener) {

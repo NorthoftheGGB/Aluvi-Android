@@ -3,7 +3,7 @@ package com.aluvi.android.api.gis;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
-import com.aluvi.android.api.request.GetRequestBuilder;
+import com.aluvi.android.api.request.utils.GetRequestBuilder;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;

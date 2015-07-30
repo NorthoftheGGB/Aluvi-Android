@@ -2,7 +2,7 @@ package com.aluvi.android.api.devices;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
-import com.aluvi.android.api.request.AluviRequestListener;
+import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.aluvi.android.application.GlobalIdentifiers;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -42,7 +42,7 @@ public class DevicesApi {
                 Request.Method.POST,
                 AluviApi.API_DEVICES + GlobalIdentifiers.getInstance().getAndroidId(),
                 deviceData,
-                new AluviRequestListener<DeviceData>() {
+                new AluviAuthRequestListener<DeviceData>() {
                     @Override
                     public void onAuthenticatedResponse(DeviceData response, int statusCode, VolleyError error) {
                         if (response != null) {
