@@ -15,4 +15,12 @@ public class RealmHelper {
         object.removeFromRealm();
         realm.commitTransaction();
     }
+
+    public static void saveToRealm(RealmObject object)
+    {
+        Realm realm = AluviRealm.getDefaultRealm();
+        realm.beginTransaction();
+        realm.copyToRealm(object);
+        realm.commitTransaction();
+    }
 }

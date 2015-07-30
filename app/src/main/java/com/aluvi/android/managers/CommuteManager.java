@@ -1,11 +1,8 @@
 package com.aluvi.android.managers;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
-import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.api.gis.MapQuestApi;
 import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
@@ -13,11 +10,9 @@ import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.api.users.RoutesApi;
-import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.model.RealmHelper;
-import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
@@ -55,17 +50,11 @@ public class CommuteManager {
     private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
 
-    private SharedPreferences preferences;
-    private Context ctx;
+    private Route userRoute;
 
-    private TicketLocation homeLocation, workLocation;
-    private int pickupTimeHour, pickupTimeMinute;
-    private int returnTimeHour, returnTimeMinute;
-    private boolean driving;
-
-    public static synchronized void initialize(Context context) {
+    public static synchronized void initialize(Callback callback) {
         if (mInstance == null) {
-            mInstance = new CommuteManager(context);
+            mInstance = new CommuteManager(callback);
         }
     }
 
@@ -73,92 +62,65 @@ public class CommuteManager {
         return mInstance;
     }
 
-    public CommuteManager(Context context) {
-        ctx = context;
-        preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
-        load();
+    /**
+     * Initialize ths commute manager by fetching the latest route that the user has set. Initialization isn't be dependent
+     * on a route being found, but is dependent on fetching the latest copy we can find. If there aren't any routes
+     * stored server or client side, then create an empty route.
+     *
+     * @param callback
+     */
+    private CommuteManager(final Callback callback) {
+        refreshRoutePreferences(new Callback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(String message) {
+                userRoute = AluviRealm.getDefaultRealm().where(Route.class).findFirst();
+                if (userRoute == null)
+                    userRoute = new Route();
+
+                callback.success();
+            }
+        });
     }
 
-    private void load() {
-        float homeLatitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        float homeLongitude = preferences.getFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        float workLatitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        float workLongitude = preferences.getFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-
-        String homePlaceName = preferences.getString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
-        String workPlaceName = preferences.getString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
-
-        homeLocation = new TicketLocation(homeLatitude, homeLongitude, homePlaceName);
-        workLocation = new TicketLocation(workLatitude, workLongitude, workPlaceName);
-
-        pickupTimeHour = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, INVALID_TIME);
-        returnTimeHour = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, INVALID_TIME);
-
-        pickupTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, INVALID_TIME);
-        returnTimeMinute = preferences.getInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
-
-        driving = preferences.getBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
-        refreshRoutePreferences();
-    }
-
-    public void refreshRoutePreferences() {
+    public void refreshRoutePreferences(final Callback callback) {
         RoutesApi.getSavedRoute(new RoutesApi.OnRouteFetchedListener() {
             @Override
             public void onFetched(Route route) {
-                Log.e(TAG, "Fetched route");
-                Log.e(TAG, "Route home: " + route.getHomePlaceName());
-                Log.e(TAG, "Route work: " + route.getWorkPlaceName());
+                userRoute = route;
+                if (userRoute != null) {
+                    Realm realm = AluviRealm.getDefaultRealm();
+                    realm.beginTransaction();
+                    realm.clear(Route.class); // Remove previously saved routes
+                    realm.copyToRealm(userRoute);
+                    realm.commitTransaction();
+                }
+
+                callback.success();
             }
 
             @Override
             public void onFailure(int statusCode) {
                 Log.e(TAG, "Error fetching route. Status code: " + statusCode);
+                callback.failure("Error fetching status code");
             }
         });
     }
 
-    private void store() {
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, (float) homeLocation.getLatitude());
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, (float) homeLocation.getLongitude());
-
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, (float) workLocation.getLatitude());
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, (float) workLocation.getLongitude());
-
-        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, homeLocation.getPlaceName());
-        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, workLocation.getPlaceName());
-
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, pickupTimeHour);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, returnTimeHour);
-
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, pickupTimeMinute);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, returnTimeMinute);
-
-        editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, driving);
-        editor.commit();
+    public boolean isMinViableRouteAvailable() {
+        return userRoute != null && userRoute.getOrigin() != null && userRoute.getDestination() != null;
     }
 
     public void save(Callback callback) {
-        // TODO: Implement Routes API
-        store();
+        RealmHelper.saveToRealm(userRoute);
     }
 
     public void clear() {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_HOME_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LATITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        editor.putFloat(AluviPreferences.COMMUTER_WORK_LONGITUDE_KEY, GeocodingApi.INVALID_LOCATION);
-        editor.putString(AluviPreferences.COMMUTER_HOME_PLACENAME_KEY, "");
-        editor.putString(AluviPreferences.COMMUTER_WORK_PLACENAME_KEY, "");
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_HOUR_KEY, INVALID_TIME);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_HOUR_KEY, INVALID_TIME);
-        editor.putInt(AluviPreferences.COMMUTER_PICKUP_TIME_MINUTE_KEY, INVALID_TIME);
-        editor.putInt(AluviPreferences.COMMUTER_RETURN_TIME_MINUTE_KEY, INVALID_TIME);
-        editor.putBoolean(AluviPreferences.COMMUTER_IS_DRIVER_KEY, false);
-        editor.commit();
-        load(); // Reset by pulling default values from shared prefs
+        AluviRealm.getDefaultRealm().clear(Route.class);
 
         // Destroy any saved trip data
         Realm aluviRealm = AluviRealm.getDefaultRealm();
@@ -168,76 +130,52 @@ public class CommuteManager {
         aluviRealm.commitTransaction();
     }
 
-    public boolean routeIsSet() {
-        boolean locationsIncorrect =
-                homeLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
-                        homeLocation.getLongitude() == GeocodingApi.INVALID_LOCATION ||
-                        workLocation.getLatitude() == GeocodingApi.INVALID_LOCATION ||
-                        workLocation.getLongitude() == GeocodingApi.INVALID_LOCATION;
-
-        boolean timesIncorrect = pickupTimeHour == INVALID_TIME || pickupTimeMinute == INVALID_TIME ||
-                returnTimeHour == INVALID_TIME || returnTimeMinute == INVALID_TIME;
-
-        return !locationsIncorrect && !timesIncorrect;
-    }
-
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
         Date rideDate = new LocalDate().plus(Period.days(1)).toDateTimeAtStartOfDay().toDate();
         if (!checkExistingTickets(rideDate))
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
                     "This is a system error but can be recovered by canceling your commuter rides and requesting again");
 
-        Realm realm = AluviRealm.getDefaultRealm();
-        realm.beginTransaction();
-
-        final Ticket toWorkTicket = realm.createObject(Ticket.class);
-        Ticket.buildNewTicket(toWorkTicket, rideDate, getHomeLocation(), getWorkLocation(),
-                driving, pickupTimeHour, pickupTimeMinute);
-
-        final Ticket fromWorkTicket = realm.createObject(Ticket.class);
-        Ticket.buildNewTicket(fromWorkTicket, rideDate, getWorkLocation(), getHomeLocation(),
-                driving, returnTimeHour, returnTimeMinute);
-
-        realm.commitTransaction();
-
+        final Ticket toWorkTicket = Ticket.buildNewTicket(rideDate, userRoute);
+        final Ticket fromWorkTicket = Ticket.buildNewTicket(rideDate, userRoute, true);
         TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket,
                 new RequestCommuterTicketsCallback(toWorkTicket, fromWorkTicket) {
                     @Override
                     public void success(CommuterTicketsResponse response) {
-                        Realm realm = AluviRealm.getDefaultRealm();
-                        realm.beginTransaction();
-
-                        toWorkTicket.setTripId(response.tripId);
-                        toWorkTicket.setId(response.ticketToWorkRideId);
-                        toWorkTicket.setState(Ticket.StateRequested);
-
-                        fromWorkTicket.setTripId(response.tripId);
-                        fromWorkTicket.setId(response.ticketFromWorkRideId);
-                        fromWorkTicket.setState(Ticket.StateRequested);
-
-                        Trip trip = realm.createObject(Trip.class);
-                        trip.setTripId(response.tripId);
-                        trip.getTickets().add(this.toWorkTicket);
-                        trip.getTickets().add(this.fromWorkTicket);
-
-                        toWorkTicket.setTrip(trip);
-                        fromWorkTicket.setTrip(trip);
-
-                        realm.commitTransaction();
+                        updateTickets(toWorkTicket, fromWorkTicket, response);
                         callback.success();
                     }
 
                     @Override
                     public void failure(int statusCode) {
-                        // just delete the ticket if it doesn't go through
-                        Realm realm = AluviRealm.getDefaultRealm();
-                        realm.beginTransaction();
-                        toWorkTicket.removeFromRealm();
-                        fromWorkTicket.removeFromRealm();
-                        realm.commitTransaction();
                         callback.failure("Scheduling failure message");
                     }
                 });
+    }
+
+    private void updateTickets(Ticket toWorkTicket, Ticket fromWorkTicket, CommuterTicketsResponse response) {
+        toWorkTicket.setTripId(response.tripId);
+        toWorkTicket.setId(response.ticketToWorkRideId);
+        toWorkTicket.setState(Ticket.StateRequested);
+
+        fromWorkTicket.setTripId(response.tripId);
+        fromWorkTicket.setId(response.ticketFromWorkRideId);
+        fromWorkTicket.setState(Ticket.StateRequested);
+
+        Trip trip = new Trip();
+        trip.setTripId(response.tripId);
+        trip.getTickets().add(toWorkTicket);
+        trip.getTickets().add(fromWorkTicket);
+
+        toWorkTicket.setTrip(trip);
+        fromWorkTicket.setTrip(trip);
+
+        Realm realm = AluviRealm.getDefaultRealm();
+        realm.beginTransaction();
+        realm.copyToRealm(trip);
+        realm.copyToRealm(toWorkTicket);
+        realm.copyToRealm(fromWorkTicket);
+        realm.commitTransaction();
     }
 
     private boolean checkExistingTickets(Date startDate) {
@@ -262,10 +200,6 @@ public class CommuteManager {
         }
 
         return true;
-    }
-
-    public boolean isDriving() {
-        return driving;
     }
 
     public void cancelTicket(final Ticket ticket, final Callback callback) {
@@ -394,7 +328,7 @@ public class CommuteManager {
         });
     }
 
-    public void ridersPickedUp(Ticket ticket, final Callback callback){
+    public void ridersPickedUp(Ticket ticket, final Callback callback) {
         TicketsApi.ridersPickedUp(ticket, new ApiCallback() {
             @Override
             public void success() {
@@ -410,7 +344,7 @@ public class CommuteManager {
         });
     }
 
-    public void ridersDroppedOff(Ticket ticket, final Callback callback){
+    public void ridersDroppedOff(Ticket ticket, final Callback callback) {
         TicketsApi.ridersDroppedOff(ticket, new ApiCallback() {
             @Override
             public void success() {
@@ -443,57 +377,7 @@ public class CommuteManager {
         });
     }
 
-    public void setHomeLocation(TicketLocation homeLocation) {
-        this.homeLocation = homeLocation;
+    public Route getUserRoute() {
+        return userRoute;
     }
-
-    public void setWorkLocation(TicketLocation workLocation) {
-        this.workLocation = workLocation;
-    }
-
-    public TicketLocation getHomeLocation() {
-        return homeLocation;
-    }
-
-    public TicketLocation getWorkLocation() {
-        return workLocation;
-    }
-
-    public int getPickupTimeHour() {
-        return pickupTimeHour;
-    }
-
-    public void setPickupTimeHour(int pickupTimeHour) {
-        this.pickupTimeHour = pickupTimeHour;
-    }
-
-    public int getPickupTimeMinute() {
-        return pickupTimeMinute;
-    }
-
-    public void setPickupTimeMinute(int pickupTimeMinute) {
-        this.pickupTimeMinute = pickupTimeMinute;
-    }
-
-    public int getReturnTimeHour() {
-        return returnTimeHour;
-    }
-
-    public void setReturnTimeHour(int returnTimeHour) {
-        this.returnTimeHour = returnTimeHour;
-    }
-
-    public int getReturnTimeMinute() {
-        return returnTimeMinute;
-    }
-
-    public void setReturnTimeMinute(int returnTimeMinute) {
-        this.returnTimeMinute = returnTimeMinute;
-    }
-
-    public void setDriving(boolean driving) {
-        this.driving = driving;
-    }
-
-
 }
