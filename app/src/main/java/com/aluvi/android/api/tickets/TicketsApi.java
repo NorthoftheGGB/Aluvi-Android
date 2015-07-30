@@ -181,7 +181,7 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_PICKUP,
                 params,
-                new AluviRequestListener<Void>() {
+                new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {
@@ -209,7 +209,7 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_DROPOFF,
                 params,
-                new AluviRequestListener<Void>() {
+                new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {

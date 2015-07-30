@@ -1,5 +1,8 @@
 package com.aluvi.android.api.devices;
 
+import android.os.Build;
+import android.util.Log;
+
 import com.aluvi.android.BuildConfig;
 import com.aluvi.android.api.request.AluviPayload;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,10 +31,18 @@ public class DeviceData extends AluviPayload {
     @JsonProperty("platform")
     private String platform;
 
+    @JsonProperty("os")
+    private String os;
+
+    @JsonProperty("hardware")
+    private String hardware;
+
     public DeviceData() {
         appVersion = String.valueOf(BuildConfig.VERSION_CODE);
         appIdentifier = BuildConfig.APPLICATION_ID;
         platform = DevicesApi.ANDROID_PUSH_PLATFORM_NAME;
+        hardware = Build.MANUFACTURER + " " + Build.BOARD + " " + Build.DISPLAY;
+        os = "android " + String.valueOf(Build.VERSION.SDK_INT);
     }
 
     public String getPushToken() {
@@ -56,5 +67,21 @@ public class DeviceData extends AluviPayload {
 
     public void setAppIdentifier(String appIdentifier) {
         this.appIdentifier = appIdentifier;
+    }
+
+    public String getOs() {
+        return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
+    }
+
+    public String getHardware() {
+        return hardware;
+    }
+
+    public void setHardware(String hardware) {
+        this.hardware = hardware;
     }
 }

@@ -35,9 +35,9 @@ android {
         }
     }
     productFlavors {
-        alpha {
+        dev {
             minSdkVersion 10
-            applicationId 'com.aluvi.android'
+            applicationId 'com.aluvi.android.dev'
         }
 
         nightly {
