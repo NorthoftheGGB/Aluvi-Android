@@ -79,6 +79,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     @Override
     public void initUI() {
+        resetUI();
         mMapView.setUserLocationEnabled(true);
 
         if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY)) {
@@ -158,19 +159,22 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
-        switch (mCurrentTicket.getState()) {
-            case Ticket.StateRequested:
-                onCommuteRequested();
-                break;
-            case Ticket.StateScheduled:
-                if (mCurrentTicket.isDriving())
-                    enableDriverOverlay(mCurrentTicket);
-                else
-                    enableRiderOverlay(mCurrentTicket);
-                break;
+        if (mCurrentTicket != null) {
+            switch (mCurrentTicket.getState()) {
+                case Ticket.StateRequested:
+                    onCommuteRequested();
+                    break;
+                case Ticket.StateScheduled:
+                    if (mCurrentTicket.isDriving())
+                        enableDriverOverlay(mCurrentTicket);
+                    else
+                        enableRiderOverlay(mCurrentTicket);
+                    break;
+            }
+
+            plotTicketRoute(mCurrentTicket);
         }
 
-        plotTicketRoute(mCurrentTicket);
         getActivity().supportInvalidateOptionsMenu();
     }
 
@@ -281,19 +285,19 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mCurrentTicket != null) {
-            if (mCurrentTicket.getState().equals(Ticket.StateRequested)
-                    || mCurrentTicket.getState().equals(Ticket.StateScheduled)) {
-                menu.findItem(R.id.action_cancel).setVisible(true);
+        if (mCurrentTicket != null && (mCurrentTicket.getState().equals(Ticket.StateRequested)
+                || mCurrentTicket.getState().equals(Ticket.StateScheduled))) {
+            menu.findItem(R.id.action_cancel).setVisible(true);
 
-                if (mCurrentTicket.getState().equals(Ticket.StateRequested))
-                    menu.findItem(R.id.action_schedule_ride)
-                            .setVisible(true)
-                            .setTitle(R.string.action_commute_pending);
-                else
-                    menu.findItem(R.id.action_schedule_ride).setVisible(false);
-            }
-        }
+            if (mCurrentTicket.getState().equals(Ticket.StateRequested))
+                menu.findItem(R.id.action_schedule_ride)
+                        .setVisible(true)
+                        .setTitle(R.string.action_view_commute);
+            else
+                menu.findItem(R.id.action_schedule_ride).setVisible(false);
+        } else
+            menu.findItem(R.id.action_cancel).setVisible(false);
+
     }
 
     @Override

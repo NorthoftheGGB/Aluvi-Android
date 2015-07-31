@@ -62,7 +62,7 @@ public class CommuteManager {
     }
 
     /**
-     * Initialize ths commute manager by fetching the latest route that the user has set. Initialization isn't be dependent
+     * Initialize this commute manager by fetching the latest route that the user has set. Initialization isn't dependent
      * on a route being found, but is dependent on fetching the latest copy we can find. If there aren't any routes
      * stored server or client side, then create an empty route.
      *
@@ -90,15 +90,7 @@ public class CommuteManager {
         RoutesApi.getSavedRoute(new RoutesApi.OnRouteFetchedListener() {
             @Override
             public void onFetched(Route route) {
-                userRoute = route;
-                if (userRoute != null) {
-                    Realm realm = AluviRealm.getDefaultRealm();
-                    realm.beginTransaction();
-                    realm.clear(Route.class); // Remove previously saved routes
-                    realm.copyToRealm(userRoute);
-                    realm.commitTransaction();
-                }
-
+                onRouteFetched(route);
                 callback.success();
             }
 
@@ -110,15 +102,23 @@ public class CommuteManager {
         });
     }
 
-    public boolean isMinViableRouteAvailable() {
-        return userRoute != null && userRoute.getOrigin() != null && userRoute.getDestination() != null;
+    private void onRouteFetched(final Route route) {
+        if (route != null) {
+            AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.clear(Route.class); // Remove previously saved routes
+                    userRoute = realm.copyToRealm(route);
+                }
+            });
+        }
     }
 
     public void save(final Callback callback) {
-        RealmHelper.saveToRealm(userRoute);
         RoutesApi.saveRoute(userRoute, new RoutesApi.OnRouteSavedListener() {
             @Override
             public void onSaved(Route route) {
+                onRouteFetched(route);
                 if (callback != null)
                     callback.success();
             }
@@ -129,6 +129,10 @@ public class CommuteManager {
                     callback.failure("Error, couldn't save user route");
             }
         });
+    }
+
+    public boolean isMinViableRouteAvailable() {
+        return userRoute != null && userRoute.getOrigin() != null && userRoute.getDestination() != null;
     }
 
     public void clear() {
@@ -182,8 +186,6 @@ public class CommuteManager {
         Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
         realm.copyToRealm(trip);
-        realm.copyToRealm(toWorkTicket);
-        realm.copyToRealm(fromWorkTicket);
         realm.commitTransaction();
     }
 
@@ -295,14 +297,12 @@ public class CommuteManager {
 
             Trip tripForTicket = realm.where(Trip.class).equalTo("tripId", ticket.getTripId())
                     .findFirst();
-            if (tripForTicket != null) {
-                tripForTicket.getTickets().add(savedTicket);
-            } else {
+            if (tripForTicket == null) {
                 tripForTicket = realm.createObject(Trip.class);
                 tripForTicket.setTripId(ticket.getTripId());
-                tripForTicket.getTickets().add(savedTicket);
             }
 
+            tripForTicket.getTickets().add(savedTicket);
             savedTicket.setTrip(tripForTicket);
 
             TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), null, ticket.getState());
@@ -388,6 +388,12 @@ public class CommuteManager {
         });
     }
 
+    /**
+     * Minimize calling this method - it is relatively expensive to look through a potentially large list of tickets
+     * looking for the most relevant one (nearest in the future, requested or scheduled state).
+     *
+     * @return
+     */
     @Nullable
     public Ticket getActiveTicket() {
         RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
