@@ -5,9 +5,13 @@ import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.model.realm.Route;
 import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+
+import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 
@@ -28,8 +32,22 @@ public class RoutesApi {
         void onFailure(int statusCode);
     }
 
-    public static void saveRoute(Route route, OnRouteSavedListener listener) {
+    public static void saveRoute(final Route route, final OnRouteSavedListener listener) {
+        JsonObjectRequest saveRouteRequest = new JsonObjectRequest(AluviApi.API_BASE_URL + AluviApi.API_ROUTE, Route.toJSON(route),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        listener.onSaved(route);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        listener.onFailure(HttpURLConnection.HTTP_BAD_REQUEST);
+                    }
+                });
 
+        AluviApi.getInstance().getRequestQueue().add(saveRouteRequest);
     }
 
     public static void getSavedRoute(final OnRouteFetchedListener listener) {

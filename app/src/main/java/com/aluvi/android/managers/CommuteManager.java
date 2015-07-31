@@ -115,8 +115,21 @@ public class CommuteManager {
         return userRoute != null && userRoute.getOrigin() != null && userRoute.getDestination() != null;
     }
 
-    public void save(Callback callback) {
+    public void save(final Callback callback) {
         RealmHelper.saveToRealm(userRoute);
+        RoutesApi.saveRoute(userRoute, new RoutesApi.OnRouteSavedListener() {
+            @Override
+            public void onSaved(Route route) {
+                if (callback != null)
+                    callback.success();
+            }
+
+            @Override
+            public void onFailure(int statusCode) {
+                if (callback != null)
+                    callback.failure("Error, couldn't save user route");
+            }
+        });
     }
 
     public void clear() {

@@ -5,6 +5,9 @@ import android.support.annotation.Nullable;
 import com.aluvi.android.model.local.TicketLocation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.realm.RealmObject;
 
 /**
@@ -32,6 +35,22 @@ public class Route extends RealmObject {
 
     @JsonProperty("driving")
     private boolean driving;
+
+    public static JSONObject toJSON(Route route) {
+        JSONObject root = new JSONObject();
+        try {
+            root.put("origin", LocationWrapper.toJSON(route.getOrigin()));
+            root.put("destination", LocationWrapper.toJSON(route.getDestination()));
+            root.put("destination_place_name", route.getDestinationPlaceName());
+            root.put("pickup_time", route.getPickupTime());
+            root.put("return_time", route.getReturnTime());
+            root.put("driving", route.isDriving());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return root;
+    }
 
     public static int getHour(String time) {
         int hour = -1;

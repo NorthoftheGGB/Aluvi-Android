@@ -2,6 +2,9 @@ package com.aluvi.android.model.realm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.realm.RealmObject;
 
 /**
@@ -13,6 +16,18 @@ public class LocationWrapper extends RealmObject {
 
     @JsonProperty("longitude")
     private double longitude;
+
+    public static JSONObject toJSON(LocationWrapper wrapper) {
+        JSONObject root = new JSONObject();
+        try {
+            root.put("latitude", wrapper.getLatitude());
+            root.put("longitude", wrapper.getLongitude());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return root;
+    }
 
     public double getLatitude() {
         return latitude;
