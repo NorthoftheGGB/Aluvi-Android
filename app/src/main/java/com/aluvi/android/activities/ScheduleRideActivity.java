@@ -17,6 +17,7 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketLocation;
+import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.rey.material.app.DialogFragment;
@@ -142,29 +143,30 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     }
 
     private void initUICommuteManager() {
-        CommuteManager manager = CommuteManager.getInstance();
+        if (CommuteManager.getInstance().isMinViableRouteAvailable()) {
+            Route route = CommuteManager.getInstance().getUserRoute();
+            mStartLocation = Route.getOriginTicketLocation(route);
+            mEndLocation = Route.getDestinationTicketLocation(route);
 
-        mStartLocation = manager.getHomeLocation();
-        mEndLocation = manager.getWorkLocation();
+            mStartHour = Route.getHour(route.getPickupTime());
+            mStartMin = Route.getMinute(route.getPickupTime());
 
-        mStartHour = manager.getPickupTimeHour();
-        mStartMin = manager.getPickupTimeMinute();
+            mEndHour = Route.getHour(route.getReturnTime());
+            mEndMin = Route.getMinute(route.getReturnTime());
 
-        mEndHour = manager.getReturnTimeHour();
-        mEndMin = manager.getReturnTimeMinute();
-
-        mDriveThereCheckbox.setChecked(manager.isDriving());
+            mDriveThereCheckbox.setChecked(route.isDriving());
+        }
     }
 
     @OnClick(R.id.schedule_ride_button_from)
     public void onFromButtonClicked() {
-        LocationSelectDialogFragment.newInstance(CommuteManager.getInstance().getHomeLocation())
+        LocationSelectDialogFragment.newInstance(mStartLocation)
                 .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
     }
 
     @OnClick(R.id.schedule_ride_button_to)
     public void onToButtonClicked() {
-        LocationSelectDialogFragment.newInstance(CommuteManager.getInstance().getWorkLocation())
+        LocationSelectDialogFragment.newInstance(mEndLocation)
                 .show(getSupportFragmentManager(), TO_LOCATION_TAG);
     }
 
@@ -207,16 +209,20 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     public void onConfirmCommuteButtonClicked() {
         if (isCommuteReady()) {
             final CommuteManager manager = CommuteManager.getInstance();
-            manager.setDriving(mDriveThereCheckbox.isChecked());
 
-            manager.setHomeLocation(mStartLocation);
-            manager.setWorkLocation(mEndLocation);
+            Route route = manager.getUserRoute();
+            route.setDriving(mDriveThereCheckbox.isChecked());
 
-            manager.setPickupTimeHour(mStartHour);
-            manager.setPickupTimeMinute(mStartMin);
+            route.getOrigin().setLatitude(mStartLocation.getLatitude());
+            route.getOrigin().setLongitude(mStartLocation.getLongitude());
+            route.setOriginPlaceName(mStartLocation.getPlaceName());
 
-            manager.setReturnTimeHour(mEndHour);
-            manager.setReturnTimeMinute(mEndMin);
+            route.getDestination().setLatitude(mEndLocation.getLatitude());
+            route.getDestination().setLongitude(mEndLocation.getLongitude());
+            route.setDestinationPlaceName(mEndLocation.getPlaceName());
+
+            route.setPickupTime(Route.getTime(mStartHour, mStartMin));
+            route.setReturnTime(Route.getTime(mEndHour, mEndMin));
             manager.save(null);
 
             try {

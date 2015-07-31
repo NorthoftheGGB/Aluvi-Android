@@ -2,7 +2,6 @@ package com.aluvi.android.model.realm;
 
 import com.aluvi.android.api.tickets.model.RiderData;
 import com.aluvi.android.api.tickets.model.TicketData;
-import com.aluvi.android.model.local.TicketLocation;
 
 import org.joda.time.LocalDate;
 
@@ -34,56 +33,72 @@ public class Ticket extends RealmObject {
     private int carId;   // These primary keys could be retrieved from related objects
     private int driverId;
     private int tripId;
-    private String rideType;
-    private Date requestedTimestamp;
-    private Date estimatedArrivalTime;
+    private int fare_id;
+
     private double originLatitude;
     private double originLongitude;
     private String originPlaceName;
     private String originShortName;
+
     private double destinationLatitude;
     private double destinationLongitude;
     private String destinationPlaceName;
     private String destinationShortName;
+
     private double meetingPointLatitude;
     private double meetingPointLongitude;
     private String meetingPointPlaceName;
+
     private double dropOffPointLatitude;
     private double dropOffPointLongitude;
     private String dropOffPointPlaceName;
-    private Date rideDate;
+
     private boolean confirmed; // User has viewed the itinerary and accepted
     private boolean driving;
     private double fixedPrice;
-    private String direction;
-    private int fare_id;
+
+    private Date requestedTimestamp;
+    private Date estimatedArrivalTime;
     private Date desiredArrival;
     private Date pickupTime;
-    private String state;
     private Date lastUpdated;
+    private Date rideDate;
+
+    private String state;
+    private String rideType;
+    private String direction;
 
     private Driver driver;
     private Car car;
     private Trip trip;
     private RealmList<Rider> riders;
 
-    public static Ticket buildNewTicket(Ticket ticket, Date rideDate, TicketLocation origin,
-                                        TicketLocation destination, boolean driving, int pickupTimeHour, int pickUpTimeMin) {
+    public static Ticket buildNewTicket(Date rideDate, Route route) {
+        return buildNewTicket(rideDate, route, false);
+    }
+
+    public static Ticket buildNewTicket(Date rideDate, Route route, boolean reverseDirection) {
+        Ticket ticket = new Ticket();
         ticket.setRideDate(rideDate);
+
+        LocationWrapper origin = reverseDirection ? route.getDestination() : route.getOrigin();
+        LocationWrapper destination = reverseDirection ? route.getOrigin() : route.getDestination();
+
         ticket.setOriginLatitude(origin.getLatitude());
         ticket.setOriginLongitude(origin.getLongitude());
-        ticket.setOriginPlaceName(origin.getPlaceName());
+        ticket.setOriginPlaceName(reverseDirection ? route.getDestinationPlaceName() : route.getOriginPlaceName());
+
         ticket.setDestinationLatitude(destination.getLatitude());
         ticket.setDestinationLongitude(destination.getLongitude());
-        ticket.setDestinationPlaceName(destination.getPlaceName());
-        ticket.setDriving(driving);
+        ticket.setDestinationPlaceName(reverseDirection ? route.getOriginPlaceName() : route.getDestinationPlaceName());
+
+        ticket.setDriving(route.isDriving());
 
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(rideDate);
-        cal.add(Calendar.HOUR_OF_DAY, pickupTimeHour);
-        cal.add(Calendar.MINUTE, pickUpTimeMin);
+        cal.add(Calendar.HOUR_OF_DAY, Route.getHour(route.getPickupTime()));
+        cal.add(Calendar.MINUTE, Route.getMinute(route.getPickupTime()));
         ticket.setPickupTime(cal.getTime());
-
         ticket.setLastUpdated(new Date());
         return ticket;
     }

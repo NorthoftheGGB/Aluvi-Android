@@ -39,10 +39,12 @@ android {
             minSdkVersion 10
             applicationId 'com.aluvi.android.dev'
         }
-
         nightly {
             minSdkVersion 10
             applicationId 'com.aluvi.android.nightly'
+        }
+        apiDebug {
+            minSdkVersion 10
         }
     }
 }
