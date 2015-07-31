@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.gis.models.RouteData;
-import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
@@ -35,12 +34,10 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
-import io.realm.RealmResults;
 
 /**
  * Created by usama on 7/13/15.
@@ -160,35 +157,20 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
-        mCurrentTicket = null; // Reset cached ticket; use most recent data
-
-        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
-                .where(Ticket.class)
-                .greaterThan("pickupTime", new Date())
-                .beginGroup()
-                .equalTo("state", Ticket.StateRequested)
-                .or()
-                .equalTo("state", Ticket.StateScheduled)
-                .endGroup()
-                .findAllSorted("pickupTime");
-
-        if (tickets != null && tickets.size() > 0) {
-            mCurrentTicket = tickets.get(0);
-            switch (mCurrentTicket.getState()) {
-                case Ticket.StateRequested:
-                    onCommuteRequested();
-                    break;
-                case Ticket.StateScheduled:
-                    if (mCurrentTicket.isDriving())
-                        enableDriverOverlay(mCurrentTicket);
-                    else
-                        enableRiderOverlay(mCurrentTicket);
-                    break;
-            }
-
-            plotTicketRoute(mCurrentTicket);
+        mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
+        switch (mCurrentTicket.getState()) {
+            case Ticket.StateRequested:
+                onCommuteRequested();
+                break;
+            case Ticket.StateScheduled:
+                if (mCurrentTicket.isDriving())
+                    enableDriverOverlay(mCurrentTicket);
+                else
+                    enableRiderOverlay(mCurrentTicket);
+                break;
         }
 
+        plotTicketRoute(mCurrentTicket);
         getActivity().supportInvalidateOptionsMenu();
     }
 

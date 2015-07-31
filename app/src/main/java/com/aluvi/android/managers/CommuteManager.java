@@ -1,5 +1,6 @@
 package com.aluvi.android.managers;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
@@ -385,6 +386,21 @@ public class CommuteManager {
                 callback.failure("Could not fetch route");
             }
         });
+    }
+
+    @Nullable
+    public Ticket getActiveTicket() {
+        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
+                .where(Ticket.class)
+                .greaterThan("pickupTime", new Date())
+                .beginGroup()
+                .equalTo("state", Ticket.StateRequested)
+                .or()
+                .equalTo("state", Ticket.StateScheduled)
+                .endGroup()
+                .findAllSorted("pickupTime");
+
+        return tickets.size() > 0 ? tickets.get(0) : null;
     }
 
     public Route getRoute() {
