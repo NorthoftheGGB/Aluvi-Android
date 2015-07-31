@@ -13,7 +13,7 @@ import io.realm.RealmObject;
 public class Trip extends RealmObject {
     private int tripId;
 
-    private RealmList<Ticket> tickets;
+    private RealmList<Ticket> tickets = new RealmList<>();
 
     public static void removeIfEmpty(Trip trip) {
         if (trip.getTickets().size() == 0) {
@@ -24,11 +24,7 @@ public class Trip extends RealmObject {
     public static void removeTickets(Trip trip) {
         Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
-
-        if (trip.getTickets() != null) {
-            trip.getTickets().clear();
-        }
-
+        trip.getTickets().where().findAll().clear();
         realm.commitTransaction();
     }
 

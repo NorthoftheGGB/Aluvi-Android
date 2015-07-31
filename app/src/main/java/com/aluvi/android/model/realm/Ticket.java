@@ -32,7 +32,6 @@ public class Ticket extends RealmObject {
     private int id;
     private int carId;   // These primary keys could be retrieved from related objects
     private int driverId;
-    private int tripId;
     private int fare_id;
 
     private double originLatitude;
@@ -258,14 +257,6 @@ public class Ticket extends RealmObject {
 
     public void setDriverId(int driverId) {
         this.driverId = driverId;
-    }
-
-    public int getTripId() {
-        return tripId;
-    }
-
-    public void setTripId(int tripId) {
-        this.tripId = tripId;
     }
 
     public String getRideType() {

@@ -15,8 +15,8 @@ public abstract class AluviAuthRequestListener<T> extends JacksonRequestListener
     public void onResponse(T response, int statusCode, VolleyError error) {
         if (!AuthenticationChecker.isAuthenticated(statusCode, error))
             EventBus.getDefault().post(new AuthFailEvent());
-        else
-            onAuthenticatedResponse(response, statusCode, error);
+
+        onAuthenticatedResponse(response, statusCode, error);
     }
 
     public abstract void onAuthenticatedResponse(T response, int statusCode, VolleyError error);

@@ -2,7 +2,9 @@ package com.aluvi.android.application;
 
 import android.app.Application;
 
+import com.aluvi.android.R;
 import com.aluvi.android.api.AluviApi;
+import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.location.DriverLocationManager;
 import com.aluvi.android.managers.location.RiderLocationManager;
@@ -23,6 +25,7 @@ public class AluviApplication extends Application {
         GlobalIdentifiers.initialize(this);
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
+        GeocodingApi.initialize(this, getString(R.string.mapbox_access_token));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
     }

@@ -17,6 +17,7 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketLocation;
+import com.aluvi.android.model.realm.LocationWrapper;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -30,6 +31,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class ScheduleRideActivity extends AluviAuthActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
@@ -75,13 +77,15 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
         if (!initUISavedTrip())
             initUICommuteManager();
 
-        String homeAddress = mStartLocation.getPlaceName();
-        String workAddress = mEndLocation.getPlaceName();
+        if (mStartLocation != null && mEndLocation != null) {
+            String homeAddress = mStartLocation.getPlaceName();
+            String workAddress = mEndLocation.getPlaceName();
 
-        if (homeAddress != null && !"".equals(homeAddress))
-            mFromButton.setText(homeAddress);
-        if (workAddress != null && !"".equals(workAddress))
-            mToButton.setText(workAddress);
+            if (homeAddress != null && !"".equals(homeAddress))
+                mFromButton.setText(homeAddress);
+            if (workAddress != null && !"".equals(workAddress))
+                mToButton.setText(workAddress);
+        }
 
         updateStartTimeButton();
         updateEndTimeButton();
@@ -144,7 +148,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
 
     private void initUICommuteManager() {
         if (CommuteManager.getInstance().isMinViableRouteAvailable()) {
-            Route route = CommuteManager.getInstance().getUserRoute();
+            Route route = CommuteManager.getInstance().getRoute();
             mStartLocation = Route.getOriginTicketLocation(route);
             mEndLocation = Route.getDestinationTicketLocation(route);
 
@@ -210,19 +214,30 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
         if (isCommuteReady()) {
             final CommuteManager manager = CommuteManager.getInstance();
 
-            Route route = manager.getUserRoute();
+            Realm realm = AluviRealm.getDefaultRealm();
+            realm.beginTransaction();
+
+            Route route = manager.getRoute();
             route.setDriving(mDriveThereCheckbox.isChecked());
 
-            route.getOrigin().setLatitude(mStartLocation.getLatitude());
-            route.getOrigin().setLongitude(mStartLocation.getLongitude());
+            LocationWrapper origin = route.getOrigin();
+            origin = origin == null ? realm.createObject(LocationWrapper.class) : origin;
+            origin.setLatitude(mStartLocation.getLatitude());
+            origin.setLongitude(mStartLocation.getLongitude());
             route.setOriginPlaceName(mStartLocation.getPlaceName());
+            route.setOrigin(origin);
 
-            route.getDestination().setLatitude(mEndLocation.getLatitude());
-            route.getDestination().setLongitude(mEndLocation.getLongitude());
+            LocationWrapper destination = route.getDestination();
+            destination = destination == null ? realm.createObject(LocationWrapper.class) : destination;
+            destination.setLatitude(mEndLocation.getLatitude());
+            destination.setLongitude(mEndLocation.getLongitude());
             route.setDestinationPlaceName(mEndLocation.getPlaceName());
+            route.setDestination(destination);
 
             route.setPickupTime(Route.getTime(mStartHour, mStartMin));
             route.setReturnTime(Route.getTime(mEndHour, mEndMin));
+
+            realm.commitTransaction();
             manager.save(null);
 
             try {

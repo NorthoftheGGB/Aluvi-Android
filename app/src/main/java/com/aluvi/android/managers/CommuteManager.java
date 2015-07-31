@@ -53,9 +53,7 @@ public class CommuteManager {
     private Route userRoute;
 
     public static synchronized void initialize(Callback callback) {
-        if (mInstance == null) {
-            mInstance = new CommuteManager(callback);
-        }
+        mInstance = new CommuteManager(callback);
     }
 
     public static synchronized CommuteManager getInstance() {
@@ -133,11 +131,10 @@ public class CommuteManager {
     }
 
     public void clear() {
-        AluviRealm.getDefaultRealm().clear(Route.class);
-
         // Destroy any saved trip data
         Realm aluviRealm = AluviRealm.getDefaultRealm();
         aluviRealm.beginTransaction();
+
         aluviRealm.where(Trip.class).findAll().clear();
         aluviRealm.where(Ticket.class).findAll().clear();
         aluviRealm.commitTransaction();
@@ -167,11 +164,9 @@ public class CommuteManager {
     }
 
     private void updateTickets(Ticket toWorkTicket, Ticket fromWorkTicket, CommuterTicketsResponse response) {
-        toWorkTicket.setTripId(response.tripId);
         toWorkTicket.setId(response.ticketToWorkRideId);
         toWorkTicket.setState(Ticket.StateRequested);
 
-        fromWorkTicket.setTripId(response.tripId);
         fromWorkTicket.setId(response.ticketFromWorkRideId);
         fromWorkTicket.setState(Ticket.StateRequested);
 
@@ -261,23 +256,22 @@ public class CommuteManager {
     public void refreshTickets(final DataCallback<List<TicketStateTransition>> callback) {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
-            public void success(List<TicketData> tickets) {
-                List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
+            public void success(final List<TicketData> tickets) {
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
 
-                if (tickets != null) {
-                    Realm realm = AluviRealm.getDefaultRealm();
-                    realm.beginTransaction();
+                        if (tickets != null)
+                            for (TicketData ticket : tickets)
+                                updateTicketForData(ticket, ticketStateTransitions);
 
-                    for (TicketData ticket : tickets) {
-                        updateTicketForData(ticket, ticketStateTransitions);
+
+                        if (callback != null)
+                            callback.success(ticketStateTransitions);
                     }
-
-                    realm.commitTransaction();
-                    // TODO check for any tickets in Realm that are no longer relevant
-                }
-
-                if (callback != null)
-                    callback.success(ticketStateTransitions);
+                });
             }
 
             @Override
@@ -303,9 +297,9 @@ public class CommuteManager {
             if (tripForTicket != null) {
                 tripForTicket.getTickets().add(savedTicket);
             } else {
-                Trip trip = realm.createObject(Trip.class);
-                trip.setTripId(ticket.getTripId());
-                trip.getTickets().add(savedTicket);
+                tripForTicket = realm.createObject(Trip.class);
+                tripForTicket.setTripId(ticket.getTripId());
+                tripForTicket.getTickets().add(savedTicket);
             }
 
             savedTicket.setTrip(tripForTicket);
@@ -329,8 +323,11 @@ public class CommuteManager {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
-                Trip.removeTickets(trip);
-                RealmHelper.removeFromRealm(trip);
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.beginTransaction();
+                trip.getTickets().where().findAll().clear();
+                trip.removeFromRealm();
+                realm.commitTransaction();
                 callback.success();
             }
 
@@ -390,7 +387,11 @@ public class CommuteManager {
         });
     }
 
-    public Route getUserRoute() {
+    public Route getRoute() {
         return userRoute;
+    }
+
+    public void setRoute(Route route) {
+        userRoute = route;
     }
 }

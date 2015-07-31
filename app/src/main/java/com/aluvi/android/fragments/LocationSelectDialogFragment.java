@@ -188,7 +188,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
 
         Log.d(TAG, "Looking for address for custom marker location");
         onLocationSearchStarted();
-        GeocodingApi.getInstance(getActivity())
+        GeocodingApi.getInstance()
                 .getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), new GeocodingApi.GeocodingApiCallback() {
                     @Override
                     public void onAddressesFound(String query, List<Address> data) {

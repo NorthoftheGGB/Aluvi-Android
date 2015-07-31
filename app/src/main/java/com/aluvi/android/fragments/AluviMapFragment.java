@@ -160,6 +160,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
+        mCurrentTicket = null; // Reset cached ticket; use most recent data
 
         RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
                 .where(Ticket.class)
@@ -266,32 +267,6 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
         mSlidingLayout.setAnchorPoint(anchor);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-        mSlidingLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View view, float v) {
-
-            }
-
-            @Override
-            public void onPanelCollapsed(View view) {
-
-            }
-
-            @Override
-            public void onPanelExpanded(View view) {
-
-            }
-
-            @Override
-            public void onPanelAnchored(View view) {
-
-            }
-
-            @Override
-            public void onPanelHidden(View view) {
-
-            }
-        });
     }
 
     private void cancelTrip(Trip trip) {

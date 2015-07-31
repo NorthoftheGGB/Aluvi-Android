@@ -64,7 +64,7 @@ public class LoginActivity extends BaseToolBarActivity {
     }
 
     private void onLoggedIn() {
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        startActivity(new Intent(LoginActivity.this, InitActivity.class));
         finish();
     }
 }
