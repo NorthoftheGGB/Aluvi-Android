@@ -5,10 +5,9 @@ import android.util.Log;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
-import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviAuthRequestListener;
+import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.tickets.model.TicketData;
-import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.android.volley.Request;
@@ -171,8 +170,6 @@ public class TicketsApi {
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
-
-    // public static void ridersPickedUp(Ticket ticket, Rider rider){
 
     public static void ridersPickedUp(Ticket ticket, final ApiCallback callback){
         Map<String, String> params = new HashMap<String, String>();
