@@ -28,6 +28,7 @@ import io.realm.Realm;
 public class DebugActivity extends AppCompatActivity {
 
     @Bind(R.id.login_button) Button loginButton;
+    @Bind(R.id.driver_login_button) Button driverLoginButton;
     @Bind(R.id.logout_button) Button logoutButton;
     @Bind(R.id.schedule_button) Button scheduleButton;
     @Bind(R.id.cancel_ticket_button) Button cancelTicketButton;
@@ -68,6 +69,23 @@ public class DebugActivity extends AppCompatActivity {
 
     @OnClick(R.id.login_button) public void login(){
         UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback() {
+            @Override
+            public void success() {
+                Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void failure(String message) {
+                Toast.makeText(getApplicationContext(), "Failed to Log In", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
+    @OnClick(R.id.driver_login_button) public void driverLogin(){
+        UserStateManager.getInstance().login("bartle@b.com", "bartle", new UserStateManager.Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
