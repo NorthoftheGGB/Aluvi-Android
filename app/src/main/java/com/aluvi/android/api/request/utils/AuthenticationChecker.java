@@ -10,6 +10,6 @@ public class AuthenticationChecker {
     private final static String TEMP_ERROR_CHECK = "java.io.IOException: Received authentication challenge is null";
 
     public static boolean isAuthenticated(int statusCode, VolleyError error) {
-        return statusCode != STATUS_CODE_AUTH_FAIL || (error != null && !TEMP_ERROR_CHECK.equals(error.getMessage()));
+        return statusCode != STATUS_CODE_AUTH_FAIL;
     }
 }
