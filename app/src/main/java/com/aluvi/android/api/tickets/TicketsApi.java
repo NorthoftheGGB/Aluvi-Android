@@ -42,7 +42,7 @@ public class TicketsApi {
                 new AluviAuthRequestListener<CommuterTicketsResponse>() {
                     @Override
                     public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
-                        if (response != null) {
+                        if ( statusCode == HttpURLConnection.HTTP_CREATED) {
                             callback.success(response);
                         } else {
                             callback.failure(statusCode);
