@@ -14,7 +14,6 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.local.TicketStateTransition;
-import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 
@@ -100,7 +99,6 @@ public class DebugActivity extends AppCompatActivity {
                     @Override
                     public void success() {
                         //onInitializationFinished();
-                        CommuteManager.setUserRoute(new Route())
                     }
 
                     @Override

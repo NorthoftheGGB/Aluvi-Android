@@ -146,6 +146,11 @@ public class CommuteManager {
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
+        if(!isMinViableRouteAvailable()){
+            callback.failure("You do not have a commute set up yet");
+            return;
+        }
+
         Date rideDate = new LocalDate().plus(Period.days(1)).toDateTimeAtStartOfDay().toDate();
         if (!checkExistingTickets(rideDate))
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
