@@ -7,7 +7,6 @@ import com.android.volley.VolleyError;
  */
 public class AuthenticationChecker {
     private final static int STATUS_CODE_AUTH_FAIL = 401;
-    private final static String TEMP_ERROR_CHECK = "java.io.IOException: Received authentication challenge is null";
 
     public static boolean isAuthenticated(int statusCode, VolleyError error) {
         return statusCode != STATUS_CODE_AUTH_FAIL;

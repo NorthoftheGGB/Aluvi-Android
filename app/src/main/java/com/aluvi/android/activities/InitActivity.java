@@ -1,10 +1,12 @@
 package com.aluvi.android.activities;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 
 /**
@@ -19,14 +21,21 @@ public class InitActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
         CommuteManager.initialize(new CommuteManager.Callback() {
             @Override
             public void success() {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
                 onInitializationFinished();
             }
 
             @Override
             public void failure(String message) {
+                if(progressDialog != null)
+                    progressDialog.cancel();
+
                 Toast.makeText(InitActivity.this, message, Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -34,7 +43,7 @@ public class InitActivity extends Activity {
     }
 
     private void onInitializationFinished() {
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }

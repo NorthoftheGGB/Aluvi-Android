@@ -72,7 +72,7 @@ public class GeocodingAutoCompleteBinder {
                 if (mLocationUpdateListener != null)
                     mLocationUpdateListener.onGeoCodeStarted();
 
-                GeocodingApi.getInstance(mAutoCompleteTextView.getContext())
+                GeocodingApi.getInstance()
                         .getAddressesForName(query, new GeocodingApi.GeocodingApiCallback() {
                             @Override
                             public void onAddressesFound(String query, List<Address> data) {

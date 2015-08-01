@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.gis.models.RouteData;
-import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
@@ -35,12 +34,10 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
-import io.realm.RealmResults;
 
 /**
  * Created by usama on 7/13/15.
@@ -82,6 +79,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     @Override
     public void initUI() {
+        resetUI();
         mMapView.setUserLocationEnabled(true);
 
         if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY)) {
@@ -160,19 +158,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
-
-        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
-                .where(Ticket.class)
-                .greaterThan("pickupTime", new Date())
-                .beginGroup()
-                .equalTo("state", Ticket.StateRequested)
-                .or()
-                .equalTo("state", Ticket.StateScheduled)
-                .endGroup()
-                .findAllSorted("pickupTime");
-
-        if (tickets != null && tickets.size() > 0) {
-            mCurrentTicket = tickets.get(0);
+        mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
+        if (mCurrentTicket != null) {
             switch (mCurrentTicket.getState()) {
                 case Ticket.StateRequested:
                     onCommuteRequested();
@@ -266,32 +253,6 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
         mSlidingLayout.setAnchorPoint(anchor);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-        mSlidingLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View view, float v) {
-
-            }
-
-            @Override
-            public void onPanelCollapsed(View view) {
-
-            }
-
-            @Override
-            public void onPanelExpanded(View view) {
-
-            }
-
-            @Override
-            public void onPanelAnchored(View view) {
-
-            }
-
-            @Override
-            public void onPanelHidden(View view) {
-
-            }
-        });
     }
 
     private void cancelTrip(Trip trip) {
@@ -324,19 +285,19 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mCurrentTicket != null) {
-            if (mCurrentTicket.getState().equals(Ticket.StateRequested)
-                    || mCurrentTicket.getState().equals(Ticket.StateScheduled)) {
-                menu.findItem(R.id.action_cancel).setVisible(true);
+        if (mCurrentTicket != null && (mCurrentTicket.getState().equals(Ticket.StateRequested)
+                || mCurrentTicket.getState().equals(Ticket.StateScheduled))) {
+            menu.findItem(R.id.action_cancel).setVisible(true);
 
-                if (mCurrentTicket.getState().equals(Ticket.StateRequested))
-                    menu.findItem(R.id.action_schedule_ride)
-                            .setVisible(true)
-                            .setTitle(R.string.action_commute_pending);
-                else
-                    menu.findItem(R.id.action_schedule_ride).setVisible(false);
-            }
-        }
+            if (mCurrentTicket.getState().equals(Ticket.StateRequested))
+                menu.findItem(R.id.action_schedule_ride)
+                        .setVisible(true)
+                        .setTitle(R.string.action_view_commute);
+            else
+                menu.findItem(R.id.action_schedule_ride).setVisible(false);
+        } else
+            menu.findItem(R.id.action_cancel).setVisible(false);
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.aluvi.android.managers;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
@@ -53,9 +54,7 @@ public class CommuteManager {
     private Route userRoute;
 
     public static synchronized void initialize(Callback callback) {
-        if (mInstance == null) {
-            mInstance = new CommuteManager(callback);
-        }
+        mInstance = new CommuteManager(callback);
     }
 
     public static synchronized CommuteManager getInstance() {
@@ -63,7 +62,7 @@ public class CommuteManager {
     }
 
     /**
-     * Initialize ths commute manager by fetching the latest route that the user has set. Initialization isn't be dependent
+     * Initialize this commute manager by fetching the latest route that the user has set. Initialization isn't dependent
      * on a route being found, but is dependent on fetching the latest copy we can find. If there aren't any routes
      * stored server or client side, then create an empty route.
      *
@@ -91,15 +90,7 @@ public class CommuteManager {
         RoutesApi.getSavedRoute(new RoutesApi.OnRouteFetchedListener() {
             @Override
             public void onFetched(Route route) {
-                userRoute = route;
-                if (userRoute != null) {
-                    Realm realm = AluviRealm.getDefaultRealm();
-                    realm.beginTransaction();
-                    realm.clear(Route.class); // Remove previously saved routes
-                    realm.copyToRealm(userRoute);
-                    realm.commitTransaction();
-                }
-
+                onRouteFetched(route);
                 callback.success();
             }
 
@@ -111,15 +102,23 @@ public class CommuteManager {
         });
     }
 
-    public boolean isMinViableRouteAvailable() {
-        return userRoute != null && userRoute.getOrigin() != null && userRoute.getDestination() != null;
+    private void onRouteFetched(final Route route) {
+        if (route != null) {
+            AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.clear(Route.class); // Remove previously saved routes
+                    userRoute = realm.copyToRealm(route);
+                }
+            });
+        }
     }
 
     public void save(final Callback callback) {
-        RealmHelper.saveToRealm(userRoute);
         RoutesApi.saveRoute(userRoute, new RoutesApi.OnRouteSavedListener() {
             @Override
             public void onSaved(Route route) {
+                onRouteFetched(route);
                 if (callback != null)
                     callback.success();
             }
@@ -132,12 +131,15 @@ public class CommuteManager {
         });
     }
 
-    public void clear() {
-        AluviRealm.getDefaultRealm().clear(Route.class);
+    public boolean isMinViableRouteAvailable() {
+        return userRoute != null && userRoute.getOrigin() != null && userRoute.getDestination() != null;
+    }
 
+    public void clear() {
         // Destroy any saved trip data
         Realm aluviRealm = AluviRealm.getDefaultRealm();
         aluviRealm.beginTransaction();
+
         aluviRealm.where(Trip.class).findAll().clear();
         aluviRealm.where(Ticket.class).findAll().clear();
         aluviRealm.commitTransaction();
@@ -167,11 +169,9 @@ public class CommuteManager {
     }
 
     private void updateTickets(Ticket toWorkTicket, Ticket fromWorkTicket, CommuterTicketsResponse response) {
-        toWorkTicket.setTripId(response.tripId);
         toWorkTicket.setId(response.ticketToWorkRideId);
         toWorkTicket.setState(Ticket.StateRequested);
 
-        fromWorkTicket.setTripId(response.tripId);
         fromWorkTicket.setId(response.ticketFromWorkRideId);
         fromWorkTicket.setState(Ticket.StateRequested);
 
@@ -186,8 +186,6 @@ public class CommuteManager {
         Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
         realm.copyToRealm(trip);
-        realm.copyToRealm(toWorkTicket);
-        realm.copyToRealm(fromWorkTicket);
         realm.commitTransaction();
     }
 
@@ -260,23 +258,22 @@ public class CommuteManager {
     public void refreshTickets(final DataCallback<List<TicketStateTransition>> callback) {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
-            public void success(List<TicketData> tickets) {
-                List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
+            public void success(final List<TicketData> tickets) {
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
 
-                if (tickets != null) {
-                    Realm realm = AluviRealm.getDefaultRealm();
-                    realm.beginTransaction();
+                        if (tickets != null)
+                            for (TicketData ticket : tickets)
+                                updateTicketForData(ticket, ticketStateTransitions);
 
-                    for (TicketData ticket : tickets) {
-                        updateTicketForData(ticket, ticketStateTransitions);
+
+                        if (callback != null)
+                            callback.success(ticketStateTransitions);
                     }
-
-                    realm.commitTransaction();
-                    // TODO check for any tickets in Realm that are no longer relevant
-                }
-
-                if (callback != null)
-                    callback.success(ticketStateTransitions);
+                });
             }
 
             @Override
@@ -299,14 +296,12 @@ public class CommuteManager {
 
             Trip tripForTicket = realm.where(Trip.class).equalTo("tripId", ticket.getTripId())
                     .findFirst();
-            if (tripForTicket != null) {
-                tripForTicket.getTickets().add(savedTicket);
-            } else {
-                Trip trip = realm.createObject(Trip.class);
-                trip.setTripId(ticket.getTripId());
-                trip.getTickets().add(savedTicket);
+            if (tripForTicket == null) {
+                tripForTicket = realm.createObject(Trip.class);
+                tripForTicket.setTripId(ticket.getTripId());
             }
 
+            tripForTicket.getTickets().add(savedTicket);
             savedTicket.setTrip(tripForTicket);
 
             TicketStateTransition stateTransition = new TicketStateTransition(savedTicket.getId(), null, ticket.getState());
@@ -328,8 +323,11 @@ public class CommuteManager {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
-                Trip.removeTickets(trip);
-                RealmHelper.removeFromRealm(trip);
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.beginTransaction();
+                trip.getTickets().where().findAll().clear();
+                trip.removeFromRealm();
+                realm.commitTransaction();
                 callback.success();
             }
 
@@ -389,7 +387,32 @@ public class CommuteManager {
         });
     }
 
-    public Route getUserRoute() {
+    /**
+     * Minimize calling this method - it is relatively expensive to look through a potentially large list of tickets
+     * looking for the most relevant one (nearest in the future, requested or scheduled state).
+     *
+     * @return
+     */
+    @Nullable
+    public Ticket getActiveTicket() {
+        RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
+                .where(Ticket.class)
+                .greaterThan("pickupTime", new Date())
+                .beginGroup()
+                .equalTo("state", Ticket.StateRequested)
+                .or()
+                .equalTo("state", Ticket.StateScheduled)
+                .endGroup()
+                .findAllSorted("pickupTime");
+
+        return tickets.size() > 0 ? tickets.get(0) : null;
+    }
+
+    public Route getRoute() {
         return userRoute;
+    }
+
+    public void setRoute(Route route) {
+        userRoute = route;
     }
 }

@@ -1,13 +1,13 @@
 package com.aluvi.android.api.users;
 
 import com.aluvi.android.api.AluviApi;
+import com.aluvi.android.api.request.AluviAuthJSONPostRequest;
 import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
+import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.model.realm.Route;
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
@@ -33,21 +33,30 @@ public class RoutesApi {
     }
 
     public static void saveRoute(final Route route, final OnRouteSavedListener listener) {
-        JsonObjectRequest saveRouteRequest = new JsonObjectRequest(AluviApi.API_BASE_URL + AluviApi.API_ROUTE, Route.toJSON(route),
-                new Response.Listener<JSONObject>() {
+        AluviAuthJSONPostRequest request = new AluviAuthJSONPostRequest(
+                Request.Method.POST,
+                AluviApi.API_ROUTE,
+                Route.toJSON(route),
+                new AluviAuthRequestListener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        listener.onSaved(route);
+                    public void onAuthenticatedResponse(JSONObject response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED) {
+                            listener.onSaved(route);
+                        } else {
+                            if (error != null)
+                                error.printStackTrace();
+                            listener.onFailure(statusCode);
+                        }
                     }
-                },
-                new Response.ErrorListener() {
+
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onFailure(HttpURLConnection.HTTP_BAD_REQUEST);
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(JSONObject.class);
                     }
                 });
 
-        AluviApi.getInstance().getRequestQueue().add(saveRouteRequest);
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
+        AluviApi.getInstance().getRequestQueue().add(request);
     }
 
     public static void getSavedRoute(final OnRouteFetchedListener listener) {

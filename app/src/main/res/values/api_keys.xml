@@ -2,5 +2,6 @@
 <resources>
     <string name="map_id">justsoamazing.mn4kk9l9</string>
     <string name="mapbox_access_token">sk.eyJ1IjoianVzdHNvYW1hemluZyIsImEiOiI4ZTVkZjYzYjMxZTY0MjhiNjE4ODUyMDZlYTQ2ZmZmMyJ9.IS45g3H17jQkehrxFV0XcA</string>
+    <string name="mapbox_public_access_token">sk.eyJ1IjoianVzdHNvYW1hemluZyIsImEiOiI4ZTVkZjYzYjMxZTY0MjhiNjE4ODUyMDZlYTQ2ZmZmMyJ9.IS45g3H17jQkehrxFV0XcA</string>
     <string name="gcm_sender_id">560390205545</string>
 </resources>

@@ -40,6 +40,7 @@ public class Route extends RealmObject {
         JSONObject root = new JSONObject();
         try {
             root.put("origin", LocationWrapper.toJSON(route.getOrigin()));
+            root.put("origin_place_name", route.getOriginPlaceName());
             root.put("destination", LocationWrapper.toJSON(route.getDestination()));
             root.put("destination_place_name", route.getDestinationPlaceName());
             root.put("pickup_time", route.getPickupTime());

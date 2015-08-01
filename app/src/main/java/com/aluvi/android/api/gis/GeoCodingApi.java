@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequestListener;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +27,6 @@ import java.util.Locale;
  * Created by usama on 7/13/15.
  */
 public class GeocodingApi {
-
     public interface GeocodingApiCallback {
         void onAddressesFound(String query, List<Address> data);
 
@@ -33,21 +34,23 @@ public class GeocodingApi {
     }
 
     public final static float INVALID_LOCATION = 360;
-    private final static String ENDPOINT_GEOCODE = "geocoding/v1/address",
-            ENDPOINT_REVERSE_GEOCODE = "geocoding/v1/reverse";
+    private final String BASE_GEOCODE_URL = "https://api.mapbox.com/v4/",
+            ENDPOINT_GEOCODE = "geocode/mapbox.places/";
 
     private static GeocodingApi mInstance;
+    private String mToken;
     private RequestQueue mRequestQueue;
 
-    public static GeocodingApi getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new GeocodingApi(context);
-        }
+    public static void initialize(Context context, String mapBoxToken) {
+        mInstance = new GeocodingApi(context, mapBoxToken);
+    }
 
+    public static GeocodingApi getInstance() {
         return mInstance;
     }
 
-    private GeocodingApi(Context context) {
+    private GeocodingApi(Context context, String mapBoxToken) {
+        mToken = mapBoxToken;
         // Set up a request queue that has only 1 worker thread, so all requests get executed sequentially.
         // This is important because some geocoding requests take longer than others to execute and we can't handle out-of-order responses.
         mRequestQueue = new RequestQueue(new DiskBasedCache(context.getCacheDir(), 1024 * 1024),
@@ -56,36 +59,41 @@ public class GeocodingApi {
     }
 
     public void getAddressesForName(final String name, GeocodingApiCallback addressCallback) {
-        GetRequestBuilder builder = new GetRequestBuilder(MapQuestApi.MAPQUEST_BASE_URL + ENDPOINT_GEOCODE)
-                .appendParameter("key", MapQuestApi.MAP_QUEST_API_KEY)
-                .appendParameter("location", name);
-
-        sendGeoCodeRequest(builder.build(), name, addressCallback);
+        try {
+            String geocodeUrl = BASE_GEOCODE_URL + ENDPOINT_GEOCODE + URLEncoder.encode(name, "UTF-8").toString() + ".json";
+            sendGeoCodeRequest(geocodeUrl, name, addressCallback);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            addressCallback.onFailure(HttpURLConnection.HTTP_BAD_REQUEST);
+        }
     }
 
     public void getAddressesForLocation(final double lat, final double lon, GeocodingApiCallback addressCallback) {
-        GetRequestBuilder builder = new GetRequestBuilder(MapQuestApi.MAPQUEST_BASE_URL + ENDPOINT_REVERSE_GEOCODE)
-                .appendParameter("key", MapQuestApi.MAP_QUEST_API_KEY)
-                .appendParameter("location", lat + "," + lon);
-
-        sendGeoCodeRequest(builder.build(), addressCallback);
+        try {
+            String reverseGeocodeUrl = BASE_GEOCODE_URL + ENDPOINT_GEOCODE + URLEncoder.encode(lon + "," + lat, "UTF-8") + ".json";
+            sendGeoCodeRequest(reverseGeocodeUrl, addressCallback);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            addressCallback.onFailure(HttpURLConnection.HTTP_BAD_REQUEST);
+        }
     }
 
     private void sendGeoCodeRequest(String url, final String query, final GeocodingApiCallback addressCallback) {
+
+        GetRequestBuilder builder = new GetRequestBuilder(url)
+                .appendParameter("access_token", mToken);
+
         AluviUnauthenticatedRequest<GeocodeData> geoCodeRequest = new AluviUnauthenticatedRequest<>(Request.Method.GET,
-                url,
+                builder.build(),
                 new JacksonRequestListener<GeocodeData>() {
                     @Override
                     public void onResponse(GeocodeData response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                        if (statusCode == HttpURLConnection.HTTP_OK && response != null) {
                             List<Address> out = new ArrayList<>();
-                            GeocodeData.GeocodedLocation[] locations = response.getLocations();
-                            if (locations != null) {
-                                for (int i = 0; i < locations.length; i++) {
-                                    GeocodeData.GeocodedLocation location = locations[i];
-                                    out.add(addressForGeocodeLocation(location));
-                                }
-                            }
+                            GeocodeData.Feature[] locations = response.getFeatures();
+                            if (locations != null)
+                                for (int i = 0; i < locations.length; i++)
+                                    out.add(addressForGeocodeData(locations[i]));
 
                             addressCallback.onAddressesFound(query, out);
                         } else {
@@ -99,7 +107,6 @@ public class GeocodingApi {
                     }
                 });
 
-        geoCodeRequest.setShouldCache(true);
         geoCodeRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         mRequestQueue.add(geoCodeRequest);
     }
@@ -108,10 +115,10 @@ public class GeocodingApi {
         sendGeoCodeRequest(url, null, addressCallback);
     }
 
-    private Address addressForGeocodeLocation(GeocodeData.GeocodedLocation location) {
+    private Address addressForGeocodeData(GeocodeData.Feature location) {
         Address address = new Address(Locale.getDefault());
-        address.setLatitude(location.getLatLng().getLat());
-        address.setLongitude(location.getLatLng().getLng());
+        address.setLatitude(location.getLat());
+        address.setLongitude(location.getLon());
 
         address.setThoroughfare(location.getStreet());
         address.setAddressLine(0, location.getStreet());
@@ -132,7 +139,7 @@ public class GeocodingApi {
         int addressLines = Math.min(2, address.getMaxAddressLineIndex());
         for (int i = 0; i < addressLines; i++) {
             String line = address.getAddressLine(i);
-            if (line != null && !"".equals(line)) {
+            if (line != null && !line.trim().equals("")) {
                 out.append(address.getAddressLine(i));
                 if (i + 1 < addressLines)
                     out.append(", ");
@@ -142,4 +149,3 @@ public class GeocodingApi {
         return out.toString();
     }
 }
-
