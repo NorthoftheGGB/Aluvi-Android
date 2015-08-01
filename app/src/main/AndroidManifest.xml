@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     package="com.aluvi.android"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -86,6 +87,15 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="531b451b5ea5c0dc8f72ba102e736a6a2edb31c0"/>
+
+        <!-- put this here temporarily, required for Matt's launch configuration -->
+        <!-- launch config won't find launcher activities in flavor unless defined in master Manifest -->
+        <activity
+            android:name=".DebugActivity"
+            android:label="Aluvi Debug"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

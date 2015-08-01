@@ -13,8 +13,9 @@ import de.greenrobot.event.EventBus;
 public abstract class AluviAuthRequestListener<T> extends JacksonRequestListener<T> {
     @Override
     public void onResponse(T response, int statusCode, VolleyError error) {
-        if (!AuthenticationChecker.isAuthenticated(statusCode, error))
+        if (!AuthenticationChecker.isAuthenticated(statusCode, error)) {
             EventBus.getDefault().post(new AuthFailEvent());
+        }
 
         onAuthenticatedResponse(response, statusCode, error);
     }

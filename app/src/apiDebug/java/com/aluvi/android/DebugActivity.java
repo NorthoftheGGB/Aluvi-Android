@@ -14,6 +14,7 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.local.TicketStateTransition;
+import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 
@@ -42,6 +43,11 @@ public class DebugActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_debug);
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
     }
 
@@ -90,6 +96,19 @@ public class DebugActivity extends AppCompatActivity {
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
 
+                CommuteManager.initialize(new CommuteManager.Callback() {
+                    @Override
+                    public void success() {
+                        //onInitializationFinished();
+                        CommuteManager.setUserRoute(new Route())
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        Toast.makeText(DebugActivity.this, message, Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
             }
 
             @Override

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.aluvi.android"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -53,9 +55,11 @@
         </service>
         <service android:name=".services.LocationTrackingService"/>
 
+        <!-- this key is intentionally fake so that we don't get errors from debug activity in fabric -->
         <meta-data
+            tools:replace="android:value"
             android:name="io.fabric.ApiKey"
-            android:value="531b451b5ea5c0dc8f72ba102e736a6a2edb31c0"/>
+            android:value="531b451b5ea5c0dc8f72ba102e736a6a2edb31c1"/>
     </application>
 
 </manifest>

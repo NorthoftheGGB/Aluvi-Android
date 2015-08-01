@@ -45,6 +45,7 @@ android {
         }
         apiDebug {
             minSdkVersion 10
+            applicationId 'com.aluvi.android.debug'
         }
     }
 }
