@@ -57,7 +57,6 @@ public class LocationSelectDialogFragment extends DialogFragment {
         args.putParcelable(TICKET_KEY, currentlySelectionLocation);
 
         LocationSelectDialogFragment fragment = new LocationSelectDialogFragment();
-        fragment.mCurrentlySelectedLocation = currentlySelectionLocation;
         fragment.setArguments(args);
         return fragment;
     }
@@ -99,14 +98,23 @@ public class LocationSelectDialogFragment extends DialogFragment {
 
     private void initMap() {
         mMapView.setUserLocationEnabled(true);
-        MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
 
+        LatLng centerLocation = null;
         if (mCurrentlySelectedLocation != null &&
                 mCurrentlySelectedLocation.getLatitude() != GeocodingApi.INVALID_LOCATION &&
                 mCurrentlySelectedLocation.getLongitude() != GeocodingApi.INVALID_LOCATION)
-            mMapView.setCenter(new EasyILatLang(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude()));
-        else if (mMapView.getUserLocation() != null)
-            mMapView.setCenter(mMapView.getUserLocation());
+            centerLocation = new LatLng(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude());
+        else if (mMapView.getUserLocation() != null) {
+            centerLocation = mMapView.getUserLocation();
+        }
+
+        if (centerLocation != null) {
+            mMapView.setCenter(new EasyILatLang(centerLocation));
+            mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
+            addMarker(centerLocation);
+        } else {
+            MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
+        }
 
         mMapView.setMapViewListener(new MapViewListener() {
             @Override

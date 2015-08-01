@@ -265,8 +265,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     private boolean isCommuteReady() {
         return mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME
                 && mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME
-                && mStartLocation.getPlaceName() != null && !mStartLocation.getPlaceName().equals("")
-                && mEndLocation != null && !mEndLocation.equals("");
+                && mStartLocation != null && mStartLocation.getPlaceName() != null && !mStartLocation.getPlaceName().equals("")
+                && mEndLocation != null && mEndLocation.getPlaceName() != null && !mEndLocation.getPlaceName().equals("");
     }
 
     public void onCommuteRequestFail() {

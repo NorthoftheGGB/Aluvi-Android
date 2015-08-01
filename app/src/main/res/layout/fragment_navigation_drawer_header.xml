@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:paddingRight="@dimen/activity_vertical_margin"
+                android:paddingTop="@dimen/activity_vertical_margin">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_width="@dimen/medium_profile_picture_width"
+        android:layout_height="@dimen/medium_profile_picture_height"
+        android:layout_alignEnd="@+id/driver_divider"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/driver_divider"
+        android:src="@mipmap/test_profile_pic"/>
+
+    <TextView
+        android:id="@+id/navigation_drawer_header_text_view_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_below="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_marginTop="10dp"
+        android:text="Name Placeholder"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white"/>
+</RelativeLayout>

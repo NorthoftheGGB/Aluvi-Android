@@ -192,7 +192,7 @@ public class CommuteManager {
     private boolean checkExistingTickets(Date startDate) {
         Realm realm = AluviRealm.getDefaultRealm();
         RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
-                .greaterThan("rideDate", startDate) // Rides that are tomorrow or later which have been created, requested, or scheduled
+                .greaterThanOrEqualTo("rideDate", startDate) // Rides that are tomorrow or later which have been created, requested, or scheduled
                 .beginGroup()
                 .equalTo("state", Ticket.StateCreated)
                 .or()

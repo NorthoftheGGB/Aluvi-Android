@@ -41,7 +41,8 @@ public class TicketsApi {
                 new AluviAuthRequestListener<CommuterTicketsResponse>() {
                     @Override
                     public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
-                        if ( statusCode == HttpURLConnection.HTTP_CREATED) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED
+                                || statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success(response);
                         } else {
                             callback.failure(statusCode);
@@ -55,7 +56,8 @@ public class TicketsApi {
                 }
         );
 
-        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_FORBIDDEN});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
+                HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
@@ -171,7 +173,7 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void ridersPickedUp(Ticket ticket, final ApiCallback callback){
+    public static void ridersPickedUp(Ticket ticket, final ApiCallback callback) {
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
@@ -199,7 +201,7 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void ridersDroppedOff(Ticket ticket, final ApiCallback callback){
+    public static void ridersDroppedOff(Ticket ticket, final ApiCallback callback) {
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
