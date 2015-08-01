@@ -5,6 +5,7 @@ import android.app.Application;
 import com.aluvi.android.R;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.gis.GeocodingApi;
+import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.location.DriverLocationManager;
 import com.aluvi.android.managers.location.RiderLocationManager;
@@ -21,6 +22,7 @@ public class AluviApplication extends Application {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
 
+        PushManager.setup(this);
         AluviRealm.initialize(this);
         GlobalIdentifiers.initialize(this);
         AluviApi.initialize(this);

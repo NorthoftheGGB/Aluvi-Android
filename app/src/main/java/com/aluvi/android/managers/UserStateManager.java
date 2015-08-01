@@ -99,8 +99,17 @@ public class UserStateManager {
             @Override
             public void success(String token) {
                 setApiToken(token);
-                callback.success();
-                PushManager.setup(context);
+
+                DevicesApi.updateUser(new DevicesApi.Callback() {
+                    @Override
+                    public void success() {
+                        callback.success();
+                    }
+                    @Override
+                    public void failure(int statusCode) {
+                        callback.failure("Could not update user");
+                    }
+                });
             }
 
             @Override
