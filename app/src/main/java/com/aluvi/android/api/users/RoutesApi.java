@@ -40,7 +40,8 @@ public class RoutesApi {
                 new AluviAuthRequestListener<JSONObject>() {
                     @Override
                     public void onAuthenticatedResponse(JSONObject response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED
+                                || statusCode == HttpURLConnection.HTTP_OK) {
                             listener.onSaved(route);
                         } else {
                             if (error != null)
@@ -55,7 +56,8 @@ public class RoutesApi {
                     }
                 });
 
-        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
+                HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
