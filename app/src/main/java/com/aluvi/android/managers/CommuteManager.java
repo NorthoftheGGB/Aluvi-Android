@@ -63,6 +63,9 @@ public class CommuteManager {
     }
 
     private CommuteManager() {
+        userRoute = AluviRealm.getDefaultRealm().where(Route.class).findFirst();
+        if (userRoute == null)
+            userRoute = new Route();
     }
 
     /**
@@ -73,21 +76,48 @@ public class CommuteManager {
      * @param callback
      */
     public void sync(final Callback callback) {
-        refreshRoutePreferences(new Callback() {
+
+        new ManagerRequestQueue(new ManagerRequestQueue.RequestQueueListener() {
             @Override
-            public void success() {
+            public void onRequestsFinished() {
                 callback.success();
             }
 
             @Override
-            public void failure(String message) {
-                userRoute = AluviRealm.getDefaultRealm().where(Route.class).findFirst();
-                if (userRoute == null)
-                    userRoute = new Route();
-
-                callback.success();
+            public void onError(String message) {
+                callback.failure(message);
             }
-        });
+        }).addRequest(new ManagerRequestQueue.RequestTask() {
+            @Override
+            public void run() {
+                refreshRoutePreferences(new Callback() {
+                    @Override
+                    public void success() {
+                        onComplete();
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        onError(message);
+                    }
+                });
+            }
+        }).addRequest(new ManagerRequestQueue.RequestTask() {
+            @Override
+            public void run() {
+                refreshTickets(new DataCallback<List<TicketStateTransition>>() {
+                    @Override
+                    public void success(List<TicketStateTransition> result) {
+                        onComplete();
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        onError(message);
+                    }
+                });
+            }
+        }).execute();
     }
 
     public void refreshRoutePreferences(final Callback callback) {
