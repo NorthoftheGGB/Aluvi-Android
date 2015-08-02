@@ -34,6 +34,8 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -126,6 +128,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 if (refreshProgressDialog != null)
                     refreshProgressDialog.cancel();
 
+                handleTicketStateTransitions(stateTransitions);
                 onTicketsRefreshed();
             }
 
@@ -244,6 +247,23 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mSlidingPanelContainer.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
+    }
+
+    private void handleTicketStateTransitions(List<TicketStateTransition> transitions) {
+        Collections.sort(transitions, new Comparator<TicketStateTransition>() {
+            @Override
+            public int compare(TicketStateTransition lhs, TicketStateTransition rhs) {
+                String lStatus = lhs.getNewState();
+                String rStaus = rhs.getNewState();
+
+                if (lStatus != null && lStatus.equals(Ticket.StateCreated)) {
+                    return -1;
+                } else if(rStaus != null && rStaus.equals(Ticket.StateCreated)){
+
+                }
+                return 0;
+            }
+        });
     }
 
     @Override

@@ -72,7 +72,6 @@ public class RegistrationIntentService extends IntentService {
         DevicesApi.updatePushToken(token, new DevicesApi.Callback() {
             @Override
             public void success() {
-
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(RegistrationIntentService.this);
                 sharedPreferences.edit().putBoolean(PushPreferences.SENT_TOKEN_TO_SERVER, true).apply();
 

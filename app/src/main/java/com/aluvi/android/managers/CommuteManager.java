@@ -53,22 +53,26 @@ public class CommuteManager {
 
     private Route userRoute;
 
-    public static synchronized void initialize(Callback callback) {
-        mInstance = new CommuteManager(callback);
+    public static synchronized void initialize() {
+        if (mInstance == null)
+            mInstance = new CommuteManager();
     }
 
     public static synchronized CommuteManager getInstance() {
         return mInstance;
     }
 
+    private CommuteManager() {
+    }
+
     /**
-     * Initialize this commute manager by fetching the latest route that the user has set. Initialization isn't dependent
+     * Sync this commute manager by fetching the latest route that the user has set. Initialization isn't dependent
      * on a route being found, but is dependent on fetching the latest copy we can find. If there aren't any routes
      * stored server or client side, then create an empty route.
      *
      * @param callback
      */
-    private CommuteManager(final Callback callback) {
+    public void sync(final Callback callback) {
         refreshRoutePreferences(new Callback() {
             @Override
             public void success() {
@@ -146,7 +150,7 @@ public class CommuteManager {
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
-        if(!isMinViableRouteAvailable()){
+        if (!isMinViableRouteAvailable()) {
             callback.failure("You do not have a commute set up yet");
             return;
         }
