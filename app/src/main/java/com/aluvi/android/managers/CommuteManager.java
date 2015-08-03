@@ -4,8 +4,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
-import com.aluvi.android.api.gis.MapQuestApi;
-import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
@@ -18,7 +16,6 @@ import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -405,23 +402,6 @@ public class CommuteManager {
             public void failure(int statusCode) {
                 callback.failure("Problem communicating with server");
 
-            }
-        });
-    }
-
-    public void loadRouteForTicket(Ticket ticket, final DataCallback<RouteData> callback) {
-        LatLng start = new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude());
-        LatLng end = new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude());
-
-        MapQuestApi.findRoute(start, end, new MapQuestApi.MapQuestCallback() {
-            @Override
-            public void onRouteFound(RouteData route) {
-                callback.success(route);
-            }
-
-            @Override
-            public void onFailure(int statusCode) {
-                callback.failure("Could not fetch route");
             }
         });
     }

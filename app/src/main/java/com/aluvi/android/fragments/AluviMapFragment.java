@@ -23,6 +23,7 @@ import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.location.RouteMappingManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -220,9 +221,9 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mMapView.setCenter(homeMarker.getPoint());
         mMapView.setZoom(15);
 
-        CommuteManager.getInstance().loadRouteForTicket(ticket, new CommuteManager.DataCallback<RouteData>() {
+        RouteMappingManager.getInstance().loadRouteForTicket(ticket, new RouteMappingManager.RouteMappingListener() {
             @Override
-            public void success(RouteData result) {
+            public void onRouteFound(RouteData result) {
                 if (result != null && mMapView != null) {
                     PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
 
@@ -237,7 +238,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
             }
 
             @Override
-            public void failure(String message) {
+            public void onFailure(String message) {
                 Log.e(TAG, message);
                 if (getView() != null) {
                     Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT)
@@ -295,8 +296,6 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     private void centerMapOnCurrentPin(float panelHeight) {
         float rootHeight = getView().getHeight();
         float remainingHeight = rootHeight - panelHeight;
-
-        Log.e(TAG, "Root height: " + rootHeight + ". Panel height: " + panelHeight);
 
         ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
         ILatLng currentCenterLoc = mMapView.getCenter();
