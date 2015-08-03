@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.aluvi.android.services.push.AluviPushNotificationListenerService;
+import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
@@ -58,6 +60,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
             MAP_STATE_KEY = "map_fragment_main";
 
     private Ticket mCurrentTicket;
+    private Marker mCurrentMarker;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -157,12 +160,18 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
         mMapView.clear();
+
+        Fragment ticketInfoFragment = getChildFragmentManager().findFragmentById(R.id.map_sliding_panel_container);
+        if (ticketInfoFragment != null)
+            getChildFragmentManager().beginTransaction().remove(ticketInfoFragment).commit();
     }
 
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
         if (mCurrentTicket != null) {
+            plotTicketRoute(mCurrentTicket);
+
             switch (mCurrentTicket.getState()) {
                 case Ticket.StateRequested:
                     onCommuteRequested();
@@ -174,8 +183,6 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                         enableRiderOverlay(mCurrentTicket);
                     break;
             }
-
-            plotTicketRoute(mCurrentTicket);
         }
 
         getActivity().supportInvalidateOptionsMenu();
@@ -195,6 +202,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         Marker homeMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
         homeMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+        mCurrentMarker = homeMarker;
 
         Marker workMarker = new Marker(getString(R.string.work), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
@@ -258,7 +266,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
                 if (lStatus != null && lStatus.equals(Ticket.StateCreated)) {
                     return -1;
-                } else if(rStaus != null && rStaus.equals(Ticket.StateCreated)){
+                } else if (rStaus != null && rStaus.equals(Ticket.StateCreated)) {
 
                 }
                 return 0;
@@ -273,6 +281,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
         mSlidingLayout.setAnchorPoint(anchor);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+
+        float remainingHeight = rootHeight - panelHeight;
+        ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
+        ILatLng currentCenterLoc = mMapView.getCenter();
+
+        double dy = mCurrentMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
+        double newLat = currentCenterLoc.getLatitude() + dy;
+        mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
     }
 
     private void cancelTrip(Trip trip) {

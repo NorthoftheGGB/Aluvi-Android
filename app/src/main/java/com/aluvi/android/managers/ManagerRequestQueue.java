@@ -26,8 +26,7 @@ public class ManagerRequestQueue {
     }
 
     public void execute() {
-        for (int i = 0; i < requests.size(); i++) {
-            RequestTask task = requests.get(i);
+        for (RequestTask task : requests) {
             task.setListener(new RequestTask.TaskListener() {
                 @Override
                 public void onComplete() {
@@ -38,11 +37,17 @@ public class ManagerRequestQueue {
                 @Override
                 public void onError(String message) {
                     listener.onError(message);
+                    cancelTasks();
                 }
             });
 
             task.run();
         }
+    }
+
+    public void cancelTasks() {
+        for (RequestTask task : requests)
+            task.cancel();
     }
 
     public synchronized boolean updateCompletedTasks() {
@@ -58,6 +63,7 @@ public class ManagerRequestQueue {
         }
 
         private TaskListener listener;
+        private boolean isCancelled;
 
         public abstract void run();
 
@@ -66,11 +72,17 @@ public class ManagerRequestQueue {
         }
 
         public void onComplete() {
-            listener.onComplete();
+            if (!isCancelled)
+                listener.onComplete();
         }
 
         public void onError(String message) {
-            listener.onError(message);
+            if (!isCancelled)
+                listener.onError(message);
+        }
+
+        public void cancel() {
+            isCancelled = true;
         }
     }
 }

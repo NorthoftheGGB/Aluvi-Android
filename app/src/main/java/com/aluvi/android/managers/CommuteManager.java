@@ -76,7 +76,6 @@ public class CommuteManager {
      * @param callback
      */
     public void sync(final Callback callback) {
-
         new ManagerRequestQueue(new ManagerRequestQueue.RequestQueueListener() {
             @Override
             public void onRequestsFinished() {
@@ -152,7 +151,6 @@ public class CommuteManager {
         RoutesApi.saveRoute(userRoute, new RoutesApi.OnRouteSavedListener() {
             @Override
             public void onSaved(Route route) {
-                onRouteFetched(route);
                 if (callback != null)
                     callback.success();
             }
@@ -362,12 +360,14 @@ public class CommuteManager {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
-                Realm realm = AluviRealm.getDefaultRealm();
-                realm.beginTransaction();
-                trip.getTickets().where().findAll().clear();
-                trip.removeFromRealm();
-                realm.commitTransaction();
-                callback.success();
+                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        trip.getTickets().where().findAll().clear();
+                        trip.removeFromRealm();
+                        callback.success();
+                    }
+                });
             }
 
             @Override
