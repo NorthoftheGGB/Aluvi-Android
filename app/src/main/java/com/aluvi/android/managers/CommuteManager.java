@@ -73,7 +73,7 @@ public class CommuteManager {
      * @param callback
      */
     public void sync(final Callback callback) {
-        new ManagerRequestQueue(new ManagerRequestQueue.RequestQueueListener() {
+        new RequestQueue(new RequestQueue.RequestQueueListener() {
             @Override
             public void onRequestsFinished() {
                 callback.success();
@@ -83,7 +83,7 @@ public class CommuteManager {
             public void onError(String message) {
                 callback.failure(message);
             }
-        }).addRequest(new ManagerRequestQueue.RequestTask() {
+        }).addRequest(new RequestQueue.RequestTask() {
             @Override
             public void run() {
                 refreshRoutePreferences(new Callback() {
@@ -98,7 +98,7 @@ public class CommuteManager {
                     }
                 });
             }
-        }).addRequest(new ManagerRequestQueue.RequestTask() {
+        }).addRequest(new RequestQueue.RequestTask() {
             @Override
             public void run() {
                 refreshTickets(new DataCallback<List<TicketStateTransition>>() {
@@ -414,16 +414,17 @@ public class CommuteManager {
      */
     @Nullable
     public Ticket getActiveTicket() {
+        // @formatter:off
         RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
                 .where(Ticket.class)
                 .greaterThan("pickupTime", new Date())
                 .beginGroup()
-                .equalTo("state", Ticket.StateRequested)
-                .or()
-                .equalTo("state", Ticket.StateScheduled)
+                    .equalTo("state", Ticket.StateRequested)
+                    .or()
+                    .equalTo("state", Ticket.StateScheduled)
                 .endGroup()
                 .findAllSorted("pickupTime");
-
+        // @formatter:on
         return tickets.size() > 0 ? tickets.get(0) : null;
     }
 

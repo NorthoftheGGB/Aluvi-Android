@@ -61,7 +61,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
             MAP_STATE_KEY = "map_fragment_main";
 
     private Ticket mCurrentTicket;
-    private Marker mCurrentMarker;
+    private Marker mCurrentlyFocusedMarker;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -119,6 +119,43 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main_map, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateRequested);
+        boolean isTicketScheduled = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateScheduled);
+        boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
+
+        menu.findItem(R.id.action_cancel).setVisible(isTicketRequestedOrScheduled);
+        if (isTicketRequestedOrScheduled) {
+            MenuItem scheduleRideItem = menu.findItem(R.id.action_schedule_ride);
+            scheduleRideItem.setVisible(isTicketRequested); // If the ride has been requested, show "View Commute"
+
+            if (isTicketRequested)
+                scheduleRideItem.setTitle(R.string.action_view_commute);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_schedule_ride:
+                Trip currentlySelectedTrip = mCurrentTicket != null ? mCurrentTicket.getTrip() : null;
+                mEventListener.onCommuteSchedulerRequested(currentlySelectedTrip);
+                break;
+            case R.id.action_cancel:
+                cancelTrip(mCurrentTicket.getTrip());
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     @SuppressWarnings("unused")
     public void onEvent(AluviPushNotificationListenerService.PushNotificationEvent event) {
         refreshTickets();
@@ -145,14 +182,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
             @Override
             public void failure(String message) {
-                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
-                        .setAction(R.string.retry, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                refreshTickets();
-                            }
-                        })
-                        .show();
+                if (getView() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
 
                 if (refreshProgressDialog != null)
                     refreshProgressDialog.cancel();
@@ -160,11 +191,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         });
     }
 
-    public void onCommuteRequested() {
-        mCommutePendingTextView.setVisibility(View.VISIBLE);
-    }
-
-    public void resetUI() {
+    private void resetUI() {
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
         mMapView.clear();
@@ -182,7 +209,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
             switch (mCurrentTicket.getState()) {
                 case Ticket.StateRequested:
-                    onCommuteRequested();
+                    mCommutePendingTextView.setVisibility(View.VISIBLE);
                     break;
                 case Ticket.StateScheduled:
                     if (mCurrentTicket.isDriving())
@@ -210,56 +237,54 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         Marker homeMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
         homeMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
-        mCurrentMarker = homeMarker;
+        mCurrentlyFocusedMarker = homeMarker;
 
         Marker workMarker = new Marker(getString(R.string.work), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
         workMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
-
-        mMapView.addMarker(homeMarker);
-        mMapView.addMarker(workMarker);
-        mMapView.setCenter(homeMarker.getPoint());
-        mMapView.setZoom(15);
-
-        RouteMappingManager.getInstance().loadRouteForTicket(ticket, new RouteMappingManager.RouteMappingListener() {
-            @Override
-            public void onRouteFound(RouteData result) {
-                if (result != null && mMapView != null) {
-                    PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
-
-                    LatLng[] coordinates = result.getCoordinates();
-                    if (coordinates != null)
-                        for (LatLng coordinate : coordinates) {
-                            overlay.addPoint(coordinate);
-                        }
-
-                    mMapView.addOverlay(overlay);
-                }
-            }
-
-            @Override
-            public void onFailure(String message) {
-                Log.e(TAG, message);
-                if (getView() != null) {
-                    Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.retry, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    plotTicketRoute(ticket);
-                                }
-                            }).show();
-                }
-            }
-        });
+        plotRoute(homeMarker, workMarker);
     }
 
-    public void enableRiderOverlay(Ticket ticket) {
+    private void plotRoute(Marker startMarker, Marker endMarker) {
+        mMapView.addMarker(startMarker);
+        mMapView.addMarker(endMarker);
+        mMapView.setCenter(startMarker.getPoint());
+        mMapView.setZoom(15);
+
+        RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
+                new RouteMappingManager.RouteMappingListener() {
+                    @Override
+                    public void onRouteFound(RouteData result) {
+                        if (result != null && mMapView != null) {
+                            PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
+
+                            LatLng[] coordinates = result.getCoordinates();
+                            if (coordinates != null)
+                                for (LatLng coordinate : coordinates) {
+                                    overlay.addPoint(coordinate);
+                                }
+
+                            mMapView.addOverlay(overlay);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        Log.e(TAG, message);
+                        if (getView() != null) {
+                            Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void enableRiderOverlay(Ticket ticket) {
         mSlidingPanelContainer.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
     }
 
-    public void enableDriverOverlay(Ticket ticket) {
+    private void enableDriverOverlay(Ticket ticket) {
         mSlidingPanelContainer.setVisibility(View.VISIBLE);
         getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
                 TicketInfoFragment.newInstance(ticket)).commit();
@@ -300,7 +325,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
         ILatLng currentCenterLoc = mMapView.getCenter();
 
-        double dy = mCurrentMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
+        double dy = mCurrentlyFocusedMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
         double newLat = currentCenterLoc.getLatitude() + dy;
         mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
     }
@@ -325,44 +350,6 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main_map, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        if (mCurrentTicket != null && (mCurrentTicket.getState().equals(Ticket.StateRequested)
-                || mCurrentTicket.getState().equals(Ticket.StateScheduled))) {
-            menu.findItem(R.id.action_cancel).setVisible(true);
-
-            if (mCurrentTicket.getState().equals(Ticket.StateRequested))
-                menu.findItem(R.id.action_schedule_ride)
-                        .setVisible(true)
-                        .setTitle(R.string.action_view_commute);
-            else
-                menu.findItem(R.id.action_schedule_ride).setVisible(false);
-        } else
-            menu.findItem(R.id.action_cancel).setVisible(false);
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_schedule_ride:
-                Trip currentlySelectedTrip = mCurrentTicket != null ? mCurrentTicket.getTrip() : null;
-                mEventListener.onCommuteSchedulerRequested(currentlySelectedTrip);
-                break;
-            case R.id.action_cancel:
-                cancelTrip(mCurrentTicket.getTrip());
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {

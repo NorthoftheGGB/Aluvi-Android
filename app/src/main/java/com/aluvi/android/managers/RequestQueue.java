@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by usama on 8/2/15.
  */
-public class ManagerRequestQueue {
+public class RequestQueue {
     public interface RequestQueueListener {
         void onRequestsFinished();
 
@@ -16,11 +16,11 @@ public class ManagerRequestQueue {
     private int completedTasks;
     private RequestQueueListener listener;
 
-    public ManagerRequestQueue(RequestQueueListener listener) {
+    public RequestQueue(RequestQueueListener listener) {
         this.listener = listener;
     }
 
-    public ManagerRequestQueue addRequest(RequestTask request) {
+    public RequestQueue addRequest(RequestTask request) {
         requests.add(request);
         return this;
     }
