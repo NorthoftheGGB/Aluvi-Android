@@ -95,6 +95,13 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
             mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
         }
+
+        mSlidingLayout.setPanelSlideListener(new SimpleOnPanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+                centerMapOnCurrentPin(view.getHeight() * v);
+            }
+        });
     }
 
     @Override
@@ -282,7 +289,15 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mSlidingLayout.setAnchorPoint(anchor);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
 
+        centerMapOnCurrentPin(panelHeight);
+    }
+
+    private void centerMapOnCurrentPin(float panelHeight) {
+        float rootHeight = getView().getHeight();
         float remainingHeight = rootHeight - panelHeight;
+
+        Log.e(TAG, "Root height: " + rootHeight + ". Panel height: " + panelHeight);
+
         ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
         ILatLng currentCenterLoc = mMapView.getCenter();
 
@@ -349,5 +364,27 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
+        @Override
+        public void onPanelCollapsed(View view) {
+
+        }
+
+        @Override
+        public void onPanelExpanded(View view) {
+
+        }
+
+        @Override
+        public void onPanelAnchored(View view) {
+
+        }
+
+        @Override
+        public void onPanelHidden(View view) {
+
+        }
     }
 }
