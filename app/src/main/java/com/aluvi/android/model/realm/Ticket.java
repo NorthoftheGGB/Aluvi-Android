@@ -137,20 +137,15 @@ public class Ticket extends RealmObject {
         }
 
         if (data.getRiders() != null) {
-            // Clear out any saved riders - faster and simpler than figuring out which ones to update
-            RealmList<Rider> riders = ticket.getRiders();
-            for (Rider rider : riders) {
-                rider.removeFromRealm();
-            }
+            ticket.getRiders().where().findAll().clear();
 
             for (RiderData apiRider : data.getRiders()) {
                 Rider rider = realm.createObject(Rider.class);
-                ticket.getRiders().add(rider);
                 Rider.updateWithRiderData(rider, apiRider);
+                ticket.getRiders().add(rider);
             }
         }
     }
-
 
     public static String routeDescription(Ticket ticket) {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();

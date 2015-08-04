@@ -8,7 +8,6 @@ import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.application.AluviPreferences;
-import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.model.local.Profile;
 import com.google.gson.Gson;
 
@@ -123,7 +122,7 @@ public class UserStateManager {
         setApiToken(null);
 
         DeviceData deviceData = new DeviceData();
-        deviceData.setPushToken("");
+//        deviceData.setPushToken("");
         DevicesApi.patchDevice(deviceData, new DevicesApi.Callback() {
             @Override
             public void success() {

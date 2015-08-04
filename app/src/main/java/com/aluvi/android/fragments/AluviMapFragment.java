@@ -151,7 +151,10 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 mEventListener.onCommuteSchedulerRequested(activeTrip);
                 break;
             case R.id.action_cancel:
-                cancelTrip(activeTrip);
+                if (mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateScheduled))
+                    cancelTicket(mCurrentTicket);
+                else
+                    cancelTrip(activeTrip);
                 break;
         }
 
@@ -277,13 +280,10 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                     public void onRouteFound(RouteData result) {
                         if (result != null && mMapView != null) {
                             PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
-
                             LatLng[] coordinates = result.getCoordinates();
                             if (coordinates != null)
-                                for (LatLng coordinate : coordinates) {
+                                for (LatLng coordinate : coordinates)
                                     overlay.addPoint(coordinate);
-                                }
-
                             mMapView.addOverlay(overlay);
                         }
                     }
@@ -291,9 +291,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                     @Override
                     public void onFailure(String message) {
                         Log.e(TAG, message);
-                        if (getView() != null) {
+                        if (getView() != null)
                             Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
-                        }
                     }
                 });
     }
@@ -354,27 +353,33 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
     }
 
-    private void cancelTrip(Trip trip) {
-        CommuteManager.getInstance().cancelTrip(trip, new CommuteManager.Callback() {
-            @Override
-            public void success() {
-                Log.d(TAG, "Successfully cancelled trips");
-
-                if (getActivity() != null) {
-                    Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
-                    refreshTickets();
-                }
-            }
-
-            @Override
-            public void failure(String message) {
-                Log.e(TAG, message);
-
-                if (getActivity() != null)
-                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-            }
-        });
+    private void cancelTicket(Ticket ticket) {
+        CommuteManager.getInstance().cancelTicket(ticket, cancelCallback);
     }
+
+    private void cancelTrip(Trip trip) {
+        CommuteManager.getInstance().cancelTrip(trip, cancelCallback);
+    }
+
+    private CommuteManager.Callback cancelCallback = new CommuteManager.Callback() {
+        @Override
+        public void success() {
+            Log.d(TAG, "Successfully cancelled trips");
+
+            if (getActivity() != null) {
+                Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+                refreshTickets();
+            }
+        }
+
+        @Override
+        public void failure(String message) {
+            Log.e(TAG, message);
+
+            if (getActivity() != null)
+                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+        }
+    };
 
     private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
         @Override

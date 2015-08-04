@@ -2,7 +2,6 @@ package com.aluvi.android.managers.location;
 
 import com.aluvi.android.api.gis.MapQuestApi;
 import com.aluvi.android.api.gis.models.RouteData;
-import com.aluvi.android.model.realm.Ticket;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 /**
@@ -24,12 +23,6 @@ public class RouteMappingManager {
         if (instance == null)
             instance = new RouteMappingManager();
         return instance;
-    }
-
-    public void loadRouteForTicket(Ticket ticket, final RouteMappingListener callback) {
-        LatLng start = new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude());
-        LatLng end = new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude());
-        loadRoute(start, end, callback);
     }
 
     public void loadRoute(LatLng start, LatLng end, final RouteMappingListener callback) {

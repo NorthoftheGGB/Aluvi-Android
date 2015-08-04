@@ -33,6 +33,7 @@
     <string name="unable_schedule_commute">Unable to schedule commute</string>
     <string name="unable_log_in">Unable to log in</string>
     <string name="unable_log_out">Unable to log out</string>
+    <string name="unable_rider_picked_up">Error when saving riders\' states</string>
     <string name="retry">Retry</string>
     <string name="work">Work</string>
     <string name="home">Home</string>
@@ -56,6 +57,8 @@
     <string name="close">Close</string>
 
     <string name="contact_driver">Contact Driver</string>
+    <string name="late">I\'m Late!</string>
+    <string name="riders_picked_up">Riders Picked Up</string>
     <string-array name="contact_options">
         <item>Call</item>
         <item>Text</item>
