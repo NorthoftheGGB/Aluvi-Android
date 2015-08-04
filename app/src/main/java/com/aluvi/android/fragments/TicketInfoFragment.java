@@ -107,7 +107,8 @@ public class TicketInfoFragment extends BaseButterFragment {
         RealmList<Rider> riders = mTicket.getRiders();
         if (riders != null) {
             for (Rider rider : riders) {
-                addRider(rider);
+                if (rider.getId() != mTicket.getDriver().getId())
+                    addRider(rider);
             }
         }
     }

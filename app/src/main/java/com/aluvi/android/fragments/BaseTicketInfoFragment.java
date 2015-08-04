@@ -14,7 +14,7 @@ import com.aluvi.android.model.realm.Ticket;
 /**
  * Created by usama on 8/2/15.
  */
-public class BaseTicketInforFragment extends BaseButterFragment {
+public class BaseTicketInfoFragment extends BaseButterFragment {
     public interface OnTicketInfoLayoutListener {
         void onTicketInfoUIMeasured(int headerHeight, int panelHeight);
     }

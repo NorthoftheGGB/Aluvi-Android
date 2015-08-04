@@ -32,7 +32,6 @@ public class AluviApplication extends Application {
         GeocodingApi.initialize(this, getString(R.string.mapbox_access_token));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
-        PushManager.setup(this);
     }
 
     @Override

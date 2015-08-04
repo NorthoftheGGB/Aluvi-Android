@@ -61,7 +61,7 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void cancelRiderScheduledTicket(Ticket ticket, final ApiCallback callback) {
+    public static void cancelTicket(Ticket ticket, final ApiCallback callback) {
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(

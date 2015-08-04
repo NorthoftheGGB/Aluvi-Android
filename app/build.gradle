@@ -89,3 +89,17 @@ dependencies {
         transitive = true;
     }
 }
+
+gradle.taskGraph.beforeTask { Task task ->
+    if(task.name ==~ /process.*GoogleServices/) {
+        android.applicationVariants.all { variant ->
+            if(task.name ==~ /(?i)process${variant.name}GoogleServices/){
+                copy {
+                    from "/src/${variant.flavorName}"
+                    into '.'
+                    include 'google-services.json'
+                }
+            }
+        }
+    }
+}
