@@ -60,9 +60,14 @@ public class CommuteManager {
     }
 
     private CommuteManager() {
-        userRoute = AluviRealm.getDefaultRealm().where(Route.class).findFirst();
-        if (userRoute == null)
-            userRoute = new Route();
+        Realm realm = AluviRealm.getDefaultRealm();
+        userRoute = realm.where(Route.class).findFirst();
+
+        if (userRoute == null) {
+            realm.beginTransaction();
+            userRoute = realm.createObject(Route.class);
+            realm.commitTransaction();
+        }
     }
 
     /**
@@ -426,6 +431,12 @@ public class CommuteManager {
                 .findAllSorted("pickupTime");
         // @formatter:on
         return tickets.size() > 0 ? tickets.get(0) : null;
+    }
+
+    @Nullable
+    public Trip getActiveTrip() {
+        Ticket activeTicket = getActiveTicket();
+        return activeTicket != null ? activeTicket.getTrip() : null;
     }
 
     public Route getRoute() {

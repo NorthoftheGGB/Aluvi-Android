@@ -25,6 +25,8 @@ import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.location.RouteMappingManager;
 import com.aluvi.android.model.local.TicketStateTransition;
+import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.aluvi.android.services.push.AluviPushNotificationListenerService;
@@ -143,13 +145,13 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Trip activeTrip = CommuteManager.getInstance().getActiveTrip();
         switch (item.getItemId()) {
             case R.id.action_schedule_ride:
-                Trip currentlySelectedTrip = mCurrentTicket != null ? mCurrentTicket.getTrip() : null;
-                mEventListener.onCommuteSchedulerRequested(currentlySelectedTrip);
+                mEventListener.onCommuteSchedulerRequested(activeTrip);
                 break;
             case R.id.action_cancel:
-                cancelTrip(mCurrentTicket.getTrip());
+                cancelTrip(activeTrip);
                 break;
         }
 
@@ -218,14 +220,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                         enableRiderOverlay(mCurrentTicket);
                     break;
             }
+        } else {
+            plotRoute(CommuteManager.getInstance().getRoute());
         }
 
         getActivity().supportInvalidateOptionsMenu();
     }
 
     private void plotTicketRoute(final Ticket ticket) {
-        mMapView.clear();
-
         String markerText = "";
         if (ticket.getState().equals(Ticket.StateScheduled)) {
             SimpleDateFormat pickupTime = new SimpleDateFormat("h:mm a");
@@ -236,16 +238,34 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
         Marker homeMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
-        homeMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
-        mCurrentlyFocusedMarker = homeMarker;
+        setMarkerIcon(homeMarker);
 
         Marker workMarker = new Marker(getString(R.string.work), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
-        workMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+        setMarkerIcon(workMarker);
+
         plotRoute(homeMarker, workMarker);
+        mCurrentlyFocusedMarker = homeMarker;
+    }
+
+    private void plotRoute(Route savedRoute) {
+        LocationWrapper origin = savedRoute.getOrigin();
+        LocationWrapper destination = savedRoute.getDestination();
+        if (origin != null && destination != null) {
+            Marker homeMarker = new Marker(getString(R.string.home), savedRoute.getOriginPlaceName(),
+                    new LatLng(origin.getLatitude(), origin.getLongitude()));
+            setMarkerIcon(homeMarker);
+
+            Marker workMarker = new Marker(getString(R.string.work), savedRoute.getDestinationPlaceName(),
+                    new LatLng(destination.getLatitude(), destination.getLongitude()));
+            setMarkerIcon(workMarker);
+
+            plotRoute(homeMarker, workMarker);
+        }
     }
 
     private void plotRoute(Marker startMarker, Marker endMarker) {
+        mMapView.clear();
         mMapView.addMarker(startMarker);
         mMapView.addMarker(endMarker);
         mMapView.setCenter(startMarker.getPoint());
@@ -276,6 +296,10 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                         }
                     }
                 });
+    }
+
+    private void setMarkerIcon(Marker marker) {
+        marker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
     }
 
     private void enableRiderOverlay(Ticket ticket) {
