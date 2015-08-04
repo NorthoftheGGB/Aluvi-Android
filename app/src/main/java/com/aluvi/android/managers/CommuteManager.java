@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -292,8 +293,24 @@ public class CommuteManager {
                             for (TicketData ticket : tickets)
                                 updateTicketForData(ticket, ticketStateTransitions);
 
+                        // Check for tickets that are no longer relevant
 
-                        if (callback != null)
+                        realm.beginTransaction();
+                        RealmQuery< Ticket > query = realm.where(Ticket.class);
+                        query.beginGroup();
+                        for(int i = 0; i< tickets.size(); i++){
+                            query.notEqualTo("id", tickets.get(i).getTicketId());
+                        }
+                        query.endGroup();
+                        RealmResults< Ticket > result = query.findAll();
+
+                        for (int i = 0; i < result.size(); i++) {
+                            Ticket t = result.get(i);
+                            ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
+                            t.removeFromRealm();
+                        }
+
+                        if(callback!=null)
                             callback.success(ticketStateTransitions);
                     }
                 });
