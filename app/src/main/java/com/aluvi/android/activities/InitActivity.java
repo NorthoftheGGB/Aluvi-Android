@@ -22,7 +22,7 @@ public class InitActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
-        CommuteManager.initialize(new CommuteManager.Callback() {
+        CommuteManager.getInstance().sync(new CommuteManager.Callback() {
             @Override
             public void success() {
                 if (progressDialog != null)
@@ -33,7 +33,7 @@ public class InitActivity extends Activity {
 
             @Override
             public void failure(String message) {
-                if(progressDialog != null)
+                if (progressDialog != null)
                     progressDialog.cancel();
 
                 Toast.makeText(InitActivity.this, message, Toast.LENGTH_SHORT).show();

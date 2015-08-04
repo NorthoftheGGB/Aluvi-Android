@@ -93,10 +93,13 @@ public class Ticket extends RealmObject {
 
         ticket.setDriving(route.isDriving());
 
+        int hour = reverseDirection ? Route.getHour(route.getReturnTime()) : Route.getHour(route.getPickupTime());
+        int minute = reverseDirection ? Route.getMinute(route.getReturnTime()) : Route.getMinute(route.getReturnTime());
+
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(rideDate);
-        cal.add(Calendar.HOUR_OF_DAY, Route.getHour(route.getPickupTime()));
-        cal.add(Calendar.MINUTE, Route.getMinute(route.getPickupTime()));
+        cal.add(Calendar.HOUR_OF_DAY, hour);
+        cal.add(Calendar.MINUTE, minute);
         ticket.setPickupTime(cal.getTime());
         ticket.setLastUpdated(new Date());
         return ticket;

@@ -4,8 +4,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
-import com.aluvi.android.api.gis.MapQuestApi;
-import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
@@ -18,7 +16,6 @@ import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -53,37 +50,75 @@ public class CommuteManager {
 
     private Route userRoute;
 
-    public static synchronized void initialize(Callback callback) {
-        mInstance = new CommuteManager(callback);
+    public static synchronized void initialize() {
+        if (mInstance == null)
+            mInstance = new CommuteManager();
     }
 
     public static synchronized CommuteManager getInstance() {
         return mInstance;
     }
 
+    private CommuteManager() {
+        Realm realm = AluviRealm.getDefaultRealm();
+        userRoute = realm.where(Route.class).findFirst();
+
+        if (userRoute == null) {
+            realm.beginTransaction();
+            userRoute = realm.createObject(Route.class);
+            realm.commitTransaction();
+        }
+    }
+
     /**
-     * Initialize this commute manager by fetching the latest route that the user has set. Initialization isn't dependent
+     * Sync this commute manager by fetching the latest route that the user has set. Initialization isn't dependent
      * on a route being found, but is dependent on fetching the latest copy we can find. If there aren't any routes
      * stored server or client side, then create an empty route.
      *
      * @param callback
      */
-    private CommuteManager(final Callback callback) {
-        refreshRoutePreferences(new Callback() {
+    public void sync(final Callback callback) {
+        new RequestQueue(new RequestQueue.RequestQueueListener() {
             @Override
-            public void success() {
+            public void onRequestsFinished() {
                 callback.success();
             }
 
             @Override
-            public void failure(String message) {
-                userRoute = AluviRealm.getDefaultRealm().where(Route.class).findFirst();
-                if (userRoute == null)
-                    userRoute = new Route();
-
-                callback.success();
+            public void onError(String message) {
+                callback.failure(message);
             }
-        });
+        }).addRequest(new RequestQueue.RequestTask() {
+            @Override
+            public void run() {
+                refreshRoutePreferences(new Callback() {
+                    @Override
+                    public void success() {
+                        onComplete();
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        onError(message);
+                    }
+                });
+            }
+        }).addRequest(new RequestQueue.RequestTask() {
+            @Override
+            public void run() {
+                refreshTickets(new DataCallback<List<TicketStateTransition>>() {
+                    @Override
+                    public void success(List<TicketStateTransition> result) {
+                        onComplete();
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        onError(message);
+                    }
+                });
+            }
+        }).execute();
     }
 
     public void refreshRoutePreferences(final Callback callback) {
@@ -118,7 +153,6 @@ public class CommuteManager {
         RoutesApi.saveRoute(userRoute, new RoutesApi.OnRouteSavedListener() {
             @Override
             public void onSaved(Route route) {
-                onRouteFetched(route);
                 if (callback != null)
                     callback.success();
             }
@@ -146,7 +180,7 @@ public class CommuteManager {
     }
 
     public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
-        if(!isMinViableRouteAvailable()){
+        if (!isMinViableRouteAvailable()) {
             callback.failure("You do not have a commute set up yet");
             return;
         }
@@ -312,12 +346,14 @@ public class CommuteManager {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
-                Realm realm = AluviRealm.getDefaultRealm();
-                realm.beginTransaction();
-                trip.getTickets().where().findAll().clear();
-                trip.removeFromRealm();
-                realm.commitTransaction();
-                callback.success();
+                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        trip.getTickets().where().findAll().clear();
+                        trip.removeFromRealm();
+                        callback.success();
+                    }
+                });
             }
 
             @Override
@@ -359,23 +395,6 @@ public class CommuteManager {
         });
     }
 
-    public void loadRouteForTicket(Ticket ticket, final DataCallback<RouteData> callback) {
-        LatLng start = new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude());
-        LatLng end = new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude());
-
-        MapQuestApi.findRoute(start, end, new MapQuestApi.MapQuestCallback() {
-            @Override
-            public void onRouteFound(RouteData route) {
-                callback.success(route);
-            }
-
-            @Override
-            public void onFailure(int statusCode) {
-                callback.failure("Could not fetch route");
-            }
-        });
-    }
-
     /**
      * Minimize calling this method - it is relatively expensive to look through a potentially large list of tickets
      * looking for the most relevant one (nearest in the future, requested or scheduled state).
@@ -384,17 +403,24 @@ public class CommuteManager {
      */
     @Nullable
     public Ticket getActiveTicket() {
+        // @formatter:off
         RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm()
                 .where(Ticket.class)
                 .greaterThan("pickupTime", new Date())
                 .beginGroup()
-                .equalTo("state", Ticket.StateRequested)
-                .or()
-                .equalTo("state", Ticket.StateScheduled)
+                    .equalTo("state", Ticket.StateRequested)
+                    .or()
+                    .equalTo("state", Ticket.StateScheduled)
                 .endGroup()
                 .findAllSorted("pickupTime");
-
+        // @formatter:on
         return tickets.size() > 0 ? tickets.get(0) : null;
+    }
+
+    @Nullable
+    public Trip getActiveTrip() {
+        Ticket activeTicket = getActiveTicket();
+        return activeTicket != null ? activeTicket.getTrip() : null;
     }
 
     public Route getRoute() {

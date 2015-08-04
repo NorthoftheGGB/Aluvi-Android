@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,10 +23,14 @@ import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.location.RouteMappingManager;
 import com.aluvi.android.model.local.TicketStateTransition;
+import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.aluvi.android.services.push.AluviPushNotificationListenerService;
+import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
@@ -34,6 +39,8 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -56,6 +63,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
             MAP_STATE_KEY = "map_fragment_main";
 
     private Ticket mCurrentTicket;
+    private Marker mCurrentlyFocusedMarker;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -90,6 +98,13 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
             mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
         }
+
+        mSlidingLayout.setPanelSlideListener(new SimpleOnPanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+                centerMapOnCurrentPin(view.getHeight() * v);
+            }
+        });
     }
 
     @Override
@@ -104,6 +119,43 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         super.onPause();
         MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main_map, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateRequested);
+        boolean isTicketScheduled = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateScheduled);
+        boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
+
+        menu.findItem(R.id.action_cancel).setVisible(isTicketRequestedOrScheduled);
+        if (isTicketRequestedOrScheduled) {
+            MenuItem scheduleRideItem = menu.findItem(R.id.action_schedule_ride);
+            scheduleRideItem.setVisible(isTicketRequested); // If the ride has been requested, show "View Commute"
+
+            if (isTicketRequested)
+                scheduleRideItem.setTitle(R.string.action_view_commute);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Trip activeTrip = CommuteManager.getInstance().getActiveTrip();
+        switch (item.getItemId()) {
+            case R.id.action_schedule_ride:
+                mEventListener.onCommuteSchedulerRequested(activeTrip);
+                break;
+            case R.id.action_cancel:
+                cancelTrip(activeTrip);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("unused")
@@ -126,19 +178,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 if (refreshProgressDialog != null)
                     refreshProgressDialog.cancel();
 
+                handleTicketStateTransitions(stateTransitions);
                 onTicketsRefreshed();
             }
 
             @Override
             public void failure(String message) {
-                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
-                        .setAction(R.string.retry, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                refreshTickets();
-                            }
-                        })
-                        .show();
+                if (getView() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
 
                 if (refreshProgressDialog != null)
                     refreshProgressDialog.cancel();
@@ -146,23 +193,25 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         });
     }
 
-    public void onCommuteRequested() {
-        mCommutePendingTextView.setVisibility(View.VISIBLE);
-    }
-
-    public void resetUI() {
+    private void resetUI() {
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
         mMapView.clear();
+
+        Fragment ticketInfoFragment = getChildFragmentManager().findFragmentById(R.id.map_sliding_panel_container);
+        if (ticketInfoFragment != null)
+            getChildFragmentManager().beginTransaction().remove(ticketInfoFragment).commit();
     }
 
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
         if (mCurrentTicket != null) {
+            plotTicketRoute(mCurrentTicket);
+
             switch (mCurrentTicket.getState()) {
                 case Ticket.StateRequested:
-                    onCommuteRequested();
+                    mCommutePendingTextView.setVisibility(View.VISIBLE);
                     break;
                 case Ticket.StateScheduled:
                     if (mCurrentTicket.isDriving())
@@ -171,16 +220,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                         enableRiderOverlay(mCurrentTicket);
                     break;
             }
-
-            plotTicketRoute(mCurrentTicket);
+        } else {
+            plotRoute(CommuteManager.getInstance().getRoute());
         }
 
         getActivity().supportInvalidateOptionsMenu();
     }
 
     private void plotTicketRoute(final Ticket ticket) {
-        mMapView.clear();
-
         String markerText = "";
         if (ticket.getState().equals(Ticket.StateScheduled)) {
             SimpleDateFormat pickupTime = new SimpleDateFormat("h:mm a");
@@ -191,59 +238,97 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
         Marker homeMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
-        homeMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+        setMarkerIcon(homeMarker);
 
         Marker workMarker = new Marker(getString(R.string.work), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
-        workMarker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+        setMarkerIcon(workMarker);
 
-        mMapView.addMarker(homeMarker);
-        mMapView.addMarker(workMarker);
-        mMapView.setCenter(homeMarker.getPoint());
+        plotRoute(homeMarker, workMarker);
+        mCurrentlyFocusedMarker = homeMarker;
+    }
+
+    private void plotRoute(Route savedRoute) {
+        LocationWrapper origin = savedRoute.getOrigin();
+        LocationWrapper destination = savedRoute.getDestination();
+        if (origin != null && destination != null) {
+            Marker homeMarker = new Marker(getString(R.string.home), savedRoute.getOriginPlaceName(),
+                    new LatLng(origin.getLatitude(), origin.getLongitude()));
+            setMarkerIcon(homeMarker);
+
+            Marker workMarker = new Marker(getString(R.string.work), savedRoute.getDestinationPlaceName(),
+                    new LatLng(destination.getLatitude(), destination.getLongitude()));
+            setMarkerIcon(workMarker);
+
+            plotRoute(homeMarker, workMarker);
+        }
+    }
+
+    private void plotRoute(Marker startMarker, Marker endMarker) {
+        mMapView.clear();
+        mMapView.addMarker(startMarker);
+        mMapView.addMarker(endMarker);
+        mMapView.setCenter(startMarker.getPoint());
         mMapView.setZoom(15);
 
-        CommuteManager.getInstance().loadRouteForTicket(ticket, new CommuteManager.DataCallback<RouteData>() {
-            @Override
-            public void success(RouteData result) {
-                if (result != null && mMapView != null) {
-                    PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
+        RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
+                new RouteMappingManager.RouteMappingListener() {
+                    @Override
+                    public void onRouteFound(RouteData result) {
+                        if (result != null && mMapView != null) {
+                            PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
 
-                    LatLng[] coordinates = result.getCoordinates();
-                    if (coordinates != null)
-                        for (LatLng coordinate : coordinates) {
-                            overlay.addPoint(coordinate);
-                        }
-
-                    mMapView.addOverlay(overlay);
-                }
-            }
-
-            @Override
-            public void failure(String message) {
-                Log.e(TAG, message);
-                if (getView() != null) {
-                    Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.retry, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    plotTicketRoute(ticket);
+                            LatLng[] coordinates = result.getCoordinates();
+                            if (coordinates != null)
+                                for (LatLng coordinate : coordinates) {
+                                    overlay.addPoint(coordinate);
                                 }
-                            }).show();
+
+                            mMapView.addOverlay(overlay);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        Log.e(TAG, message);
+                        if (getView() != null) {
+                            Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void setMarkerIcon(Marker marker) {
+        marker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+    }
+
+    private void enableRiderOverlay(Ticket ticket) {
+        mSlidingPanelContainer.setVisibility(View.VISIBLE);
+        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
+                TicketInfoFragment.newInstance(ticket)).commit();
+    }
+
+    private void enableDriverOverlay(Ticket ticket) {
+        mSlidingPanelContainer.setVisibility(View.VISIBLE);
+        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
+                TicketInfoFragment.newInstance(ticket)).commit();
+    }
+
+    private void handleTicketStateTransitions(List<TicketStateTransition> transitions) {
+        Collections.sort(transitions, new Comparator<TicketStateTransition>() {
+            @Override
+            public int compare(TicketStateTransition lhs, TicketStateTransition rhs) {
+                String lStatus = lhs.getNewState();
+                String rStaus = rhs.getNewState();
+
+                if (lStatus != null && lStatus.equals(Ticket.StateCreated)) {
+                    return -1;
+                } else if (rStaus != null && rStaus.equals(Ticket.StateCreated)) {
+
                 }
+                return 0;
             }
         });
-    }
-
-    public void enableRiderOverlay(Ticket ticket) {
-        mSlidingPanelContainer.setVisibility(View.VISIBLE);
-        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
-                TicketInfoFragment.newInstance(ticket)).commit();
-    }
-
-    public void enableDriverOverlay(Ticket ticket) {
-        mSlidingPanelContainer.setVisibility(View.VISIBLE);
-        getChildFragmentManager().beginTransaction().replace(R.id.map_sliding_panel_container,
-                TicketInfoFragment.newInstance(ticket)).commit();
     }
 
     @Override
@@ -253,6 +338,20 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
         mSlidingLayout.setAnchorPoint(anchor);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+
+        centerMapOnCurrentPin(panelHeight);
+    }
+
+    private void centerMapOnCurrentPin(float panelHeight) {
+        float rootHeight = getView().getHeight();
+        float remainingHeight = rootHeight - panelHeight;
+
+        ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
+        ILatLng currentCenterLoc = mMapView.getCenter();
+
+        double dy = mCurrentlyFocusedMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
+        double newLat = currentCenterLoc.getLatitude() + dy;
+        mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
     }
 
     private void cancelTrip(Trip trip) {
@@ -277,41 +376,25 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         });
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main_map, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+    private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
+        @Override
+        public void onPanelCollapsed(View view) {
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        if (mCurrentTicket != null && (mCurrentTicket.getState().equals(Ticket.StateRequested)
-                || mCurrentTicket.getState().equals(Ticket.StateScheduled))) {
-            menu.findItem(R.id.action_cancel).setVisible(true);
-
-            if (mCurrentTicket.getState().equals(Ticket.StateRequested))
-                menu.findItem(R.id.action_schedule_ride)
-                        .setVisible(true)
-                        .setTitle(R.string.action_view_commute);
-            else
-                menu.findItem(R.id.action_schedule_ride).setVisible(false);
-        } else
-            menu.findItem(R.id.action_cancel).setVisible(false);
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_schedule_ride:
-                Trip currentlySelectedTrip = mCurrentTicket != null ? mCurrentTicket.getTrip() : null;
-                mEventListener.onCommuteSchedulerRequested(currentlySelectedTrip);
-                break;
-            case R.id.action_cancel:
-                cancelTrip(mCurrentTicket.getTrip());
-                break;
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public void onPanelExpanded(View view) {
+
+        }
+
+        @Override
+        public void onPanelAnchored(View view) {
+
+        }
+
+        @Override
+        public void onPanelHidden(View view) {
+
+        }
     }
 }
