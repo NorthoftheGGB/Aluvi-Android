@@ -12,10 +12,11 @@
     <color name="scheduleRideButtonBackgroundExtraLight">#EAEAEA</color>
     <color name="scheduleRideButtonBackgroundExtraLightClicked">#C8C8C8</color>
 
+    <color name="errorButtonBackground">#FB3341</color>
+    <color name="successButtonBackground">@color/colorSecondary</color>
+
     <color name="transparent_white">#AAFFFFFF</color>
     <color name="ticketInfoPriceBackground">#2360DD</color>
-
     <color name="ticketInfoProfileOutlineColor">#5FA262</color>
-
     <color name="pathOverlayColor">#5FA262</color>
 </resources>

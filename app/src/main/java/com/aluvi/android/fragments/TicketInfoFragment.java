@@ -2,10 +2,12 @@ package com.aluvi.android.fragments;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +18,20 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
-import com.aluvi.android.application.AluviRealm;
+import com.aluvi.android.helpers.views.DialogUtils;
+import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmList;
 
-public class TicketInfoFragment extends BaseButterFragment {
+public class TicketInfoFragment extends BaseTicketConsumerFragment {
 
     public interface OnTicketInfoLayoutListener {
         void onTicketInfoUIMeasured(int headerHeight, int panelHeight);
@@ -39,16 +44,13 @@ public class TicketInfoFragment extends BaseButterFragment {
     @Bind(R.id.ticket_info_image_view_driver_profile) ImageView mDriverProfileImageView;
     @Bind(R.id.ticket_info_container_rider_info) LinearLayout mRiderProfilePictureContainer;
 
-    private final static String TICKET_ID_KEY = "ticketId";
-    private Ticket mTicket;
+    @Bind({R.id.ticket_info_relative_layout_driver_info, R.id.ticket_info_late_button}) List<View> mRiderViews;
+    @Bind({R.id.ticket_info_riders_picked_up}) List<View> mDriverViews;
     private OnTicketInfoLayoutListener mListener;
 
     public static TicketInfoFragment newInstance(Ticket ticket) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(TICKET_ID_KEY, ticket.getId());
-
         TicketInfoFragment infoFragment = new TicketInfoFragment();
-        infoFragment.setArguments(bundle);
+        infoFragment.saveTicket(ticket);
         return infoFragment;
     }
 
@@ -68,31 +70,27 @@ public class TicketInfoFragment extends BaseButterFragment {
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (getArguments() != null) {
-            int ticketId = getArguments().getInt(TICKET_ID_KEY);
-            mTicket = AluviRealm.getDefaultRealm().where(Ticket.class).equalTo("id", ticketId).findFirst();
-        }
-
         return inflater.inflate(R.layout.fragment_ticket_info, container, false);
     }
 
     @Override
     public void initUI() {
-        if (mTicket != null) {
-            mTicketPriceTextView.setText(NumberFormat.getCurrencyInstance().format(mTicket.getFixedPrice()));
+        mTicketPriceTextView.setText(NumberFormat.getCurrencyInstance().format(getTicket().getFixedPrice()));
 
-            if (mTicket.getCar() != null) {
-                mCarNameTextView.setText(mTicket.getCar().getMake());
-                mCarLicenseNumberTextView.setText(mTicket.getCar().getLicensePlate());
-            }
-
-            if (mTicket.getDriver() != null) {
-                mDriverNameTextView.setText(mTicket.getDriver().getFirstName());
-            }
-
-            initRidersUI();
+        if (getTicket().getCar() != null) {
+            mCarNameTextView.setText(getTicket().getCar().getMake());
+            mCarLicenseNumberTextView.setText(getTicket().getCar().getLicensePlate());
         }
 
+        if (getTicket().getDriver() != null)
+            mDriverNameTextView.setText(getTicket().getDriver().getFirstName());
+
+        if (getTicket().isDriving())
+            ButterKnife.apply(mRiderViews, INVISIBILITY_ACTION);
+        else
+            ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);
+
+        initRidersUI();
         getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -104,10 +102,10 @@ public class TicketInfoFragment extends BaseButterFragment {
     }
 
     private void initRidersUI() {
-        RealmList<Rider> riders = mTicket.getRiders();
+        RealmList<Rider> riders = getTicket().getRiders();
         if (riders != null) {
             for (Rider rider : riders) {
-                if (rider.getId() != mTicket.getDriver().getId())
+                if (rider.getId() != getTicket().getDriver().getId())
                     addRider(rider);
             }
         }
@@ -144,6 +142,29 @@ public class TicketInfoFragment extends BaseButterFragment {
                 .show();
     }
 
+    @SuppressWarnings("unused")
+    @OnClick(R.id.ticket_info_riders_picked_up)
+    public void onRidersPickedUpButtonClicked() {
+        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+        CommuteManager.getInstance().ridersPickedUp(getTicket(), new CommuteManager.Callback() {
+            @Override
+            public void success() {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+            }
+
+            @Override
+            public void failure(String message) {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
+                if (getActivity() != null) {
+                    Snackbar.make(getView(), R.string.unable_rider_picked_up, Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     private void textDriver(String phoneNumber) {
         Intent smsIntent = new Intent(Intent.ACTION_VIEW);
         smsIntent.setType("vnd.android-dir/mms-sms");
@@ -158,6 +179,20 @@ public class TicketInfoFragment extends BaseButterFragment {
 
     @Nullable
     private String getDriverPhoneNumber() {
-        return mTicket.getDriver() != null ? mTicket.getDriver().getPhone() : null;
+        return getTicket().getDriver() != null ? getTicket().getDriver().getPhone() : null;
     }
+
+    private final ButterKnife.Action INVISIBILITY_ACTION = new ButterKnife.Action() {
+        @Override
+        public void apply(View view, int index) {
+            view.setVisibility(View.GONE);
+        }
+    };
+
+    private final ButterKnife.Action VISIBILITY_ACTION = new ButterKnife.Action() {
+        @Override
+        public void apply(View view, int index) {
+            view.setVisibility(View.VISIBLE);
+        }
+    };
 }

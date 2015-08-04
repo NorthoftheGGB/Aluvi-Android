@@ -280,13 +280,10 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                     public void onRouteFound(RouteData result) {
                         if (result != null && mMapView != null) {
                             PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
-
                             LatLng[] coordinates = result.getCoordinates();
                             if (coordinates != null)
-                                for (LatLng coordinate : coordinates) {
+                                for (LatLng coordinate : coordinates)
                                     overlay.addPoint(coordinate);
-                                }
-
                             mMapView.addOverlay(overlay);
                         }
                     }
@@ -294,9 +291,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                     @Override
                     public void onFailure(String message) {
                         Log.e(TAG, message);
-                        if (getView() != null) {
+                        if (getView() != null)
                             Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
-                        }
                     }
                 });
     }

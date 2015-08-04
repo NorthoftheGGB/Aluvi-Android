@@ -24,4 +24,14 @@
     <style name="ScheduleRideButtonStyle.Dark">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="ErrorButtonStyle" parent="@android:style/Widget.Button">
+        <item name="colorButtonNormal">@color/errorButtonBackground</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SuccessButtonStyle" parent="@android:style/Widget.Button">
+        <item name="colorButtonNormal">@color/successButtonBackground</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>
