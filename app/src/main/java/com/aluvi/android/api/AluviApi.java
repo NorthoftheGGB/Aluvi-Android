@@ -14,7 +14,7 @@ import com.aluvi.android.api.AluviApiConstants;
 public class AluviApi implements AluviApiConstants {
 
     final public static String API_POST_REQUEST_COMMUTER_TICKETS = "v2/rides/commute";
-    final public static String CANCEL_TICKET = "v2/rides/rider_cancelled";
+    final public static String CANCEL_TICKET = "v2/rides/cancel";
     final public static String API_POST_RIDER_PICKUP = "v2/rides/pickup";
     final public static String API_POST_RIDER_DROPOFF = "v2/rides/arrived";
     final public static String API_DELETE_TRIP = "rides/trips/";

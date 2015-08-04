@@ -81,7 +81,7 @@ public class DebugActivity extends AppCompatActivity {
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
                 final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
-                CommuteManager.initialize(new CommuteManager.Callback() {
+                CommuteManager.getInstance().sync(new CommuteManager.Callback() {
                     @Override
                     public void success() {
                         if (progressDialog != null)
@@ -95,7 +95,6 @@ public class DebugActivity extends AppCompatActivity {
                             progressDialog.cancel();
 
                         Toast.makeText(DebugActivity.this, message, Toast.LENGTH_SHORT).show();
-                        finish();
                     }
                 });
             }
@@ -115,33 +114,21 @@ public class DebugActivity extends AppCompatActivity {
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
 
-                CommuteManager.initialize(new CommuteManager.Callback() {
+                final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
+                CommuteManager.getInstance().sync(new CommuteManager.Callback() {
                     @Override
                     public void success() {
-                        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
-                        CommuteManager.initialize(new CommuteManager.Callback() {
-                            @Override
-                            public void success() {
-                                if (progressDialog != null)
-                                    progressDialog.cancel();
+                        if (progressDialog != null)
+                            progressDialog.cancel();
 
-                            }
-
-                            @Override
-                            public void failure(String message) {
-                                if (progressDialog != null)
-                                    progressDialog.cancel();
-
-                                Toast.makeText(DebugActivity.this, message, Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-                        });
                     }
 
                     @Override
                     public void failure(String message) {
+                        if (progressDialog != null)
+                            progressDialog.cancel();
+
                         Toast.makeText(DebugActivity.this, message, Toast.LENGTH_SHORT).show();
-                        finish();
                     }
                 });
             }
@@ -187,7 +174,7 @@ public class DebugActivity extends AppCompatActivity {
         } catch (UserRecoverableSystemError userRecoverableSystemError) {
             userRecoverableSystemError.printStackTrace();
             // This should be handled by a dialog, not a Toast
-            Toast.makeText(this, userRecoverableSystemError.getMessage(), Toast.LENGTH_LONG);
+            Toast.makeText(DebugActivity.this, userRecoverableSystemError.getMessage(), Toast.LENGTH_LONG);
         }
 
     }
