@@ -61,42 +61,12 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-
-    public static void cancelRiderTicketRequest(Ticket ticket, final ApiCallback callback) {
-        Map<String, String> params = new HashMap<>();
-        params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest<Void> request = new AluviAuthenticatedRequest<>(
-                Request.Method.POST,
-                AluviApi.API_POST_REQUEST_CANCELLED,
-                params,
-                new AluviAuthRequestListener<Void>() {
-                    @Override
-                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success();
-                        } else {
-                            callback.failure(statusCode);
-                        }
-                    }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return SimpleType.construct(Void.class);
-                    }
-                }
-        );
-
-        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
-        AluviApi.getInstance().getRequestQueue().add(request);
-
-    }
-
     public static void cancelRiderScheduledTicket(Ticket ticket, final ApiCallback callback) {
         Map<String, String> params = new HashMap<String, String>();
         params.put(AluviApiKeys.FARE_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.POST,
-                AluviApi.CANCEL_RIDER_SCHEDULED_TICKET,
+                AluviApi.CANCEL_TICKET,
                 params,
                 new AluviAuthRequestListener<Void>() {
                     @Override

@@ -13,11 +13,8 @@ import com.aluvi.android.api.AluviApiConstants;
  */
 public class AluviApi implements AluviApiConstants {
 
-    final public static String API_POST_REQUEST_COMMUTER_TICKETS = "rides/commute";
-    final public static String API_POST_RIDE_REQUEST = "rides/request";
-    final public static String API_POST_REQUEST_CANCELLED = "rides/request/cancel";
-    final public static String API_GET_RIDES_STATE = "rides/state";
-    final public static String CANCEL_RIDER_SCHEDULED_TICKET = "v2/rides/rider_cancelled";
+    final public static String API_POST_REQUEST_COMMUTER_TICKETS = "v2/rides/commute";
+    final public static String CANCEL_TICKET = "v2/rides/rider_cancelled";
     final public static String API_POST_RIDER_PICKUP = "v2/rides/pickup";
     final public static String API_POST_RIDER_DROPOFF = "v2/rides/arrived";
     final public static String API_DELETE_TRIP = "rides/trips/";
@@ -35,7 +32,7 @@ public class AluviApi implements AluviApiConstants {
     final public static String API_GET_RIDER_LOCATION = "geo/rider/";
     final public static String API_UPDATE_RIDER_LOCATION = "geo/rider";
 
-    // devices API - RESTfl
+    // devices API
     final public static String API_DEVICES = "devices/";
 
     // users API
@@ -51,9 +48,6 @@ public class AluviApi implements AluviApiConstants {
     // drivers
     final public static String API_DRIVER_REGISTRATION = "drivers/driver_registration";
     final public static String API_GET_DRIVER_FARE_PATH_PATTERN = "drivers/fares/:id";
-
-    // state
-    final public static String API_TOKEN_KEY = "API_TOKEN";
 
 
     //Singleton

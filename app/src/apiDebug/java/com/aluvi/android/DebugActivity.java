@@ -1,5 +1,6 @@
 package com.aluvi.android;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -7,10 +8,12 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.aluvi.android.activities.InitActivity;
 import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.local.TicketStateTransition;
@@ -77,7 +80,24 @@ public class DebugActivity extends AppCompatActivity {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
+                final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
+                CommuteManager.initialize(new CommuteManager.Callback() {
+                    @Override
+                    public void success() {
+                        if (progressDialog != null)
+                            progressDialog.cancel();
 
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        if (progressDialog != null)
+                            progressDialog.cancel();
+
+                        Toast.makeText(DebugActivity.this, message, Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
             }
 
             @Override
@@ -98,7 +118,24 @@ public class DebugActivity extends AppCompatActivity {
                 CommuteManager.initialize(new CommuteManager.Callback() {
                     @Override
                     public void success() {
-                        //onInitializationFinished();
+                        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
+                        CommuteManager.initialize(new CommuteManager.Callback() {
+                            @Override
+                            public void success() {
+                                if (progressDialog != null)
+                                    progressDialog.cancel();
+
+                            }
+
+                            @Override
+                            public void failure(String message) {
+                                if (progressDialog != null)
+                                    progressDialog.cancel();
+
+                                Toast.makeText(DebugActivity.this, message, Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        });
                     }
 
                     @Override

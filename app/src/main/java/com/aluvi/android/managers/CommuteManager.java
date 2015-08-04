@@ -221,38 +221,22 @@ public class CommuteManager {
     public void cancelTicket(final Ticket ticket, final Callback callback) {
         if (ticket.getId() != 0) {
 
-            if (!ticket.getState().equals(Ticket.StateScheduled)) {
-                // ride has not been scheduled yet
-                TicketsApi.cancelRiderTicketRequest(ticket, new ApiCallback() {
-                    @Override
-                    public void success() {
-                        Trip trip = ticket.getTrip();
-                        RealmHelper.removeFromRealm(ticket);
-                        Trip.removeIfEmpty(trip);
-                        callback.success();
-                    }
 
-                    @Override
-                    public void failure(int statusCode) {
-                        callback.failure("We had a problem deleting your ticket.  Please try again.");
-                    }
-                });
-            } else {
-                TicketsApi.cancelRiderScheduledTicket(ticket, new ApiCallback() {
-                    @Override
-                    public void success() {
-                        Trip trip = ticket.getTrip();
-                        RealmHelper.removeFromRealm(ticket);
-                        Trip.removeIfEmpty(trip);
-                        callback.success();
-                    }
+            TicketsApi.cancelRiderScheduledTicket(ticket, new ApiCallback() {
+                @Override
+                public void success() {
+                    Trip trip = ticket.getTrip();
+                    RealmHelper.removeFromRealm(ticket);
+                    Trip.removeIfEmpty(trip);
+                    callback.success();
+                }
 
-                    @Override
-                    public void failure(int statusCode) {
-                        callback.failure("We had a problem deleting your ticket.  Please try again.");
-                    }
-                });
-            }
+                @Override
+                public void failure(int statusCode) {
+                    callback.failure("We had a problem deleting your ticket.  Please try again.");
+                }
+            });
+
 
         } else {
             RealmHelper.removeFromRealm(ticket);
