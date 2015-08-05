@@ -296,11 +296,11 @@ public class CommuteManager {
 
                         // Check for tickets that are no longer relevant
 
-                        RealmQuery< Ticket > query = realm.where(Ticket.class);
-                        for(int i = 0; i< tickets.size(); i++){
+                        RealmQuery<Ticket> query = realm.where(Ticket.class);
+                        for (int i = 0; i < tickets.size(); i++) {
                             query.notEqualTo("id", tickets.get(i).getTicketId());
                         }
-                        RealmResults< Ticket > result = query.findAll();
+                        RealmResults<Ticket> result = query.findAll();
 
                         for (int i = 0; i < result.size(); i++) {
                             Ticket t = result.get(i);
@@ -308,7 +308,7 @@ public class CommuteManager {
                             t.removeFromRealm();
                         }
 
-                        if(callback!=null)
+                        if (callback != null)
                             callback.success(ticketStateTransitions);
                     }
                 });
@@ -408,6 +408,12 @@ public class CommuteManager {
 
             }
         });
+    }
+
+    public void notifyLate(Ticket ticket, final Callback callback) {
+        if(callback != null) {
+            callback.success();
+        }
     }
 
     /**
