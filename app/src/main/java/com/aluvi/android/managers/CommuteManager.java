@@ -296,13 +296,10 @@ public class CommuteManager {
 
                         // Check for tickets that are no longer relevant
 
-                        realm.beginTransaction();
                         RealmQuery< Ticket > query = realm.where(Ticket.class);
-                        query.beginGroup();
                         for(int i = 0; i< tickets.size(); i++){
                             query.notEqualTo("id", tickets.get(i).getTicketId());
                         }
-                        query.endGroup();
                         RealmResults< Ticket > result = query.findAll();
 
                         for (int i = 0; i < result.size(); i++) {

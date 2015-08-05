@@ -51,10 +51,32 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
     }
 
     protected void logOut() {
-        UserStateManager.getInstance().logout(null);
-        Intent logInIntent = new Intent(this, LoginActivity.class);
-        logInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(logInIntent);
-        finish();
+        UserStateManager.getInstance().logout(new UserStateManager.Callback() {
+            @Override
+            public void success() {
+                Intent logInIntent = new Intent(AluviAuthActivity.this, LoginActivity.class);
+                logInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(logInIntent);
+                finish();
+            }
+
+            @Override
+            public void failure(String message) {
+                authDialog = new MaterialDialog.Builder(AluviAuthActivity.this)
+                        .title(R.string.auth_error)
+                        .content(R.string.unable_log_out)
+                        .positiveText(android.R.string.ok)
+                        .cancelable(false)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                logOut();
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
 }
