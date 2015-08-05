@@ -294,24 +294,14 @@ public class CommuteManager {
                             for (TicketData ticket : tickets)
                                 updateTicketForData(ticket, ticketStateTransitions);
 
-                        // Check for tickets that are no longer relevant
-
-                        realm.beginTransaction();
-                        RealmQuery< Ticket > query = realm.where(Ticket.class);
-                        query.beginGroup();
-                        for(int i = 0; i< tickets.size(); i++){
-                            query.notEqualTo("id", tickets.get(i).getTicketId());
-                        }
-                        query.endGroup();
-                        RealmResults< Ticket > result = query.findAll();
-
-                        for (int i = 0; i < result.size(); i++) {
-                            Ticket t = result.get(i);
+                        List<Ticket> relevantTickets = removeNonRelevantTickets(tickets);
+                        for (int i = 0; i < relevantTickets.size(); i++) {
+                            Ticket t = relevantTickets.get(i);
                             ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
                             t.removeFromRealm();
                         }
 
-                        if(callback!=null)
+                        if (callback != null)
                             callback.success(ticketStateTransitions);
                     }
                 });
@@ -322,6 +312,23 @@ public class CommuteManager {
                 callback.failure("Unable to refresh tickets");
             }
         });
+    }
+
+    /**
+     * Check for tickets that are no longer relevant
+     *
+     * @param tickets
+     * @return A list of relevant tickets
+     */
+    private RealmResults<Ticket> removeNonRelevantTickets(List<TicketData> tickets) {
+        Realm realm = AluviRealm.getDefaultRealm();
+        realm.beginTransaction();
+        RealmQuery<Ticket> query = realm.where(Ticket.class);
+        query.beginGroup();
+        for (int i = 0; i < tickets.size(); i++)
+            query.notEqualTo("id", tickets.get(i).getTicketId());
+        query.endGroup();
+        return query.findAll();
     }
 
     private void updateTicketForData(TicketData ticket, List<TicketStateTransition> ticketStateTransitions) {
