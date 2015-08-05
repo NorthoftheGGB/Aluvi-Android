@@ -301,7 +301,7 @@ public class CommuteManager {
                             t.removeFromRealm();
                         }
 
-                        if (callback != null)
+                        if(callback!=null)
                             callback.success(ticketStateTransitions);
                     }
                 });
@@ -418,6 +418,12 @@ public class CommuteManager {
 
             }
         });
+    }
+
+    public void notifyLate(Ticket ticket, final Callback callback) {
+        if(callback != null) {
+            callback.success();
+        }
     }
 
     /**

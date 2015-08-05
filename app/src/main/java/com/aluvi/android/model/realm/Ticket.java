@@ -19,10 +19,12 @@ import io.realm.RealmObject;
 public class Ticket extends RealmObject {
     public static final String StateCreated = "created";
     public static final String StateRequested = "requested";
+    public static final String StateCancelled = "cancelled"; // cancelled before scheduled
     public static final String StateScheduled = "scheduled";
     public static final String StateCommuteSchedulerFailed = "commute_scheduler_failed";
-    public static final String StateCancelled = "cancelled";
+    public static final String StateInProgress = "in_progress";
     public static final String StateComplete = "complete";
+    public static final String StateAborted = "aborted";  // cancelled after scheduled
     public static final String StateIrrelevant = "irrelevant";
 
     public static String RideRequestTypeCommuter = "commuter";

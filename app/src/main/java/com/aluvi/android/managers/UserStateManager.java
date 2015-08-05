@@ -119,15 +119,12 @@ public class UserStateManager {
     }
 
     public void logout(final Callback callback) {
-        setApiToken(null);
 
-        DeviceData deviceData = new DeviceData();
-//        deviceData.setPushToken("");
-        DevicesApi.patchDevice(deviceData, new DevicesApi.Callback() {
+        DevicesApi.disassociateUser(new DevicesApi.Callback() {
             @Override
             public void success() {
-                if (callback != null)
-                    callback.success();
+                setApiToken(null);
+                callback.success();
             }
 
             @Override

@@ -19,6 +19,8 @@ public class DevicesApi {
 
     public static final String ANDROID_PUSH_PLATFORM_NAME = "gcm";
 
+
+
     public interface Callback {
         void success();
 
@@ -38,6 +40,7 @@ public class DevicesApi {
     }
 
     public static void patchDevice(DeviceData deviceData, final Callback callback) {
+
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<DeviceData>(
                 Request.Method.POST,
                 AluviApi.API_DEVICES + GlobalIdentifiers.getInstance().getAndroidId(),
@@ -65,8 +68,33 @@ public class DevicesApi {
                 return headers;
             }
         };
-
         request.addAcceptedStatusCodes(new int[]{201});
         AluviApi.getInstance().getRequestQueue().add(request);
+    }
+
+    public static void disassociateUser(final Callback callback){
+
+            AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+                    Request.Method.PUT,
+                    AluviApi.API_DEVICE_DISASSOCIATE_USER + GlobalIdentifiers.getInstance().getAndroidId(),
+                    new AluviAuthRequestListener<Void>() {
+                        @Override
+                        public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                            if (statusCode == 200) {
+                                callback.success();
+                            } else {
+                                callback.failure(statusCode);
+                            }
+                        }
+
+                        @Override
+                        public JavaType getReturnType() {
+                            return SimpleType.construct(Void.class);
+                        }
+                    }
+            );
+            request.addAcceptedStatusCodes(new int[]{200});
+            AluviApi.getInstance().getRequestQueue().add(request);
+
     }
 }

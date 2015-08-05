@@ -33,7 +33,8 @@ public class AluviApi implements AluviApiConstants {
     final public static String API_UPDATE_RIDER_LOCATION = "geo/rider";
 
     // devices API
-    final public static String API_DEVICES = "devices/";
+    final public static String API_DEVICES = "v2/devices/";
+    final public static String API_DEVICE_DISASSOCIATE_USER = "v2/devices/disassociate_user/";
 
     // users API
     final public static String API_USERS = "users";
