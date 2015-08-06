@@ -12,7 +12,7 @@ public class RequestQueue {
         void onError(String message);
     }
 
-    private ArrayList<RequestTask> requests = new ArrayList<>();
+    private ArrayList<Task> requests = new ArrayList<>();
     private int completedTasks;
     private RequestQueueListener listener;
 
@@ -20,14 +20,14 @@ public class RequestQueue {
         this.listener = listener;
     }
 
-    public RequestQueue addRequest(RequestTask request) {
+    public RequestQueue addRequest(Task request) {
         requests.add(request);
         return this;
     }
 
     public void execute() {
-        for (RequestTask task : requests) {
-            task.setListener(new RequestTask.TaskListener() {
+        for (Task task : requests) {
+            task.setListener(new Task.TaskListener() {
                 @Override
                 public void onComplete() {
                     if (updateCompletedTasks())
@@ -46,7 +46,7 @@ public class RequestQueue {
     }
 
     public void cancelTasks() {
-        for (RequestTask task : requests)
+        for (Task task : requests)
             task.cancel();
     }
 
@@ -55,7 +55,7 @@ public class RequestQueue {
         return completedTasks >= requests.size();
     }
 
-    public abstract static class RequestTask {
+    public abstract static class Task {
         public interface TaskListener {
             void onComplete();
 

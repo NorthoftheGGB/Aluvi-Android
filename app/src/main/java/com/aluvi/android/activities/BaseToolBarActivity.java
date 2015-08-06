@@ -13,29 +13,29 @@ import butterknife.ButterKnife;
 /**
  * Created by usama on 7/13/15.
  */
-public abstract class BaseToolBarActivity extends AppCompatActivity
-{
+public abstract class BaseToolBarActivity extends AppCompatActivity {
     @Nullable
     @Bind(R.id.toolbar) Toolbar mToolbar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutId());
-        ButterKnife.bind(this);
 
-        if (mToolbar != null)
-        {
-            mToolbar.setTitle(getTitle());
-            setSupportActionBar(mToolbar);
+        int layoutId = getLayoutId();
+        if (layoutId != -1) {
+            setContentView(getLayoutId());
+            ButterKnife.bind(this);
+
+            if (mToolbar != null) {
+                mToolbar.setTitle(getTitle());
+                setSupportActionBar(mToolbar);
+            }
         }
     }
 
     public abstract int getLayoutId();
 
-    public Toolbar getToolbar()
-    {
+    public Toolbar getToolbar() {
         return mToolbar;
     }
 }

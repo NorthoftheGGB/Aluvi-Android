@@ -79,7 +79,6 @@ public class GeocodingApi {
     }
 
     private void sendGeoCodeRequest(String url, final String query, final GeocodingApiCallback addressCallback) {
-
         GetRequestBuilder builder = new GetRequestBuilder(url)
                 .appendParameter("access_token", mToken);
 

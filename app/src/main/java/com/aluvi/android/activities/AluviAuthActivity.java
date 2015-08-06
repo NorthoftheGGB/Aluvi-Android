@@ -3,6 +3,7 @@ package com.aluvi.android.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
@@ -18,6 +19,7 @@ import de.greenrobot.event.EventBus;
  * Subclasses should only be activities that communicate and which at some point send out authenticated requests to the Aluvi API.
  */
 public abstract class AluviAuthActivity extends BaseToolBarActivity {
+    private String TAG = "AluviAuthActivity";
     private Dialog authDialog;
 
     @Override
@@ -54,29 +56,23 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
         UserStateManager.getInstance().logout(new UserStateManager.Callback() {
             @Override
             public void success() {
-                Intent logInIntent = new Intent(AluviAuthActivity.this, LoginActivity.class);
-                logInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(logInIntent);
-                finish();
+                onLoggedOut();
             }
 
             @Override
             public void failure(String message) {
-                authDialog = new MaterialDialog.Builder(AluviAuthActivity.this)
-                        .title(R.string.auth_error)
-                        .content(R.string.unable_log_out)
-                        .positiveText(android.R.string.ok)
-                        .cancelable(false)
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
-                                logOut();
-                            }
-                        })
-                        .show();
+                Log.e(TAG, message);
+
+                // Log out even if we weren't quite able to disassociate from the server because the user is invalid anyways
+                onLoggedOut();
             }
         });
+    }
 
+    private void onLoggedOut() {
+        Intent logInIntent = new Intent(AluviAuthActivity.this, LoginActivity.class);
+        logInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(logInIntent);
+        finish();
     }
 }

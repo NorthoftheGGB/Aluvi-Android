@@ -19,4 +19,11 @@
     <color name="ticketInfoPriceBackground">#2360DD</color>
     <color name="ticketInfoProfileOutlineColor">#5FA262</color>
     <color name="pathOverlayColor">#5FA262</color>
+
+    <color name="aluvi_gradient_start">#60c196</color>
+    <color name="aluvi_gradient_end">#388C94</color>
+    <color name="aluvi_gradient_start_darker">#40A074</color>
+    <color name="aluvi_gradient_end_darker">#266A72</color>
+
+    <color name="light_white_background">#CEDFE0</color>
 </resources>

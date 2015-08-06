@@ -10,4 +10,8 @@
     <string name="action_log_in">Log In</string>
     <string name="action_log_out">Log Out</string>
     <string name="action_home">Home</string>
+    <string name="action_commute">My Commute</string>
+    <string name="action_car_info">Car Info</string>
+    <string name="action_car_payments">Car Payments</string>
+    <string name="action_support">Support</string>
 </resources>

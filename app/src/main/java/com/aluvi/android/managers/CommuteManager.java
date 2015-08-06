@@ -89,7 +89,7 @@ public class CommuteManager {
             public void onError(String message) {
                 callback.failure(message);
             }
-        }).addRequest(new RequestQueue.RequestTask() {
+        }).addRequest(new RequestQueue.Task() {
             @Override
             public void run() {
                 refreshRoutePreferences(new Callback() {
@@ -104,7 +104,7 @@ public class CommuteManager {
                     }
                 });
             }
-        }).addRequest(new RequestQueue.RequestTask() {
+        }).addRequest(new RequestQueue.Task() {
             @Override
             public void run() {
                 refreshTickets(new DataCallback<List<TicketStateTransition>>() {
@@ -272,14 +272,19 @@ public class CommuteManager {
                     callback.failure("We had a problem deleting your ticket.  Please try again.");
                 }
             });
-
-
         } else {
             RealmHelper.removeFromRealm(ticket);
             callback.success();
         }
     }
 
+    /**
+     * Load tickets using the tickets Aluvi API. Tickets saved to realm. You will typically load the currently active ticket by using
+     * the {@link #getActiveTicket()} method.
+     *
+     * @param callback Non-null callback that provides a list of ticket state transitions that clients can use
+     *                 to update UI/state.
+     */
     public void refreshTickets(final DataCallback<List<TicketStateTransition>> callback) {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
@@ -301,8 +306,7 @@ public class CommuteManager {
                             t.removeFromRealm();
                         }
 
-                        if(callback!=null)
-                            callback.success(ticketStateTransitions);
+                        callback.success(ticketStateTransitions);
                     }
                 });
             }
@@ -315,7 +319,8 @@ public class CommuteManager {
     }
 
     /**
-     * Check for tickets that are no longer relevant
+     * Check for tickets that are no longer relevant. This method must be called within a realm transaction handler
+     * or a begin/commit transaction block.
      *
      * @param tickets
      * @return A list of relevant tickets
@@ -427,6 +432,7 @@ public class CommuteManager {
     }
 
     /**
+     * Returns tickets that are requested or scheduled that are in the future.
      * Minimize calling this method - it is relatively expensive to look through a potentially large list of tickets
      * looking for the most relevant one (nearest in the future, requested or scheduled state).
      *

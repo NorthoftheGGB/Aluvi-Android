@@ -11,13 +11,15 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.AluviMapFragment;
+import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.model.realm.Trip;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
-public class MainActivity extends AluviAuthActivity implements AluviMapFragment.OnMapEventListener {
+public class MainActivity extends AluviAuthActivity implements AluviMapFragment.OnMapEventListener,
+        NavigationDrawerHeaderFragment.ProfileRequestedListener {
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
@@ -47,7 +49,7 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.action_drawer_home:
+                    case R.id.action_my_commute:
                         onHomeClicked();
                         break;
                     case R.id.action_log_out:
@@ -58,6 +60,11 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onProfileRequested() {
+        startActivity(new Intent(this, ProfileActivity.class));
     }
 
     @Override

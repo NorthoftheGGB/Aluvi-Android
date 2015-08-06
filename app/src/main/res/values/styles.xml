@@ -8,6 +8,14 @@
         <item name="windowActionBarOverlay">true</item>
     </style>
 
+    <style name="AppTheme.Dark" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorSecondary</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
     <style name="ScheduleRideButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/schedule_ride_button_background</item>
         <item name="android:paddingLeft">10dp</item>

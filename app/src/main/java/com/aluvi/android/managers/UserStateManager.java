@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.model.local.Profile;
 import com.google.gson.Gson;
+
+import java.net.HttpURLConnection;
 
 /**
  * Created by matthewxi on 7/14/15.
@@ -98,12 +99,12 @@ public class UserStateManager {
             @Override
             public void success(String token) {
                 setApiToken(token);
-
                 DevicesApi.updateUser(new DevicesApi.Callback() {
                     @Override
                     public void success() {
                         callback.success();
                     }
+
                     @Override
                     public void failure(int statusCode) {
                         callback.failure("Could not update user");
@@ -119,7 +120,6 @@ public class UserStateManager {
     }
 
     public void logout(final Callback callback) {
-
         DevicesApi.disassociateUser(new DevicesApi.Callback() {
             @Override
             public void success() {
@@ -129,6 +129,9 @@ public class UserStateManager {
 
             @Override
             public void failure(int statusCode) {
+                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
+                    setApiToken(null);
+
                 // we will probably translate the status code to a message here
                 // using a strings file.
                 if (callback != null)

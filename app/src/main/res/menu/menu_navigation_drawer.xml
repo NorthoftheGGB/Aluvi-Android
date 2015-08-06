@@ -2,9 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/action_drawer_home"
-            android:title="@string/action_home"/>
-
+            android:id="@+id/action_my_commute"
+            android:title="@string/action_commute"/>
+        <item
+            android:id="@+id/action_car_info"
+            android:title="@string/action_car_info"/>
+        <item
+            android:id="@+id/action_car_payments"
+            android:title="@string/action_car_payments"/>
+        <item
+            android:id="@+id/action_support"
+            android:title="@string/action_support"/>
         <item
             android:id="@+id/action_log_out"
             android:title="@string/action_log_out">

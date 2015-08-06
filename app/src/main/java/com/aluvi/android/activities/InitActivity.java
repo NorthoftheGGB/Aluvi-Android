@@ -1,11 +1,11 @@
 package com.aluvi.android.activities;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.aluvi.android.R;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 
@@ -16,11 +16,14 @@ import com.aluvi.android.managers.CommuteManager;
  * <p/>
  * Created by usama on 7/30/15
  */
-public class InitActivity extends Activity {
+public class InitActivity extends AluviAuthActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initAluvi();
+    }
 
+    private void initAluvi() {
         final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
         CommuteManager.getInstance().sync(new CommuteManager.Callback() {
             @Override
@@ -36,10 +39,31 @@ public class InitActivity extends Activity {
                 if (progressDialog != null)
                     progressDialog.cancel();
 
-                Toast.makeText(InitActivity.this, message, Toast.LENGTH_SHORT).show();
-                finish();
+                showInitErrorMessage();
             }
         });
+    }
+
+    @Override
+    public int getLayoutId() {
+        return -1;
+    }
+
+    public void showInitErrorMessage() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.error_initializing)
+                .content(R.string.check_network)
+                .cancelable(false)
+                .positiveText(R.string.retry)
+                .negativeText(android.R.string.cancel)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        initAluvi();
+                    }
+                })
+                .show();
     }
 
     private void onInitializationFinished() {
