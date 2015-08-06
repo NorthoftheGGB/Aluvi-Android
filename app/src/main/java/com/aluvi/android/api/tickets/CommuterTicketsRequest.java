@@ -47,5 +47,6 @@ public class CommuterTicketsRequest extends AluviPayload {
         workPlaceName = ticketToWork.getDestinationPlaceName();
         toWorkPickupTime = ticketToWork.getPickupTime();
         fromWorkPickupTime = ticketFromWork.getPickupTime();
+        driving = ticketToWork.isDriving();
     }
 }

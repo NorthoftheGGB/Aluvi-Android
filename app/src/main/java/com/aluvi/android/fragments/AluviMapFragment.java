@@ -130,7 +130,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateRequested);
-        boolean isTicketScheduled = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateScheduled);
+        boolean isTicketScheduled = isTicketScheduled(mCurrentTicket);
         boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
 
         menu.findItem(R.id.action_cancel).setVisible(isTicketRequestedOrScheduled);
@@ -216,6 +216,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 case Ticket.StateRequested:
                     mCommutePendingTextView.setVisibility(View.VISIBLE);
                     break;
+                case Ticket.StateInProgress:
+                case Ticket.StateStarted:
                 case Ticket.StateScheduled:
                     if (mCurrentTicket.isDriving())
                         enableDriverOverlay(mCurrentTicket);
@@ -380,6 +382,17 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
         }
     };
+
+    private boolean isTicketScheduled(Ticket ticket) {
+        if (ticket != null) {
+            String state = ticket.getState();
+            return state.equals(Ticket.StateScheduled) ||
+                    state.equals(Ticket.StateStarted) ||
+                    state.equals(Ticket.StateInProgress);
+        }
+
+        return false;
+    }
 
     private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
         @Override

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,7 +33,6 @@ import butterknife.OnClick;
 import io.realm.RealmList;
 
 public class TicketInfoFragment extends BaseTicketConsumerFragment {
-
     public interface OnTicketInfoLayoutListener {
         void onTicketInfoUIMeasured(int headerHeight, int panelHeight);
     }
@@ -43,9 +43,10 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @Bind(R.id.ticket_info_text_view_driver_name) TextView mDriverNameTextView;
     @Bind(R.id.ticket_info_image_view_driver_profile) ImageView mDriverProfileImageView;
     @Bind(R.id.ticket_info_container_rider_info) LinearLayout mRiderProfilePictureContainer;
-
+    @Bind(R.id.ticket_info_riders_picked_up) Button mRidersPickedUpButton;
     @Bind({R.id.ticket_info_relative_layout_driver_info, R.id.ticket_info_late_button}) List<View> mRiderViews;
     @Bind({R.id.ticket_info_riders_picked_up}) List<View> mDriverViews;
+
     private OnTicketInfoLayoutListener mListener;
 
     public static TicketInfoFragment newInstance(Ticket ticket) {
@@ -60,7 +61,6 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
         if (getParentFragment() != null) {
             mListener = (OnTicketInfoLayoutListener) getParentFragment();
         } else {
@@ -85,10 +85,12 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
         if (getTicket().getDriver() != null)
             mDriverNameTextView.setText(getTicket().getDriver().getFirstName());
 
-        if (getTicket().isDriving())
+        if (getTicket().isDriving()) {
             ButterKnife.apply(mRiderViews, INVISIBILITY_ACTION);
-        else
+            updateRidersPickedUpButton();
+        } else {
             ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);
+        }
 
         initRidersUI();
         getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -116,13 +118,25 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
         riderNameTextView.setText(rider.getFirstName());
+
+        if (getTicket().isDriving()) {
+            riderProfileImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showCallTextOptions();
+                }
+            });
+        }
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.ticket_info_image_view_driver_profile)
     public void onDriveProfilePictureClicked() {
-        final int CALL_POS = 0, TEXT_POS = 1;
+        showCallTextOptions();
+    }
 
+    private void showCallTextOptions() {
+        final int CALL_POS = 0, TEXT_POS = 1;
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.contact_driver)
                 .items(R.array.contact_options)
@@ -131,10 +145,10 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                     public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                         switch (i) {
                             case CALL_POS:
-                                callDriver(getDriverPhoneNumber());
+                                callNumber(getDriverPhoneNumber());
                                 break;
                             case TEXT_POS:
-                                textDriver(getDriverPhoneNumber());
+                                textNumber(getDriverPhoneNumber());
                                 break;
                         }
                     }
@@ -142,37 +156,56 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                 .show();
     }
 
+    private Dialog riderStatusProgressDialog;
+
     @SuppressWarnings("unused")
     @OnClick(R.id.ticket_info_riders_picked_up)
     public void onRidersPickedUpButtonClicked() {
-        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
-        CommuteManager.getInstance().ridersPickedUp(getTicket(), new CommuteManager.Callback() {
-            @Override
-            public void success() {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-            }
+        riderStatusProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
 
-            @Override
-            public void failure(String message) {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                if (getActivity() != null) {
-                    Snackbar.make(getView(), R.string.unable_rider_picked_up, Snackbar.LENGTH_SHORT).show();
-                }
-            }
-        });
+        if (!isRideInProgress())
+            CommuteManager.getInstance().ridersPickedUp(getTicket(), ridersStatusUpdatedCallback);
+        else
+            CommuteManager.getInstance().ridersDroppedOff(getTicket(), ridersStatusUpdatedCallback);
     }
 
-    private void textDriver(String phoneNumber) {
+    private CommuteManager.Callback ridersStatusUpdatedCallback = new CommuteManager.Callback() {
+        @Override
+        public void success() {
+            if (riderStatusProgressDialog != null)
+                riderStatusProgressDialog.cancel();
+
+            updateRidersPickedUpButton();
+        }
+
+        @Override
+        public void failure(String message) {
+            if (riderStatusProgressDialog != null)
+                riderStatusProgressDialog.cancel();
+
+            if (getActivity() != null)
+                Snackbar.make(getView(), R.string.unable_rider_picked_up, Snackbar.LENGTH_SHORT).show();
+        }
+    };
+
+    private void updateRidersPickedUpButton() {
+        int statusText = isRideInProgress() ? R.string.riders_dropped_off : R.string.riders_picked_up;
+        mRidersPickedUpButton.setText(statusText);
+    }
+
+    private boolean isRideInProgress() {
+        return getTicket().getState().equals(Ticket.StateInProgress) ||
+                getTicket().getState().equals(Ticket.StateStarted);
+    }
+
+    private void textNumber(String phoneNumber) {
         Intent smsIntent = new Intent(Intent.ACTION_VIEW);
         smsIntent.setType("vnd.android-dir/mms-sms");
         smsIntent.putExtra("address", phoneNumber);
         startActivity(smsIntent);
     }
 
-    private void callDriver(String phoneNumber) {
+    private void callNumber(String phoneNumber) {
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
         startActivity(intent);
     }

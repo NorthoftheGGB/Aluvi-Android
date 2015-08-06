@@ -294,7 +294,6 @@ public class CommuteManager {
                     @Override
                     public void execute(Realm realm) {
                         List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
-
                         if (tickets != null)
                             for (TicketData ticket : tickets)
                                 updateTicketForData(ticket, ticketStateTransitions);
@@ -394,14 +393,13 @@ public class CommuteManager {
         TicketsApi.ridersPickedUp(ticket, new ApiCallback() {
             @Override
             public void success() {
-                // TODO update ticket state
+                // TODO update ticket state (change ticket state to in progress)
                 callback.success();
             }
 
             @Override
             public void failure(int statusCode) {
                 callback.failure("Problem communicating with server");
-
             }
         });
     }
@@ -445,6 +443,10 @@ public class CommuteManager {
                     .equalTo("state", Ticket.StateRequested)
                     .or()
                     .equalTo("state", Ticket.StateScheduled)
+                    .or()
+                    .equalTo("state", Ticket.StateInProgress)
+                    .or()
+                    .equalTo("state", Ticket.StateStarted)
                 .endGroup()
                 .findAllSorted("pickupTime");
         // @formatter:on

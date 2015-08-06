@@ -36,6 +36,10 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
 
     @SuppressWarnings("unused")
     public void onEvent(AuthFailEvent event) {
+        showForceLogoutDialog();
+    }
+
+    public void showForceLogoutDialog() {
         if (authDialog == null)
             authDialog = new MaterialDialog.Builder(this)
                     .title(R.string.auth_error)

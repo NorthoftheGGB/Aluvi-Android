@@ -66,6 +66,11 @@ public class InitActivity extends AluviAuthActivity {
                 .show();
     }
 
+    @Override
+    public void showForceLogoutDialog() {
+        super.logOut();
+    }
+
     private void onInitializationFinished() {
         startActivity(new Intent(this, MainActivity.class));
         finish();

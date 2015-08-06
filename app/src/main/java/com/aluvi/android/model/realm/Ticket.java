@@ -21,6 +21,7 @@ public class Ticket extends RealmObject {
     public static final String StateRequested = "requested";
     public static final String StateCancelled = "cancelled"; // cancelled before scheduled
     public static final String StateScheduled = "scheduled";
+    public static final String StateStarted = "started";
     public static final String StateCommuteSchedulerFailed = "commute_scheduler_failed";
     public static final String StateInProgress = "in_progress";
     public static final String StateComplete = "complete";

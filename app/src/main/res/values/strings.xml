@@ -61,6 +61,7 @@
     <string name="contact_driver">Contact Driver</string>
     <string name="late">I\'m Late!</string>
     <string name="riders_picked_up">Riders Picked Up</string>
+    <string name="riders_dropped_off">Riders Dropped Off</string>
     <string name="profile">Profile</string>
     <string-array name="contact_options">
         <item>Call</item>
