@@ -52,9 +52,6 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
                     case R.id.action_my_commute:
                         onHomeClicked();
                         break;
-                    case R.id.action_log_out:
-                        logOut();
-                        break;
                 }
 
                 return false;

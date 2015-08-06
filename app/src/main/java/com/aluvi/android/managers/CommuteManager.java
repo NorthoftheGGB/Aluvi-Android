@@ -299,13 +299,7 @@ public class CommuteManager {
                             for (TicketData ticket : tickets)
                                 updateTicketForData(ticket, ticketStateTransitions);
 
-                        List<Ticket> relevantTickets = removeNonRelevantTickets(tickets);
-                        for (int i = 0; i < relevantTickets.size(); i++) {
-                            Ticket t = relevantTickets.get(i);
-                            ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
-                            t.removeFromRealm();
-                        }
-
+                        removeNonRelevantTickets(tickets, ticketStateTransitions);
                         callback.success(ticketStateTransitions);
                     }
                 });
@@ -323,17 +317,20 @@ public class CommuteManager {
      * or a begin/commit transaction block.
      *
      * @param tickets
-     * @return A list of relevant tickets
+     * @return
      */
-    private RealmResults<Ticket> removeNonRelevantTickets(List<TicketData> tickets) {
+    private void removeNonRelevantTickets(List<TicketData> tickets, List<TicketStateTransition> ticketStateTransitions) {
         Realm realm = AluviRealm.getDefaultRealm();
-        realm.beginTransaction();
         RealmQuery<Ticket> query = realm.where(Ticket.class);
-        query.beginGroup();
         for (int i = 0; i < tickets.size(); i++)
             query.notEqualTo("id", tickets.get(i).getTicketId());
-        query.endGroup();
-        return query.findAll();
+
+        List<Ticket> nonRelevantTickets = query.findAll();
+        for (int i = 0; i < nonRelevantTickets.size(); i++) {
+            Ticket t = nonRelevantTickets.get(i);
+            ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
+            t.removeFromRealm();
+        }
     }
 
     private void updateTicketForData(TicketData ticket, List<TicketStateTransition> ticketStateTransitions) {
@@ -426,7 +423,7 @@ public class CommuteManager {
     }
 
     public void notifyLate(Ticket ticket, final Callback callback) {
-        if(callback != null) {
+        if (callback != null) {
             callback.success();
         }
     }

@@ -1,18 +1,21 @@
 package com.aluvi.android.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.aluvi.android.R;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AluviAuthActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_profile;
     }
 
     @Override
@@ -24,7 +27,8 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_log_out) {
+            super.logOut();
             return true;
         }
 
