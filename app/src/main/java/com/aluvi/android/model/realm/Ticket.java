@@ -55,7 +55,7 @@ public class Ticket extends RealmObject {
 
     private boolean confirmed; // User has viewed the itinerary and accepted
     private boolean driving;
-    private double fixedPrice;
+    private int fixedPrice, estimatedEarnings;
 
     private Date requestedTimestamp;
     private Date estimatedArrivalTime;
@@ -126,6 +126,7 @@ public class Ticket extends RealmObject {
                 .toDate());
 
         ticket.setFixedPrice(data.getFixedPrice());
+        ticket.setEstimatedEarnings(data.getEstimatedEarnings());
 
         if (data.car != null) {
             Car car = ticket.getCar() == null ? realm.createObject(Car.class) : ticket.getCar();
@@ -418,12 +419,20 @@ public class Ticket extends RealmObject {
         this.driving = driving;
     }
 
-    public double getFixedPrice() {
+    public int getFixedPrice() {
         return fixedPrice;
     }
 
-    public void setFixedPrice(double fixedPrice) {
+    public void setFixedPrice(int fixedPrice) {
         this.fixedPrice = fixedPrice;
+    }
+
+    public int getEstimatedEarnings() {
+        return estimatedEarnings;
+    }
+
+    public void setEstimatedEarnings(int estimatedEarnings) {
+        this.estimatedEarnings = estimatedEarnings;
     }
 
     public String getDirection() {

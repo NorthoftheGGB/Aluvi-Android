@@ -55,7 +55,10 @@ public class TicketData {
     private double dropOffPointLongitude;
 
     @JsonProperty("fixed_price")
-    private double fixedPrice;
+    private int fixedPrice;
+
+    @JsonProperty("estimated_earnings")
+    private int estimatedEarnings;
 
     @JsonProperty("state")
     private String state;
@@ -149,13 +152,6 @@ public class TicketData {
         this.destinationLongitude = destinationLongitude;
     }
 
-    public double getFixedPrice() {
-        return fixedPrice;
-    }
-
-    public void setFixedPrice(double fixedPrice) {
-        this.fixedPrice = fixedPrice;
-    }
 
     public String getState() {
         return state;
@@ -254,6 +250,21 @@ public class TicketData {
         this.dropOffPointLongitude = dropOffPointLongitude;
     }
 
+    public int getFixedPrice() {
+        return fixedPrice;
+    }
+
+    public void setFixedPrice(int fixedPrice) {
+        this.fixedPrice = fixedPrice;
+    }
+
+    public int getEstimatedEarnings() {
+        return estimatedEarnings;
+    }
+
+    public void setEstimatedEarnings(int estimatedEarnings) {
+        this.estimatedEarnings = estimatedEarnings;
+    }
 
     public DriverData getDriver() {
         return driver;
@@ -262,7 +273,6 @@ public class TicketData {
     public void setDriver(DriverData driver) {
         this.driver = driver;
     }
-
 
     public CarData getCar() {
         return car;
@@ -279,5 +289,4 @@ public class TicketData {
     public void setRiders(ArrayList<RiderData> riders) {
         this.riders = riders;
     }
-
 }

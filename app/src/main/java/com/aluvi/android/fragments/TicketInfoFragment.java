@@ -24,8 +24,11 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -75,7 +78,8 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
 
     @Override
     public void initUI() {
-        mTicketPriceTextView.setText(NumberFormat.getCurrencyInstance().format(getTicket().getFixedPrice()));
+        int price = getTicket().isDriving() ? getTicket().getEstimatedEarnings() : getTicket().getFixedPrice();
+        mTicketPriceTextView.setText(getFormattedDollars(price));
 
         if (getTicket().getCar() != null) {
             mCarNameTextView.setText(getTicket().getCar().getMake());
@@ -228,4 +232,11 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             view.setVisibility(View.VISIBLE);
         }
     };
+
+    private String getFormattedDollars(int cents) {
+        BigDecimal displayDecimal = new BigDecimal(cents)
+                .divide(new BigDecimal(100))
+                .setScale(2, RoundingMode.HALF_EVEN);
+        return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(displayDecimal.doubleValue());
+    }
 }
