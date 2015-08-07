@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseButterActivity;
+import com.aluvi.android.fragments.onboarding.AboutUserFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
 import com.aluvi.android.model.local.TicketLocation;
@@ -15,8 +16,10 @@ import com.aluvi.android.model.local.TicketLocation;
 /**
  * Created by usama on 8/06/15.
  */
-public class OnboardingActivity extends BaseButterActivity implements RegisterFragment.RegistrationListener,
-        LocationSelectFragment.LocationSelectedListener {
+public class OnboardingActivity extends BaseButterActivity implements
+        RegisterFragment.RegistrationListener,
+        LocationSelectFragment.LocationSelectedListener,
+        AboutUserFragment.AboutUserListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +28,7 @@ public class OnboardingActivity extends BaseButterActivity implements RegisterFr
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.onboarding_root_container);
         if (fragment == null)
             getSupportFragmentManager().beginTransaction().replace(R.id.onboarding_root_container,
-                    RegisterFragment.newInstance()).addToBackStack(null).commit();
+                    RegisterFragment.newInstance()).commit();
     }
 
     @Override
@@ -51,15 +54,27 @@ public class OnboardingActivity extends BaseButterActivity implements RegisterFr
 
     @Override
     public void onRegistered() {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left,
-                R.anim.slide_out_right);
-        transaction.replace(R.id.onboarding_root_container, LocationSelectFragment.newInstance())
-                .addToBackStack(null).commit();
+        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
+                .replace(R.id.onboarding_root_container, LocationSelectFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
     public void onLocationSelected(TicketLocation start, TicketLocation end) {
+        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
+                .replace(R.id.onboarding_root_container, AboutUserFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
 
+    @Override
+    public void onUserDetailsPopulated() {
+
+    }
+
+    private FragmentTransaction attachOnboardingSlideAnimation(FragmentTransaction transaction) {
+        return transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left,
+                R.anim.slide_out_right);
     }
 }

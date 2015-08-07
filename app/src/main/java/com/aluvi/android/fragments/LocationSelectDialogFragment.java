@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +39,7 @@ import butterknife.ButterKnife;
  */
 public class LocationSelectDialogFragment extends DialogFragment {
     public interface OnLocationSelectedListener {
-        void onLocationSelected(TicketLocation address, LocationSelectDialogFragment fragment);
+        void onLocationSelected(@Nullable TicketLocation address, LocationSelectDialogFragment fragment);
     }
 
     @Bind(R.id.location_select_progress_bar) ProgressBar mSearchProgressBar;

@@ -7,12 +7,14 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.BaseButterFragment;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.model.local.TicketLocation;
 
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -24,6 +26,9 @@ public class LocationSelectFragment extends BaseButterFragment
     public interface LocationSelectedListener {
         void onLocationSelected(TicketLocation start, TicketLocation end);
     }
+
+    @Bind(R.id.onboarding_button_home_location) Button mHomeButton;
+    @Bind(R.id.onboarding_button_work_location) Button mWorkButton;
 
     private final String HOME_LOC = "home_location", WORK_LOC = "work_location";
     private TicketLocation mHomeLocation, mWorkLocation;
@@ -68,10 +73,14 @@ public class LocationSelectFragment extends BaseButterFragment
 
     @Override
     public void onLocationSelected(TicketLocation address, LocationSelectDialogFragment fragment) {
-        if (fragment.getTag().equals(HOME_LOC)) {
-            mHomeLocation = address;
-        } else {
-            mWorkLocation = address;
+        if (address != null) {
+            if (fragment.getTag().equals(HOME_LOC)) {
+                mHomeLocation = address;
+                mHomeButton.setText(address.getPlaceName());
+            } else {
+                mWorkLocation = address;
+                mWorkButton.setText(address.getPlaceName());
+            }
         }
     }
 }

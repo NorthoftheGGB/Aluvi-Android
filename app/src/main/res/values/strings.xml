@@ -80,4 +80,6 @@
     <string name="next">Next</string>
     <string name="home_location">Home</string>
     <string name="work_location">Work Location</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="choose_existing">Choose Existing</string>
 </resources>

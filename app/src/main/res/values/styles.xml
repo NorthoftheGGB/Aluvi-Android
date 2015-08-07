@@ -43,8 +43,8 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="BlueButton.Large" parent="@android:style/Widget.Button">
-        <item name="android:textSize">@dimen/abc_text_size_large_material</item>
+    <style name="BlueButton.Large">
+        <item name="android:textSize">@dimen/abc_text_size_medium_material</item>
         <item name="android:height">60dp</item>
     </style>
 

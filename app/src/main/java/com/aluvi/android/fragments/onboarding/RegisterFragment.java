@@ -3,6 +3,7 @@ package com.aluvi.android.fragments.onboarding;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,7 @@ public class RegisterFragment extends BaseButterFragment {
     private boolean showRegistrationErrors(String email, String password, String confirmPassword) {
         boolean errorFree = true;
 
-        if (email.equals("")) {
+        if (email.equals("") || !isValidEmail(email)) {
             mEmailEditText.setError(getString(R.string.email_error));
             errorFree = false;
         }
@@ -82,5 +83,9 @@ public class RegisterFragment extends BaseButterFragment {
         }
 
         return errorFree;
+    }
+
+    private boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 }
