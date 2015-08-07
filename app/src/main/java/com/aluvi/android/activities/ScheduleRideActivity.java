@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.aluvi.android.R;
+import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;

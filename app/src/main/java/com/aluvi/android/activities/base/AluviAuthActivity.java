@@ -1,12 +1,14 @@
-package com.aluvi.android.activities;
+package com.aluvi.android.activities.base;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.IntentCompat;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
+import com.aluvi.android.activities.LoginActivity;
 import com.aluvi.android.api.AuthFailEvent;
 import com.aluvi.android.managers.UserStateManager;
 
@@ -75,7 +77,7 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
 
     private void onLoggedOut() {
         Intent logInIntent = new Intent(AluviAuthActivity.this, LoginActivity.class);
-        logInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        logInIntent.addFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(logInIntent);
         finish();
     }

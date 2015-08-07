@@ -1,4 +1,4 @@
-package com.aluvi.android.activities;
+package com.aluvi.android.activities.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

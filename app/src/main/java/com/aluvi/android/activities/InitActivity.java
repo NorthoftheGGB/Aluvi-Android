@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
+import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 

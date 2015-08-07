@@ -5,6 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.aluvi.android.R;
+import com.aluvi.android.activities.base.AluviAuthActivity;
 
 public class ProfileActivity extends AluviAuthActivity {
 

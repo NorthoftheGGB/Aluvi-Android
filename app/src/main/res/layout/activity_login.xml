@@ -54,8 +54,19 @@
             android:layout_alignRight="@+id/log_in_edit_text_password"
             android:layout_below="@+id/log_in_edit_text_password"
             android:text="@string/login"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            />
+            android:theme="@style/BlueButtonStyle.Large"/>
+
+        <Button
+            android:id="@+id/login_button_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/login_button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/login_button"
+            android:layout_below="@+id/login_button"
+            android:text="@string/register"
+            android:theme="@style/BlueButtonStyle.Large"/>
     </RelativeLayout>
 </LinearLayout>
 

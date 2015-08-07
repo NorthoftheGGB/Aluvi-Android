@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aluvi.android.R;
+import com.aluvi.android.activities.base.BaseToolBarActivity;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.UserStateManager;
 
@@ -61,6 +62,11 @@ public class LoginActivity extends BaseToolBarActivity {
         } else {
             Toast.makeText(this, R.string.all_fields_required, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @OnClick(R.id.login_button_register)
+    public void onRegisterButtonClicked() {
+
     }
 
     private void onLoggedIn() {

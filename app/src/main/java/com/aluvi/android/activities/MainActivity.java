@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.aluvi.android.R;
+import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;

@@ -95,7 +95,11 @@
         </activity>
         <activity
             android:name=".activities.ProfileActivity"
-            android:label="@string/title_activity_profile">
+            android:label="@string/title_activity_profile" >
+        </activity>
+        <activity
+            android:name=".activities.OnboardingActivity"
+            android:label="@string/title_activity_onboarding" >
         </activity>
     </application>
 
