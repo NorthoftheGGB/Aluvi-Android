@@ -46,11 +46,25 @@ public class LocationSelectFragment extends BaseButterFragment
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mHomeLocation = savedInstanceState.getParcelable(HOME_LOC);
+            mWorkLocation = savedInstanceState.getParcelable(WORK_LOC);
+        }
+
         return inflater.inflate(R.layout.fragment_onboarding_location_select, container, false);
     }
 
     @Override
     public void initUI() {
+        updateHomeButton();
+        updateWorkButton();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(HOME_LOC, mHomeLocation);
+        outState.putParcelable(WORK_LOC, mWorkLocation);
     }
 
     @OnClick(R.id.onboarding_button_home_location)
@@ -76,11 +90,21 @@ public class LocationSelectFragment extends BaseButterFragment
         if (address != null) {
             if (fragment.getTag().equals(HOME_LOC)) {
                 mHomeLocation = address;
-                mHomeButton.setText(address.getPlaceName());
+                updateHomeButton();
             } else {
                 mWorkLocation = address;
-                mWorkButton.setText(address.getPlaceName());
+                updateWorkButton();
             }
         }
+    }
+
+    private void updateHomeButton() {
+        if (mHomeLocation != null)
+            mHomeButton.setText(mHomeLocation.getPlaceName());
+    }
+
+    private void updateWorkButton() {
+        if (mWorkLocation != null)
+            mWorkButton.setText(mWorkLocation.getPlaceName());
     }
 }

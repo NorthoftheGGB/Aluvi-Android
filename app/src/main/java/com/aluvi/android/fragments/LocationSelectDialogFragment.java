@@ -187,11 +187,13 @@ public class LocationSelectDialogFragment extends DialogFragment {
     }
 
     private void addMarkerForAddress(TicketLocation address) {
-        Marker marker = getDefaultMarker(address.getPlaceName(), "",
-                new LatLng(address.getLatitude(), address.getLongitude()));
+        if (mMapView != null) {
+            Marker marker = getDefaultMarker(address.getPlaceName(), "",
+                    new LatLng(address.getLatitude(), address.getLongitude()));
 
-        mMapView.clear();
-        mMapView.addMarker(marker);
+            mMapView.clear();
+            mMapView.addMarker(marker);
+        }
     }
 
     private void addMarker(final ILatLng latLng) {

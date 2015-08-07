@@ -82,8 +82,7 @@ public class AboutUserFragment extends BaseButterFragment {
 
         if (mCurrentPhotoPath != null)
             outState.putString(IMAGE_PATH_INST_SAVE, mCurrentPhotoPath);
-
-        if (mCurrentPhotoUri != null)
+        else if (mCurrentPhotoUri != null)
             outState.putParcelable(IMAGE_URI_SAVE, mCurrentPhotoUri);
     }
 
@@ -123,8 +122,8 @@ public class AboutUserFragment extends BaseButterFragment {
         } else if (requestCode == GALLERY_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 mCurrentPhotoPath = null; // If the user took a picture before, don't show that one again, especially not when restoring the app's state
-                Uri selectedImage = data.getData();
-                updateProfilePicture(selectedImage);
+                mCurrentPhotoUri = data.getData();
+                updateProfilePicture(mCurrentPhotoUri);
             }
         }
     }

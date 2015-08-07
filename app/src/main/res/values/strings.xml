@@ -82,4 +82,6 @@
     <string name="work_location">Work Location</string>
     <string name="take_photo">Take Photo</string>
     <string name="choose_existing">Choose Existing</string>
+    <string name="welcome_aluvi">Welcome to Aluvi!</string>
+    <string name="welcome_text">We\'re so glad you\'ve decided to join Aluvi. We\'ve designed Aluvi to be super easy to use - just follow the onscreen tutorial on the next page and you\'re going to be carpooling in no time.</string>
 </resources>

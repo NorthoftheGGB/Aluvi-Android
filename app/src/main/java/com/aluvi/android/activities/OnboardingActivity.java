@@ -11,6 +11,7 @@ import com.aluvi.android.activities.base.BaseButterActivity;
 import com.aluvi.android.fragments.onboarding.AboutUserFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
+import com.aluvi.android.fragments.onboarding.TutorialFragment;
 import com.aluvi.android.model.local.TicketLocation;
 
 /**
@@ -19,7 +20,8 @@ import com.aluvi.android.model.local.TicketLocation;
 public class OnboardingActivity extends BaseButterActivity implements
         RegisterFragment.RegistrationListener,
         LocationSelectFragment.LocationSelectedListener,
-        AboutUserFragment.AboutUserListener {
+        AboutUserFragment.AboutUserListener,
+        TutorialFragment.TutorialListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,15 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     @Override
     public void onUserDetailsPopulated() {
+        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
+                .replace(R.id.onboarding_root_container, TutorialFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
 
+    @Override
+    public void onTutorialRequested() {
+        finish();
     }
 
     private FragmentTransaction attachOnboardingSlideAnimation(FragmentTransaction transaction) {

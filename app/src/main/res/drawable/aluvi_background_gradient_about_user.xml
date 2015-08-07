@@ -3,7 +3,7 @@
        android:shape="rectangle">
     <gradient
         android:angle="0"
-        android:endColor="@color/aluvi_gradient_end_route"
-        android:startColor="@color/aluvi_gradient_end_all_about_you"
+        android:endColor="@color/aluvi_gradient_end_tutorial"
+        android:startColor="@color/aluvi_gradient_end_location_select"
         android:type="linear"/>
 </shape>
