@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -128,24 +129,47 @@ public class AboutUserFragment extends BaseButterFragment {
         }
     }
 
-    public void updateProfilePicture(Uri pictureUri) {
-        try {
-            InputStream imageStream = getActivity().getContentResolver().openInputStream(pictureUri);
-            Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-            updateProfilePicture(bitmap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void updateProfilePicture(final Uri pictureUri) {
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                try {
+                    InputStream imageStream = getActivity().getContentResolver().openInputStream(pictureUri);
+                    return BitmapFactory.decodeStream(imageStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                super.onPostExecute(bitmap);
+                updateProfilePicture(bitmap);
+            }
+        }.execute();
     }
 
-    public void updateProfilePicture(String picturePath) {
-        try {
-            Bitmap rotatedBitmap = CameraImageRotationUtils
-                    .handleSamplingAndRotationBitmap(picturePath);
-            updateProfilePicture(rotatedBitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void updateProfilePicture(final String picturePath) {
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                try {
+                    return CameraImageRotationUtils.handleSamplingAndRotationBitmap(picturePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                super.onPostExecute(bitmap);
+                updateProfilePicture(bitmap);
+            }
+        }.execute();
     }
 
     public void updateProfilePicture(Bitmap bitmap) {
