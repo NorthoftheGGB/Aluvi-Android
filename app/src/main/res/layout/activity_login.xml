@@ -54,7 +54,7 @@
             android:layout_alignRight="@+id/log_in_edit_text_password"
             android:layout_below="@+id/log_in_edit_text_password"
             android:text="@string/login"
-            android:theme="@style/BlueButtonStyle.Large"/>
+            android:theme="@style/BlueButton.Large"/>
 
         <Button
             android:id="@+id/login_button_register"
@@ -66,7 +66,7 @@
             android:layout_alignRight="@+id/login_button"
             android:layout_below="@+id/login_button"
             android:text="@string/register"
-            android:theme="@style/BlueButtonStyle.Large"/>
+            android:theme="@style/BlueButton.Large"/>
     </RelativeLayout>
 </LinearLayout>
 

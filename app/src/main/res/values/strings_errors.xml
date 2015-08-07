@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="commuter_rides_already_in_database">There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again</string>
+    <string name="unable_cancel_ride">Error when cancelling ride</string>
+    <string name="log_in_required">You must log in to use this feature</string>
+    <string name="error_fetching_route">Error fetching route</string>
+    <string name="no_results_address">Couldn\'t find that address</string>
+    <string name="unable_schedule_commute">Unable to schedule commute</string>
+    <string name="unable_log_in">Unable to log in</string>
+    <string name="unable_log_out">Unable to log out</string>
+    <string name="unable_rider_picked_up">Error when saving riders\' states</string>
+    <string name="error_initializing">Initialization Error</string>
+    <string name="check_network">Please check your network settings. Unable to connect to Aluvi.</string>
+    <string name="all_fields_required">All Fields Required</string>
+    <string name="please_fill_fields">Please fill out all the fields</string>
+    <string name="auth_error">Authentication Error</string>
+    <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
+    <string name="email_error">Please enter a valid email</string>
+    <string name="password_error">Please enter a password</string>
+    <string name="confirm_password_error">Passwords need to match</string>
+    <string name="location_select_error">Please fill out both from and to location fields</string>
+</resources>

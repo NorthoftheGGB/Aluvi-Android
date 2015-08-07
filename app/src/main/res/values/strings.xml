@@ -3,12 +3,6 @@
     <string name="scheduled_commute">Scheduled Commute</string>
     <string name="title_activity_main">@string/app_name</string>
 
-    <!--- User Recoverable Exceptions -->
-    <string name="commuter_rides_already_in_database">There are already rides requested or scheduled for tomorrow, this is a system error but can be recovered by canceling your commuter rides and requesting again</string>
-    <string name="unable_cancel_ride">Error when cancelling ride</string>
-    <string name="log_in_required">You must log in to use this feature</string>
-    <string name="error_fetching_route">Error fetching route</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -23,22 +17,15 @@
     <string name="at">at:</string>
     <string name="to">To:</string>
     <string name="from">From:</string>
-    <string name="no_results_address">Couldn\'t find that address</string>
     <string name="cancelled_trips">Cancelled Trips</string>
 
     <string name="schedule_ready">Your schedule will be ready at 9:30 PM. You might want to brush up on your puns.</string>
     <string name="loading">Loading</string>
     <string name="please_wait">Please Wait...</string>
     <string name="logged_in">Logged In</string>
-    <string name="unable_schedule_commute">Unable to schedule commute</string>
-    <string name="unable_log_in">Unable to log in</string>
-    <string name="unable_log_out">Unable to log out</string>
-    <string name="unable_rider_picked_up">Error when saving riders\' states</string>
     <string name="retry">Retry</string>
     <string name="work">Work</string>
     <string name="home">Home</string>
-    <string name="error_initializing">Initialization Error</string>
-    <string name="check_network">Please check your network settings. Unable to connect to Aluvi.</string>
 
     <string name="trip_fulfilled">Trip request successful</string>
     <string name="trip_unfulfilled">Trip request unsuccessful</string>
@@ -52,10 +39,6 @@
     <string name="password">Password</string>
     <string name="login">Log In</string>
 
-    <string name="all_fields_required">All Fields Required</string>
-    <string name="please_fill_fields">Please fill out all the fields</string>
-    <string name="auth_error">Authentication Error</string>
-    <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
     <string name="close">Close</string>
 
     <string name="contact_driver">Contact Driver</string>
@@ -76,8 +59,25 @@
     <string name="work_email">Work Email</string>
     <string name="terms_services">In case you missed it, here are our Driver and Rider terms of service</string>
     <string name="register">Register</string>
-    <string name="title_activity_onboarding">OnboardingActivity</string>
+    <string name="title_activity_onboarding">Onboarding</string>
+    <string name="everyone_work">Everyone needs to get to work.</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="title_activity_login">Sign in</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="want_rider">I want to be a driver!</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="all_about_you"><![CDATA[All About You >]]></string>
+    <string name="next">Next</string>
+    <string name="home_location">Home</string>
+    <string name="work_location">Work Location</string>
 </resources>

@@ -22,8 +22,16 @@
 
     <color name="aluvi_gradient_start">#60c196</color>
     <color name="aluvi_gradient_end">#388C94</color>
+    <color name="aluvi_gradient_end_sign_up">#149B7A</color>
+    <color name="aluvi_gradient_end_all_about_you">#159977</color>
+    <color name="aluvi_gradient_end_route">#159386</color>
+
     <color name="aluvi_gradient_start_darker">#40A074</color>
     <color name="aluvi_gradient_end_darker">#266A72</color>
 
     <color name="light_white_background">#CEDFE0</color>
+
+    <color name="onboarding_button_background">#CFECE0</color>
+    <color name="onboarding_button_background_clicked">#ADCAB0</color>
+    <color name="onboarding_button_text_color">#1B9F72</color>
 </resources>

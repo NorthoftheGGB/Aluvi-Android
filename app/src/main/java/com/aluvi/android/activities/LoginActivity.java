@@ -66,7 +66,7 @@ public class LoginActivity extends BaseToolBarActivity {
 
     @OnClick(R.id.login_button_register)
     public void onRegisterButtonClicked() {
-
+        startActivity(new Intent(this, OnboardingActivity.class));
     }
 
     private void onLoggedIn() {

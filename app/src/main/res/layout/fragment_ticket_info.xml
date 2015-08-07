@@ -123,7 +123,7 @@
         android:layout_marginTop="10dp"
         android:minHeight="60dp"
         android:text="@string/late"
-        android:theme="@style/ErrorButtonStyle"
+        android:theme="@style/ErrorButton"
         android:layout_alignLeft="@+id/ticket_info_parent_container_rider_info"
         android:layout_alignStart="@+id/ticket_info_parent_container_rider_info"
         android:layout_alignRight="@+id/ticket_info_parent_container_rider_info"
@@ -141,5 +141,5 @@
         android:layout_marginTop="10dp"
         android:minHeight="60dp"
         android:text="@string/riders_picked_up"
-        android:theme="@style/SuccessButtonStyle"/>
+        android:theme="@style/BlueButton"/>
 </RelativeLayout>

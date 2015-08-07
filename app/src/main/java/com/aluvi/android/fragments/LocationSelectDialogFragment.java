@@ -64,7 +64,10 @@ public class LocationSelectDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mLocationSelectedListener = (OnLocationSelectedListener) activity;
+        if (getParentFragment() != null)
+            mLocationSelectedListener = (OnLocationSelectedListener) getParentFragment();
+        else
+            mLocationSelectedListener = (OnLocationSelectedListener) activity;
     }
 
     @NonNull

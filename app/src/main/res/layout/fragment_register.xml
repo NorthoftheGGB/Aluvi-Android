@@ -1,0 +1,101 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/aluvi_background_gradient_sign_up"
+                tools:context="com.aluvi.android.fragments.onboarding.RegisterFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/register_button_sign_up"
+        android:gravity="center_vertical">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/ic_app_large"
+            android:layout_alignParentTop="true"/>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/everyone_work"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <EditText
+            android:id="@+id/register_edit_text_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/textView3"
+            android:layout_alignLeft="@+id/textView3"
+            android:layout_alignRight="@+id/textView3"
+            android:layout_alignStart="@+id/textView3"
+            android:layout_below="@+id/textView3"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"/>
+
+        <EditText
+            android:id="@+id/register_edit_text_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/register_edit_text_email"
+            android:layout_alignLeft="@+id/register_edit_text_email"
+            android:layout_alignRight="@+id/register_edit_text_email"
+            android:layout_alignStart="@+id/register_edit_text_email"
+            android:layout_below="@+id/register_edit_text_email"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="@string/password"
+            android:inputType="textPassword"/>
+
+        <EditText
+            android:id="@+id/register_edit_text_confirm_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/register_edit_text_email"
+            android:layout_alignLeft="@+id/register_edit_text_email"
+            android:layout_alignRight="@+id/register_edit_text_email"
+            android:layout_alignStart="@+id/register_edit_text_email"
+            android:layout_below="@+id/register_edit_text_password"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"/>
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/register_edit_text_confirm_password"
+            android:layout_alignLeft="@+id/register_edit_text_confirm_password"
+            android:layout_alignRight="@+id/register_edit_text_confirm_password"
+            android:layout_alignStart="@+id/register_edit_text_confirm_password"
+            android:layout_below="@+id/register_edit_text_confirm_password"
+            android:layout_marginTop="10dp"
+            android:checked="false"
+            android:text="@string/want_rider"
+            android:textSize="@dimen/abc_text_size_large_material"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/register_button_sign_up"
+        style="@style/OnboardingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/sign_up"/>
+</RelativeLayout>
