@@ -20,29 +20,84 @@ public class RequestQueue {
         this.listener = listener;
     }
 
+    public RequestQueue() {
+    }
+
     public RequestQueue addRequest(Task request) {
         requests.add(request);
         return this;
     }
 
     public void execute() {
+        buildQueue().executeTasks();
+    }
+
+    private void executeTasks() {
+        for (Task task : requests)
+            task.run();
+    }
+
+    public static RequestQueue mergeQueues(final RequestQueue q1, final RequestQueue q2,
+                                           RequestQueueListener listener) {
+        return new RequestQueue(listener)
+                .addRequest(new Task() {
+                    @Override
+                    public void run() {
+                        q1.setListener(new RequestQueueListener() {
+                            @Override
+                            public void onRequestsFinished() {
+                                onComplete();
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                onError(message);
+                            }
+                        });
+
+                        q1.execute();
+                    }
+                })
+                .addRequest(new Task() {
+                    @Override
+                    public void run() {
+                        q2.setListener(new RequestQueueListener() {
+                            @Override
+                            public void onRequestsFinished() {
+                                onComplete();
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                onError(message);
+                            }
+                        });
+
+                        q2.execute();
+                    }
+                });
+    }
+
+    public RequestQueue buildQueue() {
         for (Task task : requests) {
             task.setListener(new Task.TaskListener() {
                 @Override
                 public void onComplete() {
-                    if (updateCompletedTasks())
+                    if (updateCompletedTasks() && listener != null)
                         listener.onRequestsFinished();
                 }
 
                 @Override
                 public void onError(String message) {
-                    listener.onError(message);
+                    if (listener != null)
+                        listener.onError(message);
+
                     cancelTasks();
                 }
             });
-
-            task.run();
         }
+
+        return this;
     }
 
     public void cancelTasks() {
@@ -53,6 +108,14 @@ public class RequestQueue {
     public synchronized boolean updateCompletedTasks() {
         completedTasks++;
         return completedTasks >= requests.size();
+    }
+
+    public RequestQueueListener getListener() {
+        return listener;
+    }
+
+    public void setListener(RequestQueueListener listener) {
+        this.listener = listener;
     }
 
     public abstract static class Task {

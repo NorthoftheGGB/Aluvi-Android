@@ -9,10 +9,13 @@ import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.api.users.models.DriverRegistrationData;
 import com.aluvi.android.api.users.models.UserRegistrationData;
 import com.aluvi.android.application.AluviPreferences;
-import com.aluvi.android.model.local.Profile;
+import com.aluvi.android.application.AluviRealm;
+import com.aluvi.android.model.realm.Profile;
 import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
+
+import io.realm.Realm;
 
 /**
  * Created by matthewxi on 7/14/15.
@@ -30,12 +33,6 @@ public class UserStateManager {
     private String driverState;
     private String riderState;
 
-    public interface Callback {
-        void success();
-
-        void failure(String message);
-    }
-
     public static synchronized void initialize(Context context) {
         if (mInstance == null) {
             mInstance = new UserStateManager(context);
@@ -51,12 +48,48 @@ public class UserStateManager {
         gson = new Gson();
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         apiToken = preferences.getString(AluviPreferences.API_TOKEN_KEY, null);
-        String profileString = preferences.getString(AluviPreferences.PROFILE_STRING_KEY, null);
-        if (profileString != null) {
-            profile = gson.fromJson(profileString, Profile.class);
-        } else {
-            profile = null;
-        }
+
+        profile = AluviRealm.getDefaultRealm().where(Profile.class).findFirst();
+    }
+
+    public void sync(final Callback callback) {
+        buildSyncQueue(new RequestQueue.RequestQueueListener() {
+            @Override
+            public void onRequestsFinished() {
+                callback.success();
+            }
+
+            @Override
+            public void onError(String message) {
+                callback.failure(message);
+            }
+        }).execute();
+    }
+
+    public RequestQueue buildSyncQueue(RequestQueue.RequestQueueListener listener) {
+        return new RequestQueue(listener).addRequest(new RequestQueue.Task() {
+            @Override
+            public void run() {
+                fetchProfile(new DataCallback<Profile>() {
+                    @Override
+                    public void success(final Profile result) {
+                        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                realm.clear(Profile.class);
+                                realm.copyToRealm(result);
+                                onComplete();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        onError(message);
+                    }
+                });
+            }
+        }).buildQueue();
     }
 
     @Nullable
@@ -145,6 +178,20 @@ public class UserStateManager {
             @Override
             public void failure(int statusCode) {
                 callback.failure("Unable to register driver");
+            }
+        });
+    }
+
+    public void fetchProfile(final DataCallback<Profile> profileDataCallback) {
+        UsersApi.refreshProfile(new UsersApi.ProfileCallback() {
+            @Override
+            public void success(Profile profile) {
+                profileDataCallback.success(profile);
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                profileDataCallback.failure("Unable to refresh profile");
             }
         });
     }

@@ -1,17 +1,32 @@
-package com.aluvi.android.model.local;
+package com.aluvi.android.model.realm;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.realm.RealmObject;
 
 /**
  * Created by matthewxi on 7/13/15.
  */
-public class Profile {
-
+public class Profile extends RealmObject{
+    @JsonProperty("first_name")
     private String firstName;
+
+    @JsonProperty("last_name")
     private String lastName;
+
+    @JsonProperty("phone")
     private String phone;
+
+    @JsonProperty("email")
     private String email;
 
+    @JsonProperty("commuter_refill_amount_cents")
     private int commuterRefillAmountCents;
+
+    @JsonProperty("commuter_balance_cents")
     private int commuterBalanceCents;
+
+    @JsonProperty("commuter_refill_enabled")
     private int commuterRefillEnabled;
 
     private String defaultCardToken;
@@ -22,7 +37,10 @@ public class Profile {
     private String recipientCardLastFour;
     private String bankAccountName;
 
+    @JsonProperty("image_small")
     private String smallImageUrl;
+
+    @JsonProperty("image_large")
     private String largeImageUrl;
 
     public String getFirstName() {

@@ -22,7 +22,9 @@ import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
+import com.aluvi.android.managers.Callback;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.DataCallback;
 import com.aluvi.android.managers.location.RouteMappingManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.LocationWrapper;
@@ -175,7 +177,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     public void refreshTickets() {
         final Dialog refreshProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
-        CommuteManager.getInstance().refreshTickets(new CommuteManager.DataCallback<List<TicketStateTransition>>() {
+        CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {
                 if (refreshProgressDialog != null)
@@ -363,7 +365,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         CommuteManager.getInstance().cancelTrip(trip, cancelCallback);
     }
 
-    private CommuteManager.Callback cancelCallback = new CommuteManager.Callback() {
+    private Callback cancelCallback = new Callback() {
         @Override
         public void success() {
             Log.d(TAG, "Successfully cancelled trips");

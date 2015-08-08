@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.aluvi.android.R;
 import com.aluvi.android.managers.UserStateManager;
-import com.aluvi.android.model.local.Profile;
+import com.aluvi.android.model.realm.Profile;
 
 import butterknife.Bind;
 import butterknife.OnClick;

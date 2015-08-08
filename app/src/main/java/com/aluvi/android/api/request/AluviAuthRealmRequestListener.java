@@ -11,14 +11,20 @@ import io.realm.RealmObject;
  */
 public abstract class AluviAuthRealmRequestListener<T extends RealmObject> extends AluviAuthRequestListener<T> {
     private Realm realm;
+    private boolean shouldAutoSave;
 
     public AluviAuthRealmRequestListener() {
+        this(true);
+    }
+
+    public AluviAuthRealmRequestListener(boolean shouldAutoSaveResponse) {
         realm = AluviRealm.getDefaultRealm();
+        this.shouldAutoSave = shouldAutoSaveResponse;
     }
 
     @Override
     public void onAuthenticatedResponse(T response, int statusCode, VolleyError error) {
-        if (error == null && response != null) {
+        if (error == null && response != null && shouldAutoSave) {
             realm.beginTransaction();
             realm.copyToRealm(response);
             realm.commitTransaction();

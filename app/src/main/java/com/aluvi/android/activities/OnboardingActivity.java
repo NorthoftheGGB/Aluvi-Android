@@ -17,6 +17,7 @@ import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
 import com.aluvi.android.fragments.onboarding.TutorialFragment;
+import com.aluvi.android.managers.Callback;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.local.TicketLocation;
 
@@ -124,7 +125,7 @@ public class OnboardingActivity extends BaseButterActivity implements
     @Override
     public void onTutorialRequested() {
         UserStateManager.getInstance()
-                .registerUser(mRegistrationData, new UserStateManager.Callback() {
+                .registerUser(mRegistrationData, new Callback() {
                     @Override
                     public void success() {
                         onRegistrationSuccess();
@@ -139,7 +140,7 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     public void onRegistrationSuccess() {
         UserStateManager.getInstance().login(mRegistrationData.getEmail(),
-                mRegistrationData.getPassword(), new UserStateManager.Callback() {
+                mRegistrationData.getPassword(), new Callback() {
                     @Override
                     public void success() {
                         if (mDriverRegistrationData != null)
@@ -157,7 +158,7 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     public void registerDriver() {
-        UserStateManager.getInstance().registerDriver(mDriverRegistrationData, new UserStateManager.Callback() {
+        UserStateManager.getInstance().registerDriver(mDriverRegistrationData, new Callback() {
             @Override
             public void success() {
                 onSignUpFinished();

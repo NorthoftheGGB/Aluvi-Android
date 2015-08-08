@@ -16,6 +16,7 @@ import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
+import com.aluvi.android.managers.Callback;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.LocationWrapper;
@@ -242,7 +243,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
             manager.save(null);
 
             try {
-                manager.requestRidesForTomorrow(new CommuteManager.Callback() {
+                manager.requestRidesForTomorrow(new Callback() {
                     @Override
                     public void success() {
                         onCommuteRequestSuccess();

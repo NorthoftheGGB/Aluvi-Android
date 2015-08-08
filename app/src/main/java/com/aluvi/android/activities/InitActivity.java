@@ -9,6 +9,8 @@ import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.RequestQueue;
+import com.aluvi.android.managers.UserStateManager;
 
 /**
  * Initialize any data we need before the user can use the app. Having this activity is useful because we avoid potential race conditions when using the app
@@ -26,9 +28,12 @@ public class InitActivity extends AluviAuthActivity {
 
     private void initAluvi() {
         final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
-        CommuteManager.getInstance().sync(new CommuteManager.Callback() {
+
+        RequestQueue q1 = UserStateManager.getInstance().buildSyncQueue(null);
+        RequestQueue q2 = CommuteManager.getInstance().buildSyncQueue(null);
+        RequestQueue.mergeQueues(q1, q2, new RequestQueue.RequestQueueListener() {
             @Override
-            public void success() {
+            public void onRequestsFinished() {
                 if (progressDialog != null)
                     progressDialog.cancel();
 
@@ -36,13 +41,13 @@ public class InitActivity extends AluviAuthActivity {
             }
 
             @Override
-            public void failure(String message) {
+            public void onError(String message) {
                 if (progressDialog != null)
                     progressDialog.cancel();
 
                 showInitErrorMessage();
             }
-        });
+        }).execute();
     }
 
     @Override

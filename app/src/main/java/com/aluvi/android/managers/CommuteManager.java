@@ -32,19 +32,6 @@ import io.realm.RealmResults;
  * Created by matthewxi on 7/15/15.
  */
 public class CommuteManager {
-
-    public interface Callback {
-        void success();
-
-        void failure(String message);
-    }
-
-    public interface DataCallback<T> {
-        void success(T result);
-
-        void failure(String message);
-    }
-
     public final static int INVALID_TIME = -1;
     private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
@@ -79,17 +66,23 @@ public class CommuteManager {
      * @param callback
      */
     public void sync(final Callback callback) {
-        new RequestQueue(new RequestQueue.RequestQueueListener() {
+        buildSyncQueue(new RequestQueue.RequestQueueListener() {
             @Override
             public void onRequestsFinished() {
-                callback.success();
+                if (callback != null)
+                    callback.success();
             }
 
             @Override
             public void onError(String message) {
-                callback.failure(message);
+                if (callback != null)
+                    callback.failure(message);
             }
-        }).addRequest(new RequestQueue.Task() {
+        }).execute();
+    }
+
+    public RequestQueue buildSyncQueue(RequestQueue.RequestQueueListener listener) {
+        return new RequestQueue(listener).addRequest(new RequestQueue.Task() {
             @Override
             public void run() {
                 refreshRoutePreferences(new Callback() {
@@ -119,7 +112,7 @@ public class CommuteManager {
                     }
                 });
             }
-        }).execute();
+        }).buildQueue();
     }
 
     public void refreshRoutePreferences(final Callback callback) {

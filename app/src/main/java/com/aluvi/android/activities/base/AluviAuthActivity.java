@@ -10,6 +10,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.LoginActivity;
 import com.aluvi.android.api.AuthFailEvent;
+import com.aluvi.android.managers.Callback;
 import com.aluvi.android.managers.UserStateManager;
 
 import de.greenrobot.event.EventBus;
@@ -59,7 +60,7 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
     }
 
     protected void logOut() {
-        UserStateManager.getInstance().logout(new UserStateManager.Callback() {
+        UserStateManager.getInstance().logout(new Callback() {
             @Override
             public void success() {
                 onLoggedOut();

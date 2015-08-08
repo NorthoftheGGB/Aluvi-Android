@@ -4,10 +4,12 @@ import android.util.Log;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
+import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
 import com.aluvi.android.api.users.models.DriverRegistrationData;
 import com.aluvi.android.api.users.models.UserRegistrationData;
+import com.aluvi.android.model.realm.Profile;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
@@ -23,16 +25,20 @@ import java.util.HashMap;
  * Created by matthewxi on 7/14/15.
  */
 public class UsersApi {
-    public interface LoginCallback {
-        void success(String token);
-
+    public interface FailureCallback {
         void failure(int statusCode);
     }
 
-    public interface RegistrationCallback {
-        void success();
+    public interface LoginCallback extends FailureCallback {
+        void success(String token);
+    }
 
-        void failure(int statusCode);
+    public interface RegistrationCallback extends FailureCallback {
+        void success();
+    }
+
+    public interface ProfileCallback extends FailureCallback {
+        void success(Profile profile);
     }
 
     public static void login(String email, String password, final LoginCallback loginCallback) {
@@ -104,7 +110,8 @@ public class UsersApi {
                 new JacksonRequestListener() {
                     @Override
                     public void onResponse(Object response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED
+                                || statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
@@ -119,7 +126,32 @@ public class UsersApi {
         );
 
         registerDriverRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
-                HttpURLConnection.HTTP_BAD_REQUEST});
+                HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(registerDriverRequest);
+    }
+
+    public static void refreshProfile(final ProfileCallback callback) {
+        AluviAuthenticatedRequest profileRequest = new AluviAuthenticatedRequest(
+                Request.Method.GET,
+                AluviApi.API_USER_PROFILE,
+                new AluviAuthRealmRequestListener<Profile>(false) {
+                    @Override
+                    public void onAuthRealmResponse(Profile response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK)
+                            callback.success(response);
+                        else
+                            callback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Profile.class);
+                    }
+                }
+        );
+
+        profileRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
+                HttpURLConnection.HTTP_BAD_REQUEST});
+        AluviApi.getInstance().getRequestQueue().add(profileRequest);
     }
 }

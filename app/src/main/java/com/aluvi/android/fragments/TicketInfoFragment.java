@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.helpers.views.DialogUtils;
+import com.aluvi.android.managers.Callback;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
@@ -173,7 +174,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             CommuteManager.getInstance().ridersDroppedOff(getTicket(), ridersStatusUpdatedCallback);
     }
 
-    private CommuteManager.Callback ridersStatusUpdatedCallback = new CommuteManager.Callback() {
+    private Callback ridersStatusUpdatedCallback = new Callback() {
         @Override
         public void success() {
             if (riderStatusProgressDialog != null)

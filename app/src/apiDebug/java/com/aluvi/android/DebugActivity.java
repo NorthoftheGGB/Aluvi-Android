@@ -81,7 +81,7 @@ public class DebugActivity extends AppCompatActivity {
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
                 final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
-                CommuteManager.getInstance().sync(new CommuteManager.Callback() {
+                CommuteManager.getInstance().sync(new Callback() {
                     @Override
                     public void success() {
                         if (progressDialog != null)
@@ -115,7 +115,7 @@ public class DebugActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
 
                 final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
-                CommuteManager.getInstance().sync(new CommuteManager.Callback() {
+                CommuteManager.getInstance().sync(new Callback() {
                     @Override
                     public void success() {
                         if (progressDialog != null)
@@ -158,7 +158,7 @@ public class DebugActivity extends AppCompatActivity {
 
     @OnClick(R.id.schedule_button) public void schedule(){
         try {
-            CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.Callback(){
+            CommuteManager.getInstance().requestRidesForTomorrow(new Callback(){
                 @Override
                 public void success() {
                     Toast.makeText(getApplicationContext(), "Scheduled!", Toast.LENGTH_SHORT).show();
@@ -186,7 +186,7 @@ public class DebugActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Null", Toast.LENGTH_SHORT).show();
             return;
         }
-        CommuteManager.getInstance().cancelTicket(ticket, new CommuteManager.Callback() {
+        CommuteManager.getInstance().cancelTicket(ticket, new Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Cancelled!", Toast.LENGTH_SHORT).show();
@@ -208,7 +208,7 @@ public class DebugActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Null", Toast.LENGTH_SHORT).show();
             return;
         }
-        CommuteManager.getInstance().cancelTrip(trip, new CommuteManager.Callback() {
+        CommuteManager.getInstance().cancelTrip(trip, new Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Cancelled!", Toast.LENGTH_SHORT).show();
