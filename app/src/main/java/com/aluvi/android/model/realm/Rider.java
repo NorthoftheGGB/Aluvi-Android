@@ -91,8 +91,4 @@ public class Rider extends RealmObject {
     public void setLargeImageUrl(String largeImageUrl) {
         this.largeImageUrl = largeImageUrl;
     }
-
-
-
-
 }

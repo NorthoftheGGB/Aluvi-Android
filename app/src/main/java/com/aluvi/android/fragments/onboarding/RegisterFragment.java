@@ -8,10 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.aluvi.android.R;
+import com.aluvi.android.api.users.models.UserRegistrationData;
 import com.aluvi.android.fragments.BaseButterFragment;
+import com.aluvi.android.helpers.views.FormValidator;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -20,14 +23,16 @@ import butterknife.OnClick;
  * Created by usama on 8/06/15.
  */
 public class RegisterFragment extends BaseButterFragment {
-
     public interface RegistrationListener {
-        void onRegistered();
+        void onRegistered(UserRegistrationData userRegistrationData);
     }
 
+    @Bind(R.id.register_edit_text_first_name) EditText mFirstNameEditText;
+    @Bind(R.id.register_edit_text_last_name) EditText mLastNameEditText;
     @Bind(R.id.register_edit_text_email) EditText mEmailEditText;
     @Bind(R.id.register_edit_text_password) EditText mPasswordEditText;
     @Bind(R.id.register_edit_text_confirm_password) EditText mConfirmPasswordEditText;
+    @Bind(R.id.register_check_box_interested_driver) CheckBox mInterestedDriverCheckBox;
     @Bind(R.id.register_button_sign_up) Button mSignUpButton;
 
     private RegistrationListener mRegistrationListener;
@@ -56,33 +61,39 @@ public class RegisterFragment extends BaseButterFragment {
 
     @OnClick(R.id.register_button_sign_up)
     public void onSignUpButtonClicked() {
-        String email = mEmailEditText.getText().toString();
-        String password = mPasswordEditText.getText().toString();
-        String confirmationPassword = mConfirmPasswordEditText.getText().toString();
-
-        if (showRegistrationErrors(email, password, confirmationPassword))
-            mRegistrationListener.onRegistered();
+        if (validateForm()) {
+            mRegistrationListener.onRegistered(initRegistrationData());
+        }
     }
 
-    private boolean showRegistrationErrors(String email, String password, String confirmPassword) {
-        boolean errorFree = true;
+    private boolean validateForm() {
+        return new FormValidator(getString(R.string.field_required_error))
+                .addField(mFirstNameEditText)
+                .addField(mLastNameEditText)
+                .addField(mEmailEditText, new FormValidator.Validator() {
+                    @Override
+                    public boolean isValid(String input) {
+                        return !"".equals(input) && isValidEmail(input);
+                    }
+                })
+                .addField(mPasswordEditText)
+                .addField(mConfirmPasswordEditText, new FormValidator.Validator() {
+                    @Override
+                    public boolean isValid(String input) {
+                        return input.equals(mPasswordEditText.getText().toString());
+                    }
+                })
+                .validate();
+    }
 
-        if (email.equals("") || !isValidEmail(email)) {
-            mEmailEditText.setError(getString(R.string.email_error));
-            errorFree = false;
-        }
-
-        if (password.equals("")) {
-            mPasswordEditText.setError(getString(R.string.password_error));
-            errorFree = false;
-        }
-
-        if (!confirmPassword.equals(password)) {
-            mConfirmPasswordEditText.setError(getString(R.string.confirm_password_error));
-            errorFree = false;
-        }
-
-        return errorFree;
+    private UserRegistrationData initRegistrationData() {
+        UserRegistrationData data = new UserRegistrationData();
+        data.setFirstName(mFirstNameEditText.getText().toString());
+        data.setLastName(mLastNameEditText.getText().toString());
+        data.setEmail(mEmailEditText.getText().toString());
+        data.setPassword(mPasswordEditText.getText().toString());
+        data.setIsInterestedDriver(mInterestedDriverCheckBox.isChecked());
+        return data;
     }
 
     private boolean isValidEmail(CharSequence target) {

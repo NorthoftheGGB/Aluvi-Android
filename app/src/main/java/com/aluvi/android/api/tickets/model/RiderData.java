@@ -1,11 +1,12 @@
 package com.aluvi.android.api.tickets.model;
 
+import com.aluvi.android.api.request.AluviPayload;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Created by matthewxi on 7/18/15.
  */
-public class RiderData {
+public class RiderData extends AluviPayload{
 
     @JsonProperty("id")
     private Integer id;

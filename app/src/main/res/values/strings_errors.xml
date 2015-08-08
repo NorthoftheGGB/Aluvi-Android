@@ -15,8 +15,11 @@
     <string name="please_fill_fields">Please fill out all the fields</string>
     <string name="auth_error">Authentication Error</string>
     <string name="sign_back_in">Please sign back in to continue using Aluvi</string>
+    <string name="first_name_error">Please enter your first name</string>
+    <string name="last_name_error">Please enter your last name</string>
     <string name="email_error">Please enter a valid email</string>
     <string name="password_error">Please enter a password</string>
     <string name="confirm_password_error">Passwords need to match</string>
     <string name="location_select_error">Please fill out both from and to location fields</string>
+    <string name="field_required_error">Please fill out this field</string>
 </resources>

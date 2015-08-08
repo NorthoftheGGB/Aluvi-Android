@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
+import com.aluvi.android.api.users.models.DriverRegistrationData;
+import com.aluvi.android.api.users.models.UserRegistrationData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.model.local.Profile;
 import com.google.gson.Gson;
@@ -115,6 +117,34 @@ public class UserStateManager {
             @Override
             public void failure(int statusCode) {
                 callback.failure("Could not log in");
+            }
+        });
+    }
+
+    public void registerUser(UserRegistrationData data, final Callback callback) {
+        UsersApi.registerUser(data, new UsersApi.RegistrationCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to register user");
+            }
+        });
+    }
+
+    public void registerDriver(DriverRegistrationData data, final Callback callback) {
+        UsersApi.registerDriver(data, new UsersApi.RegistrationCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to register driver");
             }
         });
     }
