@@ -70,19 +70,21 @@ public class RegisterFragment extends BaseButterFragment {
         return new FormValidator(getString(R.string.field_required_error))
                 .addField(mFirstNameEditText)
                 .addField(mLastNameEditText)
-                .addField(mEmailEditText, new FormValidator.Validator() {
-                    @Override
-                    public boolean isValid(String input) {
-                        return !"".equals(input) && isValidEmail(input);
-                    }
-                })
+                .addField(mEmailEditText, getString(R.string.error_invalid_email),
+                        new FormValidator.Validator() {
+                            @Override
+                            public boolean isValid(String input) {
+                                return !"".equals(input) && isValidEmail(input);
+                            }
+                        })
                 .addField(mPasswordEditText)
-                .addField(mConfirmPasswordEditText, new FormValidator.Validator() {
-                    @Override
-                    public boolean isValid(String input) {
-                        return input.equals(mPasswordEditText.getText().toString());
-                    }
-                })
+                .addField(mConfirmPasswordEditText, getString(R.string.confirm_password_error),
+                        new FormValidator.Validator() {
+                            @Override
+                            public boolean isValid(String input) {
+                                return input.equals(mPasswordEditText.getText().toString());
+                            }
+                        })
                 .validate();
     }
 

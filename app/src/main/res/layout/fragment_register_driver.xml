@@ -18,11 +18,13 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
+            android:layout_below="@+id/onboarding_register_driver_edit_text_license_number"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="10dp"
             android:hint="@string/license_plate_number"
-            android:layout_below="@+id/onboarding_register_driver_edit_text_license_number"
-            android:layout_marginTop="10dp"/>
+            android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"/>
 
         <TextView
             android:id="@+id/textView6"
@@ -42,9 +44,11 @@
             android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_license_plate_number"
             android:layout_alignRight="@+id/onboarding_register_driver_edit_text_license_plate_number"
             android:layout_alignStart="@+id/onboarding_register_driver_edit_text_license_plate_number"
-            android:hint="@string/make"
             android:layout_below="@+id/onboarding_register_driver_edit_text_license_plate_number"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:hint="@string/make"
+            android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"/>
 
         <EditText
             android:id="@+id/onboarding_register_driver_edit_text_car_model"
@@ -57,7 +61,9 @@
             android:layout_marginTop="10dp"
             android:layout_toLeftOf="@+id/onboarding_register_driver_edit_text_car_year"
             android:layout_toStartOf="@+id/onboarding_register_driver_edit_text_car_year"
-            android:hint="@string/model"/>
+            android:hint="@string/model"
+            android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"/>
 
         <EditText
             android:id="@+id/onboarding_register_driver_edit_text_car_year"
@@ -67,19 +73,22 @@
             android:layout_alignEnd="@+id/onboarding_register_driver_edit_text_license_plate_number"
             android:layout_alignRight="@+id/onboarding_register_driver_edit_text_license_plate_number"
             android:hint="@string/year"
+            android:imeOptions="actionDone"
             android:inputType="number"/>
 
         <EditText
             android:id="@+id/onboarding_register_driver_edit_text_license_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView6"
-            android:hint="@string/license_number"
-            android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_car_make"
-            android:layout_alignStart="@+id/onboarding_register_driver_edit_text_car_make"
-            android:layout_alignRight="@+id/onboarding_register_driver_edit_text_car_make"
             android:layout_alignEnd="@+id/onboarding_register_driver_edit_text_car_make"
-            android:layout_marginTop="20dp"/>
+            android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_car_make"
+            android:layout_alignRight="@+id/onboarding_register_driver_edit_text_car_make"
+            android:layout_alignStart="@+id/onboarding_register_driver_edit_text_car_make"
+            android:layout_below="@+id/textView6"
+            android:layout_marginTop="20dp"
+            android:hint="@string/license_number"
+            android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"/>
     </RelativeLayout>
 
     <Button

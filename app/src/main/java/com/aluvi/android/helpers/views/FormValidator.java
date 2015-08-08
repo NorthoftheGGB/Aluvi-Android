@@ -25,7 +25,11 @@ public class FormValidator {
     }
 
     public FormValidator addField(EditText editText, Validator validator) {
-        mFieldsToValidate.add(new Validation(editText, validator));
+        return addField(editText, mErrorMessage, validator);
+    }
+
+    public FormValidator addField(EditText editText, String error, Validator validator) {
+        mFieldsToValidate.add(new Validation(editText, error, validator));
         return this;
     }
 
@@ -33,7 +37,8 @@ public class FormValidator {
         boolean isErrorFree = true;
         for (Validation validation : mFieldsToValidate) {
             if (!validation.isInputValid()) {
-                validation.getField().setError(mErrorMessage);
+                String error = validation.getError() != null ? validation.getError() : mErrorMessage;
+                validation.getField().setError(error);
                 isErrorFree = false;
             }
         }
@@ -43,15 +48,25 @@ public class FormValidator {
 
     private static class Validation {
         private EditText mField;
+        private String mError;
         private Validator mValidator;
+
+        public Validation(EditText mField, String error, Validator mValidator) {
+            this.mField = mField;
+            this.mValidator = mValidator;
+            this.mError = error;
+        }
+
+        public String getError() {
+            return mError;
+        }
+
+        public void setError(String mError) {
+            this.mError = mError;
+        }
 
         public boolean isInputValid() {
             return mValidator.isValid(mField.getText().toString());
-        }
-
-        public Validation(EditText mField, Validator mValidator) {
-            this.mField = mField;
-            this.mValidator = mValidator;
         }
 
         public EditText getField() {

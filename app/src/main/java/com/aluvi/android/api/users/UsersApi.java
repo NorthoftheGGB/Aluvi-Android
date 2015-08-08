@@ -46,7 +46,7 @@ public class UsersApi {
                 new JacksonRequestListener<LoginResponse>() {
                     @Override
                     public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
-                        if (statusCode == 200 && response.getToken() != null) {
+                        if (statusCode == HttpURLConnection.HTTP_OK && response.getToken() != null) {
                             Log.d("Login Success", "Received token: " + response.getToken());
                             loginCallback.success(response.getToken());
                         } else {
@@ -76,7 +76,8 @@ public class UsersApi {
                 new JacksonRequestListener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED
+                                || statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
@@ -91,7 +92,7 @@ public class UsersApi {
         );
 
         userRegistrationRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
-                HttpURLConnection.HTTP_BAD_REQUEST});
+                HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(userRegistrationRequest);
     }
 
