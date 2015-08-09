@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.aluvi.android.R;
-import com.aluvi.android.api.users.models.DriverRegistrationData;
+import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.fragments.BaseButterFragment;
 import com.aluvi.android.helpers.views.FormValidator;
 
@@ -21,7 +21,7 @@ import butterknife.OnClick;
  */
 public class DriverRegistrationFragment extends BaseButterFragment {
     public interface DriverRegistrationListener {
-        void onDriverRegistrationComplete(DriverRegistrationData data);
+        void onDriverRegistrationComplete(DriverProfileData data);
     }
 
     @Bind(R.id.onboarding_register_driver_edit_text_license_number) EditText mLicenseNumberEditText;
@@ -57,8 +57,8 @@ public class DriverRegistrationFragment extends BaseButterFragment {
             mListener.onDriverRegistrationComplete(initData());
     }
 
-    private DriverRegistrationData initData() {
-        DriverRegistrationData data = new DriverRegistrationData();
+    private DriverProfileData initData() {
+        DriverProfileData data = new DriverProfileData();
         data.setLicenseNumber(mLicenseNumberEditText.getText().toString());
         data.setCarLicensePlate(mLicensePlateNumberEditText.getText().toString());
         data.setCarBrand(mCarMakeEditText.getText().toString());

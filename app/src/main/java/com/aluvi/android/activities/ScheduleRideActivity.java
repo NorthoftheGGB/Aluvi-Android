@@ -240,7 +240,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
             route.setReturnTime(Route.getTime(mEndHour, mEndMin));
 
             realm.commitTransaction();
-            manager.save(null);
+            manager.saveRoute(null);
 
             try {
                 manager.requestRidesForTomorrow(new Callback() {

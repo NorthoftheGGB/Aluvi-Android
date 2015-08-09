@@ -22,4 +22,5 @@
     <string name="confirm_password_error">Passwords need to match</string>
     <string name="location_select_error">Please fill out both from and to location fields</string>
     <string name="field_required_error">Please fill out this field</string>
+    <string name="save_error">Unable to save your profile</string>
 </resources>

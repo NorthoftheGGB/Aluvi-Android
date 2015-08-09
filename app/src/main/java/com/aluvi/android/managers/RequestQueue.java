@@ -1,6 +1,7 @@
 package com.aluvi.android.managers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by usama on 8/2/15.
@@ -37,58 +38,44 @@ public class RequestQueue {
             task.run();
     }
 
-    public static RequestQueue mergeQueues(final RequestQueue q1, final RequestQueue q2,
-                                           RequestQueueListener listener) {
-        return new RequestQueue(listener)
-                .addRequest(new Task() {
-                    @Override
-                    public void run() {
-                        q1.setListener(new RequestQueueListener() {
-                            @Override
-                            public void onRequestsFinished() {
-                                onComplete();
-                            }
+    public static RequestQueue mergeQueues(final List<RequestQueue> queuesToMerge, RequestQueueListener listener) {
+        RequestQueue output = new RequestQueue(listener);
+        for (RequestQueue queue : queuesToMerge) {
+            final RequestQueue copy = queue;
+            output.addRequest(new Task() {
+                @Override
+                public void run() {
+                    copy.setListener(new RequestQueueListener() {
+                        @Override
+                        public void onRequestsFinished() {
+                            onTaskComplete();
+                        }
 
-                            @Override
-                            public void onError(String message) {
-                                onError(message);
-                            }
-                        });
+                        @Override
+                        public void onError(String message) {
+                            onTaskError(message);
+                        }
+                    });
 
-                        q1.execute();
-                    }
-                })
-                .addRequest(new Task() {
-                    @Override
-                    public void run() {
-                        q2.setListener(new RequestQueueListener() {
-                            @Override
-                            public void onRequestsFinished() {
-                                onComplete();
-                            }
+                    copy.execute();
+                }
+            });
+        }
 
-                            @Override
-                            public void onError(String message) {
-                                onError(message);
-                            }
-                        });
-
-                        q2.execute();
-                    }
-                });
+        return output;
     }
 
     public RequestQueue buildQueue() {
         for (Task task : requests) {
             task.setListener(new Task.TaskListener() {
                 @Override
-                public void onComplete() {
+                public void onTaskComplete() {
                     if (updateCompletedTasks() && listener != null)
                         listener.onRequestsFinished();
                 }
 
                 @Override
-                public void onError(String message) {
+                public void onTaskError(String message) {
                     if (listener != null)
                         listener.onError(message);
 
@@ -120,9 +107,9 @@ public class RequestQueue {
 
     public abstract static class Task {
         public interface TaskListener {
-            void onComplete();
+            void onTaskComplete();
 
-            void onError(String message);
+            void onTaskError(String message);
         }
 
         private TaskListener listener;
@@ -134,14 +121,14 @@ public class RequestQueue {
             this.listener = listener;
         }
 
-        public void onComplete() {
+        public void onTaskComplete() {
             if (!isCancelled)
-                listener.onComplete();
+                listener.onTaskComplete();
         }
 
-        public void onError(String message) {
+        public void onTaskError(String message) {
             if (!isCancelled)
-                listener.onError(message);
+                listener.onTaskError(message);
         }
 
         public void cancel() {

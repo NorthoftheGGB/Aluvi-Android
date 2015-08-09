@@ -1,5 +1,6 @@
 package com.aluvi.android.model.realm;
 
+import com.aluvi.android.api.users.models.ProfileData;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.realm.RealmObject;
@@ -7,7 +8,7 @@ import io.realm.RealmObject;
 /**
  * Created by matthewxi on 7/13/15.
  */
-public class Profile extends RealmObject{
+public class Profile extends RealmObject {
     @JsonProperty("first_name")
     private String firstName;
 
@@ -19,6 +20,9 @@ public class Profile extends RealmObject{
 
     @JsonProperty("email")
     private String email;
+
+    @JsonProperty("password")
+    private String password;
 
     @JsonProperty("commuter_refill_amount_cents")
     private int commuterRefillAmountCents;
@@ -42,6 +46,23 @@ public class Profile extends RealmObject{
 
     @JsonProperty("image_large")
     private String largeImageUrl;
+
+    public static ProfileData getProfileData(Profile profile) {
+        ProfileData out = new ProfileData();
+        out.setFirstName(profile.getFirstName());
+        out.setLastName(profile.getLastName());
+        out.setEmail(profile.getEmail());
+        out.setPhoneNumber(profile.getPhone());
+        return out;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -162,7 +183,6 @@ public class Profile extends RealmObject{
     public void setLargeImageUrl(String largeImageUrl) {
         this.largeImageUrl = largeImageUrl;
     }
-
 
 
 }

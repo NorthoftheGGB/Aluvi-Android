@@ -88,12 +88,12 @@ public class CommuteManager {
                 refreshRoutePreferences(new Callback() {
                     @Override
                     public void success() {
-                        onComplete();
+                        onTaskComplete();
                     }
 
                     @Override
                     public void failure(String message) {
-                        onError(message);
+                        onTaskError(message);
                     }
                 });
             }
@@ -103,12 +103,12 @@ public class CommuteManager {
                 refreshTickets(new DataCallback<List<TicketStateTransition>>() {
                     @Override
                     public void success(List<TicketStateTransition> result) {
-                        onComplete();
+                        onTaskComplete();
                     }
 
                     @Override
                     public void failure(String message) {
-                        onError(message);
+                        onTaskError(message);
                     }
                 });
             }
@@ -143,7 +143,7 @@ public class CommuteManager {
         }
     }
 
-    public void save(final Callback callback) {
+    public void saveRoute(final Callback callback) {
         RoutesApi.saveRoute(userRoute, new RoutesApi.OnRouteSavedListener() {
             @Override
             public void onSaved(Route route) {
@@ -154,7 +154,7 @@ public class CommuteManager {
             @Override
             public void onFailure(int statusCode) {
                 if (callback != null)
-                    callback.failure("Error, couldn't save user route");
+                    callback.failure("Error, couldn't saveRoute user route");
             }
         });
     }

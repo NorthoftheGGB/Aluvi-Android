@@ -6,7 +6,6 @@ import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.spothero.volley.JacksonNetwork;
 import com.spothero.volley.JacksonRequest;
-import com.aluvi.android.api.AluviApiConstants;
 
 /**
  * Created by matthewxi on 7/14/15.
@@ -49,7 +48,6 @@ public class AluviApi implements AluviApiConstants {
     // drivers
     final public static String API_DRIVER_REGISTRATION = "drivers/driver_registration";
     final public static String API_GET_DRIVER_FARE_PATH_PATTERN = "drivers/fares/:id";
-
 
     //Singleton
     private static AluviApi mInstance;

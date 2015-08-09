@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Created by usama on 8/8/15.
  */
-public class UserRegistrationData extends AluviPayload implements Parcelable {
+public class ProfileData extends AluviPayload implements Parcelable {
     @JsonProperty("first_name")
     private String firstName;
 
@@ -30,11 +30,10 @@ public class UserRegistrationData extends AluviPayload implements Parcelable {
 
     private boolean isInterestedDriver;
 
-    public UserRegistrationData() {
-
+    public ProfileData() {
     }
 
-    private UserRegistrationData(Parcel in) {
+    private ProfileData(Parcel in) {
         firstName = in.readString();
         lastName = in.readString();
         phoneNumber = in.readString();
@@ -58,16 +57,16 @@ public class UserRegistrationData extends AluviPayload implements Parcelable {
         dest.writeString(referralCode);
     }
 
-    public static final Parcelable.Creator<UserRegistrationData> CREATOR =
-            new Parcelable.Creator<UserRegistrationData>() {
+    public static final Parcelable.Creator<ProfileData> CREATOR =
+            new Parcelable.Creator<ProfileData>() {
                 @Override
-                public UserRegistrationData createFromParcel(Parcel source) {
-                    return new UserRegistrationData(source);
+                public ProfileData createFromParcel(Parcel source) {
+                    return new ProfileData(source);
                 }
 
                 @Override
-                public UserRegistrationData[] newArray(int size) {
-                    return new UserRegistrationData[size];
+                public ProfileData[] newArray(int size) {
+                    return new ProfileData[size];
                 }
             };
 

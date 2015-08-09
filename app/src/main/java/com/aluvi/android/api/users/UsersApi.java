@@ -4,11 +4,12 @@ import android.util.Log;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
+import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
-import com.aluvi.android.api.users.models.DriverRegistrationData;
-import com.aluvi.android.api.users.models.UserRegistrationData;
+import com.aluvi.android.api.users.models.DriverProfileData;
+import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.model.realm.Profile;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
@@ -74,7 +75,7 @@ public class UsersApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void registerUser(UserRegistrationData riderData, final RegistrationCallback callback) {
+    public static void registerUser(ProfileData riderData, final RegistrationCallback callback) {
         AluviUnauthenticatedRequest userRegistrationRequest = new AluviUnauthenticatedRequest(
                 Request.Method.POST,
                 AluviApi.API_USERS,
@@ -102,7 +103,7 @@ public class UsersApi {
         AluviApi.getInstance().getRequestQueue().add(userRegistrationRequest);
     }
 
-    public static void registerDriver(DriverRegistrationData driverData, final RegistrationCallback callback) {
+    public static void registerDriver(DriverProfileData driverData, final RegistrationCallback callback) {
         AluviAuthenticatedRequest registerDriverRequest = new AluviAuthenticatedRequest(
                 Request.Method.POST,
                 AluviApi.API_DRIVER_REGISTRATION,
@@ -151,6 +152,34 @@ public class UsersApi {
         );
 
         profileRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
+                HttpURLConnection.HTTP_BAD_REQUEST});
+        AluviApi.getInstance().getRequestQueue().add(profileRequest);
+    }
+
+    public static void updateProfile(ProfileData profile, final ApiCallback callback) {
+        AluviAuthenticatedRequest profileRequest = new AluviAuthenticatedRequest(
+                Request.Method.POST,
+                AluviApi.API_USER_PROFILE,
+                profile,
+                new AluviAuthRealmRequestListener<Profile>(false) {
+                    @Override
+                    public void onAuthRealmResponse(Profile response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK
+                                || statusCode == HttpURLConnection.HTTP_CREATED)
+                            callback.success();
+                        else
+                            callback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Profile.class);
+                    }
+                }
+        );
+
+        profileRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
+                HttpURLConnection.HTTP_CREATED,
                 HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(profileRequest);
     }

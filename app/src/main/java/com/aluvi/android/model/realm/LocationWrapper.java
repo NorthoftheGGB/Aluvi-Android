@@ -17,6 +17,14 @@ public class LocationWrapper extends RealmObject {
     @JsonProperty("longitude")
     private double longitude;
 
+    public LocationWrapper() {
+    }
+
+    public LocationWrapper(double latitude, double longitude) {
+        setLatitude(latitude);
+        setLongitude(longitude);
+    }
+
     public static JSONObject toJSON(LocationWrapper wrapper) {
         JSONObject root = new JSONObject();
         try {

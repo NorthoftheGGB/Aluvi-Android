@@ -12,6 +12,8 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.RequestQueue;
 import com.aluvi.android.managers.UserStateManager;
 
+import java.util.Arrays;
+
 /**
  * Initialize any data we need before the user can use the app. Having this activity is useful because we avoid potential race conditions when using the app
  * when we want to provide the most up-to-date data but also have local caches that can also be used. This entry activity, then, lets us
@@ -31,23 +33,24 @@ public class InitActivity extends AluviAuthActivity {
 
         RequestQueue q1 = UserStateManager.getInstance().buildSyncQueue(null);
         RequestQueue q2 = CommuteManager.getInstance().buildSyncQueue(null);
-        RequestQueue.mergeQueues(q1, q2, new RequestQueue.RequestQueueListener() {
-            @Override
-            public void onRequestsFinished() {
-                if (progressDialog != null)
-                    progressDialog.cancel();
+        RequestQueue.mergeQueues(Arrays.asList(q1, q2),
+                new RequestQueue.RequestQueueListener() {
+                    @Override
+                    public void onRequestsFinished() {
+                        if (progressDialog != null)
+                            progressDialog.cancel();
 
-                onInitializationFinished();
-            }
+                        onInitializationFinished();
+                    }
 
-            @Override
-            public void onError(String message) {
-                if (progressDialog != null)
-                    progressDialog.cancel();
+                    @Override
+                    public void onError(String message) {
+                        if (progressDialog != null)
+                            progressDialog.cancel();
 
-                showInitErrorMessage();
-            }
-        }).execute();
+                        showInitErrorMessage();
+                    }
+                }).execute();
     }
 
     @Override

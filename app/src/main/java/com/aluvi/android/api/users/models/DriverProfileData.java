@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Created by usama on 8/8/15.
  */
-public class DriverRegistrationData extends AluviPayload implements Parcelable {
+public class DriverProfileData extends AluviPayload implements Parcelable {
     @JsonProperty("drivers_license_number")
     private String licenseNumber;
 
@@ -28,10 +28,10 @@ public class DriverRegistrationData extends AluviPayload implements Parcelable {
     @JsonProperty("referral_code")
     private String referralCode;
 
-    public DriverRegistrationData() {
+    public DriverProfileData() {
     }
 
-    private DriverRegistrationData(Parcel in) {
+    private DriverProfileData(Parcel in) {
         licenseNumber = in.readString();
         carBrand = in.readString();
         carModel = in.readString();
@@ -55,16 +55,16 @@ public class DriverRegistrationData extends AluviPayload implements Parcelable {
         dest.writeString(referralCode);
     }
 
-    public static final Parcelable.Creator<DriverRegistrationData> CREATOR =
-            new Parcelable.Creator<DriverRegistrationData>() {
+    public static final Parcelable.Creator<DriverProfileData> CREATOR =
+            new Parcelable.Creator<DriverProfileData>() {
                 @Override
-                public DriverRegistrationData createFromParcel(Parcel source) {
-                    return new DriverRegistrationData(source);
+                public DriverProfileData createFromParcel(Parcel source) {
+                    return new DriverProfileData(source);
                 }
 
                 @Override
-                public DriverRegistrationData[] newArray(int size) {
-                    return new DriverRegistrationData[size];
+                public DriverProfileData[] newArray(int size) {
+                    return new DriverProfileData[size];
                 }
             };
 

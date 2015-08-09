@@ -22,7 +22,7 @@ public class ProfileActivity extends AluviAuthActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_profile, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

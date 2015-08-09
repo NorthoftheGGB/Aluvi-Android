@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
+import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
-import com.aluvi.android.api.users.models.DriverRegistrationData;
-import com.aluvi.android.api.users.models.UserRegistrationData;
+import com.aluvi.android.api.users.models.DriverProfileData;
+import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.model.realm.Profile;
@@ -77,15 +78,17 @@ public class UserStateManager {
                             @Override
                             public void execute(Realm realm) {
                                 realm.clear(Profile.class);
+
+                                profile = result;
                                 realm.copyToRealm(result);
-                                onComplete();
+                                onTaskComplete();
                             }
                         });
                     }
 
                     @Override
                     public void failure(String message) {
-                        onError(message);
+                        onTaskError(message);
                     }
                 });
             }
@@ -154,7 +157,7 @@ public class UserStateManager {
         });
     }
 
-    public void registerUser(UserRegistrationData data, final Callback callback) {
+    public void registerUser(ProfileData data, final Callback callback) {
         UsersApi.registerUser(data, new UsersApi.RegistrationCallback() {
             @Override
             public void success() {
@@ -168,7 +171,7 @@ public class UserStateManager {
         });
     }
 
-    public void registerDriver(DriverRegistrationData data, final Callback callback) {
+    public void registerDriver(DriverProfileData data, final Callback callback) {
         UsersApi.registerDriver(data, new UsersApi.RegistrationCallback() {
             @Override
             public void success() {
@@ -192,6 +195,20 @@ public class UserStateManager {
             @Override
             public void failure(int statusCode) {
                 profileDataCallback.failure("Unable to refresh profile");
+            }
+        });
+    }
+
+    public void saveProfile(final Callback callback) {
+        UsersApi.updateProfile(Profile.getProfileData(profile), new ApiCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to saveRoute profile");
             }
         });
     }

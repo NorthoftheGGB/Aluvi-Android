@@ -10,18 +10,23 @@ import android.view.View;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseButterActivity;
-import com.aluvi.android.api.users.models.DriverRegistrationData;
-import com.aluvi.android.api.users.models.UserRegistrationData;
+import com.aluvi.android.api.users.models.DriverProfileData;
+import com.aluvi.android.api.users.models.ProfileData;
+import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.onboarding.AboutUserFragment;
 import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
 import com.aluvi.android.fragments.onboarding.TutorialFragment;
 import com.aluvi.android.managers.Callback;
+import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.local.TicketLocation;
+import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.Route;
 
 import butterknife.Bind;
+import io.realm.Realm;
 
 /**
  * Created by usama on 8/06/15.
@@ -36,10 +41,13 @@ public class OnboardingActivity extends BaseButterActivity implements
     @Bind(R.id.onboarding_root_container) View mRootView;
 
     private final String REGISTRATION_DATA_KEY = "registration_data",
-            DRIVER_REGISTRATION_DATA_KEY = "driver_registration_data";
+            DRIVER_REGISTRATION_DATA_KEY = "driver_registration_data",
+            HOME_LOC_KEY = "home_loc",
+            WORK_LOC_KEY = "work_loc";
 
-    private UserRegistrationData mRegistrationData;
-    private DriverRegistrationData mDriverRegistrationData;
+    private ProfileData mRegistrationData;
+    private DriverProfileData mDriverProfileData;
+    private TicketLocation mStartLoc, mEndLoc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +55,9 @@ public class OnboardingActivity extends BaseButterActivity implements
 
         if (savedInstanceState != null) {
             mRegistrationData = savedInstanceState.getParcelable(REGISTRATION_DATA_KEY);
-            mDriverRegistrationData = savedInstanceState.getParcelable(DRIVER_REGISTRATION_DATA_KEY);
+            mDriverProfileData = savedInstanceState.getParcelable(DRIVER_REGISTRATION_DATA_KEY);
+            mStartLoc = savedInstanceState.getParcelable(HOME_LOC_KEY);
+            mEndLoc = savedInstanceState.getParcelable(WORK_LOC_KEY);
         }
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.onboarding_root_container);
@@ -81,11 +91,13 @@ public class OnboardingActivity extends BaseButterActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(REGISTRATION_DATA_KEY, mRegistrationData);
-        outState.putParcelable(DRIVER_REGISTRATION_DATA_KEY, mDriverRegistrationData);
+        outState.putParcelable(DRIVER_REGISTRATION_DATA_KEY, mDriverProfileData);
+        outState.putParcelable(HOME_LOC_KEY, mStartLoc);
+        outState.putParcelable(WORK_LOC_KEY, mEndLoc);
     }
 
     @Override
-    public void onRegistered(UserRegistrationData data) {
+    public void onRegistered(ProfileData data) {
         mRegistrationData = data;
 
         Fragment nextFragment = mRegistrationData.isInterestedDriver() ? DriverRegistrationFragment.newInstance()
@@ -97,8 +109,8 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     @Override
-    public void onDriverRegistrationComplete(DriverRegistrationData data) {
-        mDriverRegistrationData = data;
+    public void onDriverRegistrationComplete(DriverProfileData data) {
+        mDriverProfileData = data;
 
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, LocationSelectFragment.newInstance())
@@ -108,6 +120,9 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     @Override
     public void onLocationSelected(TicketLocation start, TicketLocation end) {
+        mStartLoc = start;
+        mEndLoc = end;
+
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, AboutUserFragment.newInstance())
                 .addToBackStack(null)
@@ -143,11 +158,7 @@ public class OnboardingActivity extends BaseButterActivity implements
                 mRegistrationData.getPassword(), new Callback() {
                     @Override
                     public void success() {
-                        if (mDriverRegistrationData != null)
-                            registerDriver();
-                        else
-                            onSignUpFinished();
-
+                        saveRoutePreferences();
                     }
 
                     @Override
@@ -157,8 +168,37 @@ public class OnboardingActivity extends BaseButterActivity implements
                 });
     }
 
+    public void saveRoutePreferences() {
+        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Route route = CommuteManager.getInstance().getRoute();
+                route.setOrigin(new LocationWrapper(mStartLoc.getLatitude(), mStartLoc.getLongitude()));
+                route.setOriginPlaceName(mStartLoc.getPlaceName());
+
+                route.setDestination(new LocationWrapper(mEndLoc.getLatitude(), mEndLoc.getLongitude()));
+                route.setDestinationPlaceName(mEndLoc.getPlaceName());
+            }
+        });
+
+        CommuteManager.getInstance().saveRoute(new Callback() {
+            @Override
+            public void success() {
+                if (mDriverProfileData != null)
+                    registerDriver();
+                else
+                    onSignUpFinished();
+            }
+
+            @Override
+            public void failure(String message) {
+                onError(message);
+            }
+        });
+    }
+
     public void registerDriver() {
-        UserStateManager.getInstance().registerDriver(mDriverRegistrationData, new Callback() {
+        UserStateManager.getInstance().registerDriver(mDriverProfileData, new Callback() {
             @Override
             public void success() {
                 onSignUpFinished();

@@ -49,7 +49,7 @@ public class NavigationDrawerHeaderFragment extends BaseButterFragment {
         }
     }
 
-    @OnClick(R.id.navigation_drawer_header_text_view_profile)
+    @OnClick(R.id.navigation_drawer_header_root)
     public void onProfileClicked() {
         mProfileRequestedListener.onProfileRequested();
     }
