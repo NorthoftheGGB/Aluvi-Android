@@ -22,10 +22,10 @@ import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
-import com.aluvi.android.managers.Callback;
 import com.aluvi.android.managers.CommuteManager;
-import com.aluvi.android.managers.DataCallback;
 import com.aluvi.android.managers.location.RouteMappingManager;
+import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.LocationWrapper;
 import com.aluvi.android.model.realm.Route;
@@ -66,6 +66,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     private Ticket mCurrentTicket;
     private Marker mCurrentlyFocusedMarker;
+    private PathOverlay mCurrentPathOverlay;
     private OnMapEventListener mEventListener;
 
     public AluviMapFragment() {
@@ -203,6 +204,9 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
         mMapView.clear();
 
+        if (mCurrentPathOverlay != null)
+            mMapView.removeOverlay(mCurrentPathOverlay);
+
         Fragment ticketInfoFragment = getChildFragmentManager().findFragmentById(R.id.map_sliding_panel_container);
         if (ticketInfoFragment != null)
             getChildFragmentManager().beginTransaction().remove(ticketInfoFragment).commit();
@@ -211,9 +215,9 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     private void onTicketsRefreshed() {
         resetUI(); // Reset UI to original state
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
+
         if (mCurrentTicket != null) {
             plotTicketRoute(mCurrentTicket);
-
             switch (mCurrentTicket.getState()) {
                 case Ticket.StateRequested:
                     mCommutePendingTextView.setVisibility(View.VISIBLE);
@@ -277,18 +281,17 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mMapView.addMarker(endMarker);
         mMapView.setCenter(startMarker.getPoint());
         mMapView.setZoom(15);
-
         RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
                 new RouteMappingManager.RouteMappingListener() {
                     @Override
                     public void onRouteFound(RouteData result) {
                         if (result != null && mMapView != null) {
-                            PathOverlay overlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
+                            mCurrentPathOverlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
                             LatLng[] coordinates = result.getCoordinates();
                             if (coordinates != null)
                                 for (LatLng coordinate : coordinates)
-                                    overlay.addPoint(coordinate);
-                            mMapView.addOverlay(overlay);
+                                    mCurrentPathOverlay.addPoint(coordinate);
+                            mMapView.addOverlay(mCurrentPathOverlay);
                         }
                     }
 

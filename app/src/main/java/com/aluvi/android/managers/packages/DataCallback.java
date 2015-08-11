@@ -1,4 +1,4 @@
-package com.aluvi.android.managers;
+package com.aluvi.android.managers.packages;
 
 /**
  * Created by usama on 8/8/15.

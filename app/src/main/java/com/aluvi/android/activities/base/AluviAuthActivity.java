@@ -10,7 +10,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.LoginActivity;
 import com.aluvi.android.api.AuthFailEvent;
-import com.aluvi.android.managers.Callback;
+import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.UserStateManager;
 
 import de.greenrobot.event.EventBus;

@@ -16,7 +16,7 @@ import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
-import com.aluvi.android.managers.Callback;
+import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.LocationWrapper;

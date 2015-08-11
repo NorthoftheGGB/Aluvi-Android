@@ -11,6 +11,8 @@ import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
+import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.realm.Profile;
 import com.google.gson.Gson;
 

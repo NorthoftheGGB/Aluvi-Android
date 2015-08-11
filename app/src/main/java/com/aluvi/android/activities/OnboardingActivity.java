@@ -19,7 +19,7 @@ import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
 import com.aluvi.android.fragments.onboarding.TutorialFragment;
-import com.aluvi.android.managers.Callback;
+import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.local.TicketLocation;
