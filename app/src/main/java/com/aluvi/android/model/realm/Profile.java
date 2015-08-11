@@ -53,6 +53,7 @@ public class Profile extends RealmObject {
         out.setLastName(profile.getLastName());
         out.setEmail(profile.getEmail());
         out.setPhoneNumber(profile.getPhone());
+        out.setDefaultCardToken(profile.getDefaultCardToken());
         return out;
     }
 
