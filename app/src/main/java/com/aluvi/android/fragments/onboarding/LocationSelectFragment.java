@@ -30,12 +30,18 @@ public class LocationSelectFragment extends BaseButterFragment
     @Bind(R.id.onboarding_button_home_location) Button mHomeButton;
     @Bind(R.id.onboarding_button_work_location) Button mWorkButton;
 
-    private final String HOME_LOC = "home_location", WORK_LOC = "work_location";
+    private final static String HOME_LOC = "home_location", WORK_LOC = "work_location";
     private TicketLocation mHomeLocation, mWorkLocation;
     private LocationSelectedListener mListener;
 
-    public static LocationSelectFragment newInstance() {
-        return new LocationSelectFragment();
+    public static LocationSelectFragment newInstance(TicketLocation homeLoc, TicketLocation workLoc) {
+        Bundle args = new Bundle();
+        args.putParcelable(HOME_LOC, homeLoc);
+        args.putParcelable(WORK_LOC, workLoc);
+
+        LocationSelectFragment locationSelectFragment = new LocationSelectFragment();
+        locationSelectFragment.setArguments(args);
+        return locationSelectFragment;
     }
 
     @Override
@@ -46,6 +52,11 @@ public class LocationSelectFragment extends BaseButterFragment
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (getArguments() != null) {
+            mHomeLocation = getArguments().getParcelable(HOME_LOC);
+            mWorkLocation = getArguments().getParcelable(WORK_LOC);
+        }
+
         if (savedInstanceState != null) {
             mHomeLocation = savedInstanceState.getParcelable(HOME_LOC);
             mWorkLocation = savedInstanceState.getParcelable(WORK_LOC);

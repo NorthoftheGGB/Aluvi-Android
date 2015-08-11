@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -47,7 +48,7 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     private ProfileData mRegistrationData;
     private DriverProfileData mDriverProfileData;
-    private TicketLocation mStartLoc, mEndLoc;
+    private TicketLocation mHomeLoc, mWorkLoc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +57,8 @@ public class OnboardingActivity extends BaseButterActivity implements
         if (savedInstanceState != null) {
             mRegistrationData = savedInstanceState.getParcelable(REGISTRATION_DATA_KEY);
             mDriverProfileData = savedInstanceState.getParcelable(DRIVER_REGISTRATION_DATA_KEY);
-            mStartLoc = savedInstanceState.getParcelable(HOME_LOC_KEY);
-            mEndLoc = savedInstanceState.getParcelable(WORK_LOC_KEY);
+            mHomeLoc = savedInstanceState.getParcelable(HOME_LOC_KEY);
+            mWorkLoc = savedInstanceState.getParcelable(WORK_LOC_KEY);
         }
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.onboarding_root_container);
@@ -92,8 +93,8 @@ public class OnboardingActivity extends BaseButterActivity implements
         super.onSaveInstanceState(outState);
         outState.putParcelable(REGISTRATION_DATA_KEY, mRegistrationData);
         outState.putParcelable(DRIVER_REGISTRATION_DATA_KEY, mDriverProfileData);
-        outState.putParcelable(HOME_LOC_KEY, mStartLoc);
-        outState.putParcelable(WORK_LOC_KEY, mEndLoc);
+        outState.putParcelable(HOME_LOC_KEY, mHomeLoc);
+        outState.putParcelable(WORK_LOC_KEY, mWorkLoc);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         mRegistrationData = data;
 
         Fragment nextFragment = mRegistrationData.isInterestedDriver() ? DriverRegistrationFragment.newInstance()
-                : LocationSelectFragment.newInstance();
+                : LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc);
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, nextFragment)
                 .addToBackStack(null)
@@ -113,15 +114,15 @@ public class OnboardingActivity extends BaseButterActivity implements
         mDriverProfileData = data;
 
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, LocationSelectFragment.newInstance())
+                .replace(R.id.onboarding_root_container, LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc))
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
     public void onLocationSelected(TicketLocation start, TicketLocation end) {
-        mStartLoc = start;
-        mEndLoc = end;
+        mHomeLoc = start;
+        mWorkLoc = end;
 
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, AboutUserFragment.newInstance())
@@ -172,12 +173,16 @@ public class OnboardingActivity extends BaseButterActivity implements
         AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Route route = CommuteManager.getInstance().getRoute();
-                route.setOrigin(new LocationWrapper(mStartLoc.getLatitude(), mStartLoc.getLongitude()));
-                route.setOriginPlaceName(mStartLoc.getPlaceName());
+                LocationWrapper origin = realm.copyToRealm(
+                        new LocationWrapper(mHomeLoc.getLatitude(), mHomeLoc.getLongitude()));
+                LocationWrapper destination = realm.copyToRealm(
+                        new LocationWrapper(mWorkLoc.getLatitude(), mWorkLoc.getLongitude()));
 
-                route.setDestination(new LocationWrapper(mEndLoc.getLatitude(), mEndLoc.getLongitude()));
-                route.setDestinationPlaceName(mEndLoc.getPlaceName());
+                Route route = CommuteManager.getInstance().getRoute();
+                route.setOrigin(origin);
+                route.setOriginPlaceName(mHomeLoc.getPlaceName());
+                route.setDestination(destination);
+                route.setDestinationPlaceName(mWorkLoc.getPlaceName());
             }
         });
 
@@ -212,6 +217,7 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     private void onSignUpFinished() {
+        setResult(Activity.RESULT_OK);
         finish();
     }
 

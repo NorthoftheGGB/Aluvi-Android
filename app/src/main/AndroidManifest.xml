@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.aluvi.android"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.aluvi.android"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -95,11 +96,13 @@
         </activity>
         <activity
             android:name=".activities.ProfileActivity"
-            android:label="@string/title_activity_profile">
+            android:label="@string/title_activity_profile"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".activities.OnboardingActivity"
             android:label="@string/title_activity_onboarding"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark">
         </activity>
     </application>

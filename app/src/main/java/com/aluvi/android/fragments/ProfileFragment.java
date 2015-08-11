@@ -3,7 +3,6 @@ package com.aluvi.android.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +44,6 @@ public class ProfileFragment extends BaseButterFragment {
         mNameTextView.setText(profile.getFirstName() + " " + profile.getLastName());
         mEmailEditText.setText(profile.getEmail());
         mPhoneNumberEditText.setText(profile.getPhone());
-        mPhoneNumberEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
     }
 
     @OnClick(R.id.profile_button_save)
@@ -85,7 +83,7 @@ public class ProfileFragment extends BaseButterFragment {
                                 return FormUtils.isValidEmail(input);
                             }
                         })
-                .addField(mPhoneNumberEditText)
+                .addField(mPhoneNumberEditText, getString(R.string.error_invalid_phone), FormUtils.getPhoneValidator())
                 .validate();
     }
 }

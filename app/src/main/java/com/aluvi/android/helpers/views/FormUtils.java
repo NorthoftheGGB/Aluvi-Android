@@ -1,5 +1,6 @@
 package com.aluvi.android.helpers.views;
 
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
 /**
@@ -20,6 +21,6 @@ public class FormUtils {
     }
 
     public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
+        return PhoneNumberUtils.isGlobalPhoneNumber(number);
     }
 }

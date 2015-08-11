@@ -25,12 +25,16 @@
         android:id="@+id/navigation_drawer_header_text_view_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_alignRight="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_below="@+id/navigation_drawer_header_profile_picture_view"
+        android:layout_marginTop="5dp"
         android:fontFamily="sans-serif-light"
+        android:gravity="center"
         android:text="Name Placeholder"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white"
-        android:layout_below="@+id/navigation_drawer_header_profile_picture_view"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>

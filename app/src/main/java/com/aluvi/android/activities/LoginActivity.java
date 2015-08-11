@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ public class LoginActivity extends BaseToolBarActivity {
     @Bind(R.id.log_in_edit_text_username) EditText mUsernameEditText;
     @Bind(R.id.log_in_edit_text_password) EditText mPasswordEditText;
 
+    private final int REGISTER_REQ_CODE = 4223;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (UserStateManager.getInstance().getApiToken() != null) {
@@ -34,6 +37,11 @@ public class LoginActivity extends BaseToolBarActivity {
     @Override
     public int getLayoutId() {
         return R.layout.activity_login;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @OnClick(R.id.login_button)
@@ -67,7 +75,18 @@ public class LoginActivity extends BaseToolBarActivity {
 
     @OnClick(R.id.login_button_register)
     public void onRegisterButtonClicked() {
-        startActivity(new Intent(this, OnboardingActivity.class));
+        startActivityForResult(new Intent(this, OnboardingActivity.class), REGISTER_REQ_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REGISTER_REQ_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                onLoggedIn();
+            }
+        }
     }
 
     private void onLoggedIn() {

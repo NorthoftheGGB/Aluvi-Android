@@ -71,6 +71,12 @@ public class InitActivity extends AluviAuthActivity {
                         super.onPositive(dialog);
                         initAluvi();
                     }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                        finish();
+                    }
                 })
                 .show();
     }

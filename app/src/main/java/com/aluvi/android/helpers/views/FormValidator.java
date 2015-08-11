@@ -36,6 +36,7 @@ public class FormValidator {
     public boolean validate() {
         boolean isErrorFree = true;
         for (Validation validation : mFieldsToValidate) {
+            validation.getField().setError(null);
             if (!validation.isInputValid()) {
                 String error = validation.getError() != null ? validation.getError() : mErrorMessage;
                 validation.getField().setError(error);
