@@ -31,3 +31,8 @@
 -keep @io.realm.annotations.RealmModule class *
 -dontwarn javax.**
 -dontwarn io.realm.**
+
+-keep class io.card.**
+-keepclassmembers class io.card.** {
+    *;
+}

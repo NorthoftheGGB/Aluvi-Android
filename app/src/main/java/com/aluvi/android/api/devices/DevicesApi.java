@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
+import java.net.HttpURLConnection;
 import java.util.Map;
 
 /**
@@ -92,7 +93,7 @@ public class DevicesApi {
                     }
                 }
         );
-        request.addAcceptedStatusCodes(new int[]{200});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_UNAUTHORIZED});
         AluviApi.getInstance().getRequestQueue().add(request);
 
     }

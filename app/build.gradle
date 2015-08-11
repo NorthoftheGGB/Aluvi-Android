@@ -24,8 +24,8 @@ android {
         applicationId "com.aluvi.android"
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.3"
+        versionCode 2
+        versionName "1.4"
         multiDexEnabled true
     }
     buildTypes {
@@ -87,6 +87,8 @@ dependencies {
     compile 'io.realm:realm-android:0.82.0'
     compile 'com.google.android.gms:play-services-gcm:7.5.0'
     compile 'com.google.android.gms:play-services-location:7.5.0'
+    compile 'com.stripe:stripe-android:+'
+    compile 'io.card:android-sdk:5.0.1'
 }
 
 gradle.taskGraph.beforeTask { Task task ->

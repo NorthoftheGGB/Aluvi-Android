@@ -94,4 +94,6 @@
     <string name="year">Year</string>
     <string name="license_number">Your License Number</string>
     <string name="profile_saved">Updated your profile</string>
+    <string name="invalid_credit_card">Invalid credit card</string>
+    <string name="updating_payment_info">Updating your payment info</string>
 </resources>

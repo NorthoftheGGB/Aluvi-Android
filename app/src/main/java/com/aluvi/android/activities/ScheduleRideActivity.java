@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -11,15 +12,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
-import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.PaymentManager;
+import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -33,6 +40,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.card.payment.CardIOActivity;
+import io.card.payment.CreditCard;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -50,7 +59,9 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
             R.id.schedule_ride_button_end_time, R.id.schedule_ride_button_drive_there, R.id.schedule_ride_button_commute_tomorrow})
     List<View> mScheduleEditViews;
 
-    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354, RESULT_ERROR = 431;
+    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354, RESULT_ERROR = 431,
+            CARD_IO_REQUEST_CODE = 1241;
+
     public final static String COMMUTE_TO_VIEW_ID_KEY = "commute_view__id_key";
 
     private final String TAG = "ScheduleRideActivity",
@@ -91,6 +102,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
 
         updateStartTimeButton();
         updateEndTimeButton();
+        checkCreditCardDetails();
     }
 
     private boolean initUISavedTrip() {
@@ -164,6 +176,91 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
         }
     }
 
+    private void checkCreditCardDetails() {
+        Intent scanIntent = new Intent(this, CardIOActivity.class);
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
+        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
+        startActivityForResult(scanIntent, CARD_IO_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CARD_IO_REQUEST_CODE) {
+            if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
+                CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
+                onCreditCardFetched(scanResult);
+            } else {
+                onCreditCardProcessingError();
+            }
+        }
+    }
+
+    private void onCreditCardFetched(CreditCard fetchedCard) {
+        final MaterialDialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+        PaymentManager.getInstance().requestToken(fetchedCard, new DataCallback<String>() {
+            @Override
+            public void success(String result) {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
+                updateUserPaymentToken(result);
+            }
+
+            @Override
+            public void failure(String message) {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
+                if (mRootView != null)
+                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+
+                onCreditCardProcessingError();
+            }
+        });
+    }
+
+    private void updateUserPaymentToken(final String token) {
+        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Profile profile = UserStateManager.getInstance().getProfile();
+                profile.setDefaultCardToken(token);
+            }
+        });
+
+        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                .title(R.string.loading)
+                .content(R.string.updating_payment_info)
+                .progress(true, 0)
+                .cancelable(false)
+                .show();
+
+        UserStateManager.getInstance().saveProfile(new Callback() {
+            @Override
+            public void success() {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+            }
+
+            @Override
+            public void failure(String message) {
+                if (progressDialog != null)
+                    progressDialog.cancel();
+
+                if (mRootView != null) {
+                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+                }
+
+                onCreditCardProcessingError();
+            }
+        });
+    }
+
+    private void onCreditCardProcessingError() {
+        finish();
+    }
+
     @OnClick(R.id.schedule_ride_button_from)
     public void onFromButtonClicked() {
         LocationSelectDialogFragment.newInstance(mStartLocation)
@@ -214,47 +311,21 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked() {
         if (isCommuteReady()) {
-            final CommuteManager manager = CommuteManager.getInstance();
-
-            Realm realm = AluviRealm.getDefaultRealm();
-            realm.beginTransaction();
-
-            Route route = manager.getRoute();
-            route.setDriving(mDriveThereCheckbox.isChecked());
-
-            LocationWrapper origin = route.getOrigin();
-            origin = origin == null ? realm.createObject(LocationWrapper.class) : origin;
-            origin.setLatitude(mStartLocation.getLatitude());
-            origin.setLongitude(mStartLocation.getLongitude());
-            route.setOriginPlaceName(mStartLocation.getPlaceName());
-            route.setOrigin(origin);
-
-            LocationWrapper destination = route.getDestination();
-            destination = destination == null ? realm.createObject(LocationWrapper.class) : destination;
-            destination.setLatitude(mEndLocation.getLatitude());
-            destination.setLongitude(mEndLocation.getLongitude());
-            route.setDestinationPlaceName(mEndLocation.getPlaceName());
-            route.setDestination(destination);
-
-            route.setPickupTime(Route.getTime(mStartHour, mStartMin));
-            route.setReturnTime(Route.getTime(mEndHour, mEndMin));
-
-            realm.commitTransaction();
-            manager.saveRoute(null);
-
+            updateSavedRoute();
             try {
-                manager.requestRidesForTomorrow(new Callback() {
-                    @Override
-                    public void success() {
-                        onCommuteRequestSuccess();
-                    }
+                CommuteManager.getInstance()
+                        .requestRidesForTomorrow(new Callback() {
+                            @Override
+                            public void success() {
+                                onCommuteRequestSuccess();
+                            }
 
-                    @Override
-                    public void failure(String message) {
-                        Log.e(TAG, message);
-                        onCommuteRequestFail();
-                    }
-                });
+                            @Override
+                            public void failure(String message) {
+                                Log.e(TAG, message);
+                                onCommuteRequestFail();
+                            }
+                        });
             } catch (UserRecoverableSystemError error) {
                 error.printStackTrace();
                 onCommuteRequestFail();
@@ -262,6 +333,36 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
         } else {
             Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    private void updateSavedRoute() {
+        final CommuteManager manager = CommuteManager.getInstance();
+
+        Realm realm = AluviRealm.getDefaultRealm();
+        realm.beginTransaction();
+
+        Route route = manager.getRoute();
+        route.setDriving(mDriveThereCheckbox.isChecked());
+
+        LocationWrapper origin = route.getOrigin();
+        origin = origin == null ? realm.createObject(LocationWrapper.class) : origin;
+        origin.setLatitude(mStartLocation.getLatitude());
+        origin.setLongitude(mStartLocation.getLongitude());
+        route.setOriginPlaceName(mStartLocation.getPlaceName());
+        route.setOrigin(origin);
+
+        LocationWrapper destination = route.getDestination();
+        destination = destination == null ? realm.createObject(LocationWrapper.class) : destination;
+        destination.setLatitude(mEndLocation.getLatitude());
+        destination.setLongitude(mEndLocation.getLongitude());
+        route.setDestinationPlaceName(mEndLocation.getPlaceName());
+        route.setDestination(destination);
+
+        route.setPickupTime(Route.getTime(mStartHour, mStartMin));
+        route.setReturnTime(Route.getTime(mEndHour, mEndMin));
+
+        realm.commitTransaction();
+        manager.saveRoute(null);
     }
 
     private boolean isCommuteReady() {

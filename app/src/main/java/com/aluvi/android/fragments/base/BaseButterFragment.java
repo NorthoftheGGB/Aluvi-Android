@@ -1,4 +1,4 @@
-package com.aluvi.android.fragments;
+package com.aluvi.android.fragments.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

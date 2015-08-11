@@ -57,8 +57,12 @@ public class Route extends RealmObject {
         int hour = -1;
         if (time != null) {
             String[] split = time.split(":");
-            if (split.length > 0)
-                hour = Integer.parseInt(split[0]);
+            try {
+                if (split.length > 0)
+                    hour = Integer.parseInt(split[0]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
         return hour;
@@ -68,8 +72,12 @@ public class Route extends RealmObject {
         int min = -1;
         if (time != null) {
             String[] split = time.split(":");
-            if (split.length > 1)
-                min = Integer.parseInt(split[1]);
+            try {
+                if (split.length > 1)
+                    min = Integer.parseInt(split[1]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
 
         return min;

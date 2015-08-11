@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.aluvi.android.R;
-import com.aluvi.android.fragments.BaseButterFragment;
+import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.views.CameraImageRotationUtils;
 
 import java.io.File;

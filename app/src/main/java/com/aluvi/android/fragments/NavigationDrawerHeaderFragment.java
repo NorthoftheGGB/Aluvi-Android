@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aluvi.android.R;
+import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Profile;
 
@@ -44,7 +45,7 @@ public class NavigationDrawerHeaderFragment extends BaseButterFragment {
     public void initUI() {
         Profile profile = UserStateManager.getInstance().getProfile();
         if (profile != null) {
-            String fullName = profile.getFirstName() + profile.getLastName();
+            String fullName = profile.getFirstName() + " " + profile.getLastName();
             mUserNameTextView.setText(fullName);
         }
     }

@@ -3,13 +3,11 @@ package com.aluvi.android.model.realm;
 import com.aluvi.android.api.tickets.model.RiderData;
 
 import io.realm.RealmObject;
-import io.realm.RealmList;
 
 /**
  * Created by matthewxi on 7/13/15.
  */
 public class Rider extends RealmObject {
-
     private int id;
     private String firstName;
     private String lastName;

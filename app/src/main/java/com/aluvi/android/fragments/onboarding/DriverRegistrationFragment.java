@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.users.models.DriverProfileData;
-import com.aluvi.android.fragments.BaseButterFragment;
+import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.views.FormValidator;
 
 import butterknife.Bind;

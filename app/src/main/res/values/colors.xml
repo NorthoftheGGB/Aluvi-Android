@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#D32F2F</color>
-    <color name="colorSecondary">#2196F3</color>
+    <color name="colorPrimaryDark">@color/aluvi_gradient_start</color>
+    <color name="colorAccent">#2196F3</color>
 
     <color name="actionBarBackground">#99FFFFFF</color>
 
@@ -13,7 +14,7 @@
     <color name="scheduleRideButtonBackgroundExtraLightClicked">#C8C8C8</color>
 
     <color name="errorButtonBackground">#FB3341</color>
-    <color name="successButtonBackground">@color/colorSecondary</color>
+    <color name="successButtonBackground">@color/colorAccent</color>
 
     <color name="transparent_white">#AAFFFFFF</color>
     <color name="ticketInfoPriceBackground">#2360DD</color>

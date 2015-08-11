@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
+import com.aluvi.android.fragments.base.BaseTicketConsumerFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.CommuteManager;

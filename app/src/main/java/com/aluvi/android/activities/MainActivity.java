@@ -84,7 +84,8 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
     }
 
     public void onHomeClicked() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, AluviMapFragment.newInstance()).commit();
+        if (getSupportFragmentManager().findFragmentById(R.id.container) == null)
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, AluviMapFragment.newInstance()).commit();
     }
 
     public void onLoginToggleClicked() {

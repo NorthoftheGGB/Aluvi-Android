@@ -4,4 +4,5 @@
     <string name="mapbox_access_token">sk.eyJ1IjoianVzdHNvYW1hemluZyIsImEiOiI4ZTVkZjYzYjMxZTY0MjhiNjE4ODUyMDZlYTQ2ZmZmMyJ9.IS45g3H17jQkehrxFV0XcA</string>
     <string name="mapbox_public_access_token">sk.eyJ1IjoianVzdHNvYW1hemluZyIsImEiOiI4ZTVkZjYzYjMxZTY0MjhiNjE4ODUyMDZlYTQ2ZmZmMyJ9.IS45g3H17jQkehrxFV0XcA</string>
     <string name="gcm_sender_id">560390205545</string>
+    <string name="stripe_key">pk_test_4Gt6M02YRqmpk7yoBud7y5Ah</string>
 </resources>

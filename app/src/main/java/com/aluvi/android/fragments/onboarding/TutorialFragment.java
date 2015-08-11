@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.aluvi.android.R;
-import com.aluvi.android.fragments.BaseButterFragment;
+import com.aluvi.android.fragments.base.BaseButterFragment;
 
 import butterknife.OnClick;
 

@@ -7,6 +7,7 @@ import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.gis.GeocodingApi;
 import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.PaymentManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.location.DriverLocationManager;
 import com.aluvi.android.managers.location.RiderLocationManager;
@@ -32,6 +33,7 @@ public class AluviApplication extends Application {
         GeocodingApi.initialize(this, getString(R.string.mapbox_access_token));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
+        PaymentManager.initialize(getString(R.string.stripe_key));
     }
 
     @Override

@@ -28,6 +28,12 @@ public class ProfileData extends AluviPayload implements Parcelable {
     @JsonProperty("referral_code")
     private String referralCode;
 
+    @JsonProperty("default_card_token")
+    private String defaultCardToken;
+
+    @JsonProperty("default_recipient_debit_card_token")
+    private String defaultRecipientDebitCardToken;
+
     private boolean isInterestedDriver;
 
     public ProfileData() {
@@ -70,6 +76,13 @@ public class ProfileData extends AluviPayload implements Parcelable {
                 }
             };
 
+    public String getDefaultCardToken() {
+        return defaultCardToken;
+    }
+
+    public void setDefaultCardToken(String defaultCardToken) {
+        this.defaultCardToken = defaultCardToken;
+    }
 
     public String getFirstName() {
         return firstName;

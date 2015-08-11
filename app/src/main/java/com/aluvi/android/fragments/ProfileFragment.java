@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
+import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.packages.Callback;
