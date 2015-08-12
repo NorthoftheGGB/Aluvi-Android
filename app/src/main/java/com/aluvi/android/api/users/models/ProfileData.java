@@ -46,6 +46,7 @@ public class ProfileData extends AluviPayload implements Parcelable {
         password = in.readString();
         email = in.readString();
         referralCode = in.readString();
+        defaultCardToken = in.readString();
     }
 
     @Override
@@ -61,6 +62,7 @@ public class ProfileData extends AluviPayload implements Parcelable {
         dest.writeString(password);
         dest.writeString(email);
         dest.writeString(referralCode);
+        dest.writeString(defaultCardToken);
     }
 
     public static final Parcelable.Creator<ProfileData> CREATOR =

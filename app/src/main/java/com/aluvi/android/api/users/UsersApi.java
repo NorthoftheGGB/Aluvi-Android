@@ -164,8 +164,7 @@ public class UsersApi {
                 new AluviAuthRealmRequestListener<Profile>(false) {
                     @Override
                     public void onAuthRealmResponse(Profile response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK
-                                || statusCode == HttpURLConnection.HTTP_CREATED)
+                        if (statusCode == HttpURLConnection.HTTP_OK)
                             callback.success();
                         else
                             callback.failure(statusCode);
@@ -178,9 +177,7 @@ public class UsersApi {
                 }
         );
 
-        profileRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
-                HttpURLConnection.HTTP_CREATED,
-                HttpURLConnection.HTTP_BAD_REQUEST});
+        profileRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(profileRequest);
     }
 }

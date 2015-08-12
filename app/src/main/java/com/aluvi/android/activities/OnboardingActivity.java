@@ -19,9 +19,9 @@ import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
 import com.aluvi.android.fragments.onboarding.TutorialFragment;
-import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.LocationWrapper;
 import com.aluvi.android.model.realm.Route;
@@ -217,8 +217,18 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     private void onSignUpFinished() {
-        setResult(Activity.RESULT_OK);
-        finish();
+        UserStateManager.getInstance().sync(new Callback() {
+            @Override
+            public void success() {
+                setResult(Activity.RESULT_OK);
+                finish();
+            }
+
+            @Override
+            public void failure(String message) {
+                onError(message);
+            }
+        });
     }
 
     private void onError(String message) {

@@ -210,7 +210,7 @@ public class UserStateManager {
 
             @Override
             public void failure(int statusCode) {
-                callback.failure("Unable to saveRoute profile");
+                callback.failure("Unable to save profile");
             }
         });
     }
