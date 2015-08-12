@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -119,33 +117,7 @@ public class CameraHelper {
             if (resultCode == Activity.RESULT_OK) {
                 mCurrentPhotoPath = null; // If the user took a picture before, don't show that one again, especially not when restoring the app's state
                 mCurrentPhotoUri = data.getData();
-
-                /**
-                 * TODO Fix URI image rotation
-                 * Horrible, crappy way to copy the image from gallery to external file directory and then
-                 * performing image rotation crap.
-                 */
-                loadBitmap(mCurrentPhotoUri, mContext, new AsyncCallback<Bitmap>() {
-                    @Override
-                    public void onOperationCompleted(Bitmap result) {
-                        final File saveLoc = createImageFile();
-                        asyncSaveBitmap(saveLoc, result, new AsyncCallback<Boolean>() {
-                            @Override
-                            public void onOperationCompleted(Boolean result) {
-                                if (result) {
-                                    loadBitmap(saveLoc.getAbsolutePath(), new AsyncCallback<Bitmap>() {
-                                        @Override
-                                        public void onOperationCompleted(Bitmap result) {
-                                            pictureLoadCallback.onOperationCompleted(result);
-                                        }
-                                    });
-                                } else {
-                                    pictureLoadCallback.onOperationCompleted(null);
-                                }
-                            }
-                        });
-                    }
-                });
+                loadBitmap(mCurrentPhotoUri, mContext, pictureLoadCallback);
             }
         }
     }
@@ -155,9 +127,8 @@ public class CameraHelper {
             @Override
             protected Bitmap doInBackground(Void... params) {
                 try {
-                    InputStream imageStream = context.getContentResolver().openInputStream(pictureUri);
-                    return BitmapFactory.decodeStream(imageStream);
-                } catch (FileNotFoundException e) {
+                    return CameraImageRotationUtils.getCorrectlyOrientedImage(context, pictureUri);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -177,7 +148,7 @@ public class CameraHelper {
             @Override
             protected Bitmap doInBackground(Void... params) {
                 try {
-                    return CameraImageRotationUtils.handleSamplingAndRotationBitmap(picturePath);
+                    return CameraImageRotationUtils.getCorrectlyOrientedImage(picturePath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
