@@ -31,6 +31,7 @@ public class LocationSelectFragment extends BaseButterFragment
     @Bind(R.id.onboarding_button_work_location) Button mWorkButton;
 
     private final static String HOME_LOC = "home_location", WORK_LOC = "work_location";
+
     private TicketLocation mHomeLocation, mWorkLocation;
     private LocationSelectedListener mListener;
 

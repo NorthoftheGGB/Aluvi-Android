@@ -3,6 +3,7 @@ package com.aluvi.android.helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,19 +30,18 @@ public class CameraHelper {
     public final static String IMAGE_PATH_INST_SAVE = "img_path_save",
             IMAGE_URI_SAVE = "img_uri_save";
 
-    private String mCurrentPhotoPath, mId;
+    private String mCurrentPhotoPath;
     private Uri mCurrentPhotoUri;
     private Context mContext;
 
-    public CameraHelper(String id, Context context) {
-        mId = id;
+    public CameraHelper(Context context) {
         mContext = context;
     }
 
     public void restore(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mCurrentPhotoPath = savedInstanceState.getString(mId + IMAGE_PATH_INST_SAVE);
-            mCurrentPhotoUri = savedInstanceState.getParcelable(mId + IMAGE_URI_SAVE);
+            mCurrentPhotoPath = savedInstanceState.getString(IMAGE_PATH_INST_SAVE);
+            mCurrentPhotoUri = savedInstanceState.getParcelable(IMAGE_URI_SAVE);
         }
     }
 
@@ -54,9 +54,9 @@ public class CameraHelper {
 
     public void save(Bundle outState) {
         if (mCurrentPhotoPath != null)
-            outState.putString(mId + IMAGE_PATH_INST_SAVE, mCurrentPhotoPath);
+            outState.putString(IMAGE_PATH_INST_SAVE, mCurrentPhotoPath);
         else if (mCurrentPhotoUri != null)
-            outState.putParcelable(mId + IMAGE_URI_SAVE, mCurrentPhotoUri);
+            outState.putParcelable(IMAGE_URI_SAVE, mCurrentPhotoUri);
     }
 
     public boolean takePictureCamera(Activity activity) {
@@ -119,24 +119,9 @@ public class CameraHelper {
             loadBitmap(mCurrentPhotoPath, pictureLoadCallback);
         } else if (requestCode == GALLERY_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                mCurrentPhotoPath = null; // If the user took a picture before, don't show that one again, especially not when restoring the app's state
                 mCurrentPhotoUri = data.getData();
-
-                loadBitmap(mCurrentPhotoUri, mContext, new AsyncCallback<Bitmap>() {
-                    @Override
-                    public void onOperationCompleted(final Bitmap savedBitmap) {
-                        final File externalDir = createImageFile();
-
-                        // Copy image from gallery to external storage directory
-                        asyncSaveBitmap(externalDir, savedBitmap, new AsyncCallback<Boolean>() {
-                            @Override
-                            public void onOperationCompleted(Boolean result) {
-                                mCurrentPhotoPath = externalDir.getAbsolutePath();
-                                pictureLoadCallback.onOperationCompleted(savedBitmap);
-                            }
-                        });
-                    }
-                });
+                mCurrentPhotoPath = getRealPathFromURI(mContext, mCurrentPhotoUri);
+                loadBitmap(mCurrentPhotoPath, pictureLoadCallback);
             }
         }
     }
@@ -240,5 +225,20 @@ public class CameraHelper {
         }
 
         return null;
+    }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ public class ProfilePhotoFragment extends BaseButterFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCameraHelper = new CameraHelper("AboutUsFragment", getActivity());
+        mCameraHelper = new CameraHelper(getActivity());
         mCameraHelper.restore(savedInstanceState != null ? savedInstanceState : getArguments());
     }
 
@@ -105,7 +105,6 @@ public class ProfilePhotoFragment extends BaseButterFragment {
             }
         });
     }
-
 
     public void updateProfilePicture(Bitmap bitmap) {
         if (bitmap != null && mProfilePictureView != null)
