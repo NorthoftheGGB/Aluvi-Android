@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.IntentCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.LoginActivity;
 import com.aluvi.android.api.AuthFailEvent;
-import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
 
 import de.greenrobot.event.EventBus;
 
@@ -69,9 +70,7 @@ public abstract class AluviAuthActivity extends BaseToolBarActivity {
             @Override
             public void failure(String message) {
                 Log.e(TAG, message);
-
-                // Log out even if we weren't quite able to disassociate from the server because the user is invalid anyways
-                onLoggedOut();
+                Toast.makeText(AluviAuthActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }

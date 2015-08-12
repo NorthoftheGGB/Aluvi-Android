@@ -231,7 +231,7 @@ public class UserStateManager {
                 // we will probably translate the status code to a message here
                 // using a strings file.
                 if (callback != null)
-                    callback.failure("Logout Failed for some reason");
+                    callback.failure("Logout failed for some reason");
             }
         });
 
