@@ -88,7 +88,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:7.5.0'
     compile 'com.google.android.gms:play-services-location:7.5.0'
     compile 'com.stripe:stripe-android:+'
-    compile 'io.card:android-sdk:5.0.1'
 }
 
 gradle.taskGraph.beforeTask { Task task ->

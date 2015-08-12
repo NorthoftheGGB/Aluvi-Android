@@ -1,6 +1,5 @@
 package com.aluvi.android.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -17,13 +16,11 @@ import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
+import com.aluvi.android.fragments.CreditCardInfoDialogFragment;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
-import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
-import com.aluvi.android.managers.PaymentManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.packages.Callback;
-import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.LocationWrapper;
 import com.aluvi.android.model.realm.Profile;
@@ -40,12 +37,12 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.card.payment.CardIOActivity;
-import io.card.payment.CreditCard;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class ScheduleRideActivity extends AluviAuthActivity implements LocationSelectDialogFragment.OnLocationSelectedListener {
+public class ScheduleRideActivity extends AluviAuthActivity implements
+        LocationSelectDialogFragment.OnLocationSelectedListener,
+        CreditCardInfoDialogFragment.CreditCardListener {
 
     @Bind(R.id.schedule_ride_root_view) View mRootView;
     @Bind(R.id.schedule_ride_button_from) Button mFromButton;
@@ -177,47 +174,19 @@ public class ScheduleRideActivity extends AluviAuthActivity implements LocationS
     }
 
     private void checkCreditCardDetails() {
-        Intent scanIntent = new Intent(this, CardIOActivity.class);
-        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
-        scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
-        startActivityForResult(scanIntent, CARD_IO_REQUEST_CODE);
+        String cardToken = UserStateManager.getInstance().getProfile().getDefaultCardToken();
+        if (cardToken == null || cardToken.equals(""))
+            CreditCardInfoDialogFragment.newInstance().show(getSupportFragmentManager(), "credit_card_fragment");
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CARD_IO_REQUEST_CODE) {
-            if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
-                CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
-                onCreditCardFetched(scanResult);
-            } else {
-                onCreditCardProcessingError();
-            }
-        }
+    public void onStripeTokenReceived(String token) {
+        updateUserPaymentToken(token);
     }
 
-    private void onCreditCardFetched(CreditCard fetchedCard) {
-        final MaterialDialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
-        PaymentManager.getInstance().requestToken(fetchedCard, new DataCallback<String>() {
-            @Override
-            public void success(String result) {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                updateUserPaymentToken(result);
-            }
-
-            @Override
-            public void failure(String message) {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                if (mRootView != null)
-                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-
-                onCreditCardProcessingError();
-            }
-        });
+    @Override
+    public void onError(String message) {
+        onCreditCardProcessingError();
     }
 
     private void updateUserPaymentToken(final String token) {

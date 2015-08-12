@@ -33,7 +33,9 @@ public class Profile extends RealmObject {
     @JsonProperty("commuter_refill_enabled")
     private int commuterRefillEnabled;
 
+    @JsonProperty("default_card_token")
     private String defaultCardToken;
+
     private String cardLastFour;
     private String cardBrand;
 

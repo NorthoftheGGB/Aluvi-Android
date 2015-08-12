@@ -1,13 +1,12 @@
 package com.aluvi.android.managers;
 
 import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.model.local.CreditCard;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.exception.AuthenticationException;
-
-import io.card.payment.CreditCard;
 
 /**
  * Created by usama on 8/11/15.
@@ -34,7 +33,9 @@ public class PaymentManager {
     }
 
     public void requestToken(CreditCard card, final DataCallback<String> tokenCallback) {
-        Card stripeCard = new Card(card.cardNumber, card.expiryMonth, card.expiryYear, card.cvv);
+        Card stripeCard = new Card(card.getCardNumber(), card.getExpirationMonth(),
+                card.getExpirationYear(), card.getCvv());
+
         if (stripeCard.validateCard() && stripeCard.validateCVC()) {
             mStripe.createToken(stripeCard, new TokenCallback() {
                 @Override

@@ -95,5 +95,10 @@
     <string name="license_number">Your License Number</string>
     <string name="profile_saved">Updated your profile</string>
     <string name="invalid_credit_card">Invalid credit card</string>
+    <string name="card_details">Card Details</string>
     <string name="updating_payment_info">Updating your payment info</string>
+    <string name="expiration_date">MM/YY</string>
+    <string name="cvv">CVV</string>
+    <string name="card_number">Card Number</string>
+    <string name="invalid_expiration_date">Invalid expiration date</string>
 </resources>
