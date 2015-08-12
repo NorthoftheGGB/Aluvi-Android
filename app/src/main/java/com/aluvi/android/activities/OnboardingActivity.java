@@ -14,7 +14,7 @@ import com.aluvi.android.activities.base.BaseButterActivity;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.application.AluviRealm;
-import com.aluvi.android.fragments.onboarding.AboutUserFragment;
+import com.aluvi.android.fragments.onboarding.ProfilePhotoFragment;
 import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
@@ -35,7 +35,7 @@ import io.realm.Realm;
 public class OnboardingActivity extends BaseButterActivity implements
         RegisterFragment.RegistrationListener,
         LocationSelectFragment.LocationSelectedListener,
-        AboutUserFragment.AboutUserListener,
+        ProfilePhotoFragment.AboutUserListener,
         TutorialFragment.TutorialListener,
         DriverRegistrationFragment.DriverRegistrationListener {
 
@@ -47,6 +47,7 @@ public class OnboardingActivity extends BaseButterActivity implements
             WORK_LOC_KEY = "work_loc";
 
     private ProfileData mRegistrationData;
+    private String mProfileImagePath;
     private DriverProfileData mDriverProfileData;
     private TicketLocation mHomeLoc, mWorkLoc;
 
@@ -125,13 +126,14 @@ public class OnboardingActivity extends BaseButterActivity implements
         mWorkLoc = end;
 
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, AboutUserFragment.newInstance())
+                .replace(R.id.onboarding_root_container, ProfilePhotoFragment.newInstance(mProfileImagePath))
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
-    public void onUserDetailsPopulated() {
+    public void onUserDetailsPopulated(String profileImagePath) {
+        mProfileImagePath = profileImagePath;
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, TutorialFragment.newInstance())
                 .addToBackStack(null)

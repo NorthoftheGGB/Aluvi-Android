@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.aluvi.android.R;
-import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
+import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.model.local.TicketLocation;
 
 import butterknife.Bind;
@@ -51,7 +51,9 @@ public class LocationSelectFragment extends BaseButterFragment
     }
 
     @Override
-    public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mHomeLocation = getArguments().getParcelable(HOME_LOC);
             mWorkLocation = getArguments().getParcelable(WORK_LOC);
@@ -61,7 +63,10 @@ public class LocationSelectFragment extends BaseButterFragment
             mHomeLocation = savedInstanceState.getParcelable(HOME_LOC);
             mWorkLocation = savedInstanceState.getParcelable(WORK_LOC);
         }
+    }
 
+    @Override
+    public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_onboarding_location_select, container, false);
     }
 

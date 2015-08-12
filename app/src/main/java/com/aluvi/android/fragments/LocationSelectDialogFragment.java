@@ -197,23 +197,25 @@ public class LocationSelectDialogFragment extends DialogFragment {
     }
 
     private void addMarker(final ILatLng latLng) {
-        mMapView.clear();
-        mMapView.addMarker(getDefaultMarker(null, null, new LatLng(latLng.getLatitude(), latLng.getLongitude())));
+        if (mMapView != null) {
+            mMapView.clear();
+            mMapView.addMarker(getDefaultMarker(null, null, new LatLng(latLng.getLatitude(), latLng.getLongitude())));
 
-        Log.d(TAG, "Looking for address for custom marker location");
-        onLocationSearchStarted();
-        GeocodingApi.getInstance()
-                .getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), new GeocodingApi.GeocodingApiCallback() {
-                    @Override
-                    public void onAddressesFound(String query, List<Address> data) {
-                        onAddressesFoundForLocation(latLng.getLatitude(), latLng.getLongitude(), data);
-                    }
+            Log.d(TAG, "Looking for address for custom marker location");
+            onLocationSearchStarted();
+            GeocodingApi.getInstance()
+                    .getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), new GeocodingApi.GeocodingApiCallback() {
+                        @Override
+                        public void onAddressesFound(String query, List<Address> data) {
+                            onAddressesFoundForLocation(latLng.getLatitude(), latLng.getLongitude(), data);
+                        }
 
-                    @Override
-                    public void onFailure(int statusCode) {
-                        Log.e(TAG, "Error geocoding latlng. Status code: " + statusCode);
-                    }
-                });
+                        @Override
+                        public void onFailure(int statusCode) {
+                            Log.e(TAG, "Error geocoding latlng. Status code: " + statusCode);
+                        }
+                    });
+        }
     }
 
     private void onAddressesFoundForLocation(double lat, double lng, List<Address> data) {

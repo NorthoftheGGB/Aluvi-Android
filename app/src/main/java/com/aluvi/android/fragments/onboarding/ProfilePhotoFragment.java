@@ -22,10 +22,10 @@ import butterknife.OnClick;
 /**
  * Created by usama on 8/6/15.
  */
-public class AboutUserFragment extends BaseButterFragment {
+public class ProfilePhotoFragment extends BaseButterFragment {
 
     public interface AboutUserListener {
-        void onUserDetailsPopulated();
+        void onUserDetailsPopulated(String userProfilePicture);
     }
 
     @Bind(R.id.onboarding_image_view_profile_picture) ImageView mProfilePictureView;
@@ -33,8 +33,13 @@ public class AboutUserFragment extends BaseButterFragment {
     private CameraHelper mCameraHelper;
     private AboutUserListener mListener;
 
-    public static AboutUserFragment newInstance() {
-        return new AboutUserFragment();
+    public static ProfilePhotoFragment newInstance(String savedPhotoPath) {
+        Bundle args = new Bundle();
+        args.putString(CameraHelper.IMAGE_PATH_INST_SAVE, savedPhotoPath);
+
+        ProfilePhotoFragment fragment = new ProfilePhotoFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -44,9 +49,14 @@ public class AboutUserFragment extends BaseButterFragment {
     }
 
     @Override
-    public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mCameraHelper = new CameraHelper("AboutUsFragment", getActivity());
-        mCameraHelper.restore(savedInstanceState);
+        mCameraHelper.restore(savedInstanceState != null ? savedInstanceState : getArguments());
+    }
+
+    @Override
+    public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_about_user, container, false);
     }
 
@@ -68,7 +78,7 @@ public class AboutUserFragment extends BaseButterFragment {
 
     @OnClick(R.id.onboarding_about_button_next)
     public void onNextClicked() {
-        mListener.onUserDetailsPopulated();
+        mListener.onUserDetailsPopulated(mCameraHelper.getCurrentPhotoPath());
     }
 
     @SuppressWarnings("unused")

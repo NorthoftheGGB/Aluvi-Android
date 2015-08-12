@@ -26,7 +26,7 @@ import java.util.Date;
 public class CameraHelper {
     private final int PICTURE_CAPTURE_REQ_CODE = 981,
             GALLERY_REQ_CODE = 189;
-    private final String IMAGE_PATH_INST_SAVE = "img_path_save",
+    public final static String IMAGE_PATH_INST_SAVE = "img_path_save",
             IMAGE_URI_SAVE = "img_uri_save";
 
     private String mCurrentPhotoPath, mId;
@@ -109,6 +109,10 @@ public class CameraHelper {
         return photoPickerIntent;
     }
 
+    public String getCurrentPhotoPath() {
+        return mCurrentPhotoPath;
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data, final AsyncCallback<Bitmap> pictureLoadCallback) {
         if (requestCode == PICTURE_CAPTURE_REQ_CODE) {
             mCurrentPhotoUri = null; // If the user selected a gallery image before, don't show that one again, especially not when restoring the app's state
@@ -117,7 +121,22 @@ public class CameraHelper {
             if (resultCode == Activity.RESULT_OK) {
                 mCurrentPhotoPath = null; // If the user took a picture before, don't show that one again, especially not when restoring the app's state
                 mCurrentPhotoUri = data.getData();
-                loadBitmap(mCurrentPhotoUri, mContext, pictureLoadCallback);
+
+                loadBitmap(mCurrentPhotoUri, mContext, new AsyncCallback<Bitmap>() {
+                    @Override
+                    public void onOperationCompleted(final Bitmap savedBitmap) {
+                        final File externalDir = createImageFile();
+
+                        // Copy image from gallery to external storage directory
+                        asyncSaveBitmap(externalDir, savedBitmap, new AsyncCallback<Boolean>() {
+                            @Override
+                            public void onOperationCompleted(Boolean result) {
+                                mCurrentPhotoPath = externalDir.getAbsolutePath();
+                                pictureLoadCallback.onOperationCompleted(savedBitmap);
+                            }
+                        });
+                    }
+                });
             }
         }
     }
