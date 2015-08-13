@@ -3,7 +3,11 @@ package com.aluvi.android.api.request;
 import com.android.volley.AuthFailureError;
 import com.spothero.volley.JacksonRequestListener;
 
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -31,30 +35,28 @@ public class AluviAuthMultipartRequest<T> extends AluviAuthenticatedRequest<T> {
 
     @Override
     public byte[] getBody() throws AuthFailureError {
-//        MultipartEntityBuilder entityBuilder = MultipartEntityBuilder
-//                .create();
-//
-//        for (Map.Entry<String, String> entry : getParams().entrySet())
-//            entityBuilder.addTextBody(entry.getKey(), entry.getValue());
-//
-//        for (Map.Entry<String, File> entry : mFilePayload.entrySet())
-//            entityBuilder.addBinaryBody(entry.getKey(), entry.getValue());
-//
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        try {
-//            entityBuilder.build().writeTo(outputStream);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                outputStream.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        return outputStream.toByteArray();
+        MultipartEntityBuilder entityBuilder = MultipartEntityBuilder
+                .create();
 
-        return null;
+        for (Map.Entry<String, String> entry : getParams().entrySet())
+            entityBuilder.addTextBody(entry.getKey(), entry.getValue());
+
+        for (Map.Entry<String, File> entry : mFilePayload.entrySet())
+            entityBuilder.addBinaryBody(entry.getKey(), entry.getValue());
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            entityBuilder.build().writeTo(outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return outputStream.toByteArray();
     }
 }
