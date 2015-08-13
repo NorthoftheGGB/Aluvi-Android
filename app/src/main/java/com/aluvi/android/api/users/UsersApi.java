@@ -5,6 +5,7 @@ import android.util.Log;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
+import com.aluvi.android.api.request.AluviAuthMultipartRequest;
 import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
@@ -83,8 +84,7 @@ public class UsersApi {
                 new JacksonRequestListener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED
-                                || statusCode == HttpURLConnection.HTTP_OK) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
@@ -156,11 +156,12 @@ public class UsersApi {
         AluviApi.getInstance().getRequestQueue().add(profileRequest);
     }
 
-    public static void updateProfile(ProfileData profile, final ApiCallback callback) {
-        AluviAuthenticatedRequest profileRequest = new AluviAuthenticatedRequest(
+    public static void saveProfile(Profile profile, final ApiCallback callback) {
+        AluviAuthMultipartRequest<Profile> profileRequest = new AluviAuthMultipartRequest<>(
                 Request.Method.POST,
                 AluviApi.API_USER_PROFILE,
-                profile,
+                Profile.toMap(profile),
+                Profile.toFileMap(profile),
                 new AluviAuthRealmRequestListener<Profile>(false) {
                     @Override
                     public void onAuthRealmResponse(Profile response, int statusCode, VolleyError error) {

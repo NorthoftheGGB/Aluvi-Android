@@ -202,7 +202,7 @@ public class UserStateManager {
     }
 
     public void saveProfile(final Callback callback) {
-        UsersApi.updateProfile(Profile.getProfileData(profile), new ApiCallback() {
+        UsersApi.saveProfile(profile, new ApiCallback() {
             @Override
             public void success() {
                 callback.success();

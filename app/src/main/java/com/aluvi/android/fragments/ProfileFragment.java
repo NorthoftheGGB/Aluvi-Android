@@ -1,5 +1,7 @@
 package com.aluvi.android.fragments;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
+import com.aluvi.android.helpers.AsyncCallback;
+import com.aluvi.android.helpers.CameraHelper;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.UserStateManager;
@@ -28,12 +32,20 @@ import io.realm.Realm;
  * Created by usama on 8/8/15.
  */
 public class ProfileFragment extends BaseButterFragment {
-
     @Bind(R.id.profile_image_view) CircleImageView mProfileImageView;
     @Bind(R.id.profile_text_view_name) TextView mNameTextView;
     @Bind(R.id.profile_edit_text_email) EditText mEmailEditText;
     @Bind(R.id.profile_edit_text_phone_number) EditText mPhoneNumberEditText;
     @Bind(R.id.profile_edit_text_work_email) EditText mWorkEmailEditText;
+
+    private CameraHelper mCameraHelper;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCameraHelper = new CameraHelper(getActivity());
+        mCameraHelper.restore(savedInstanceState);
+    }
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -42,15 +54,39 @@ public class ProfileFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
-        Profile profile = UserStateManager.getInstance().getProfile();
-        Picasso.with(getActivity()).load(profile.getLargeImageUrl())
-                .fit().centerCrop()
-                .into(mProfileImageView);
+        final Profile profile = UserStateManager.getInstance().getProfile();
         mNameTextView.setText(profile.getFirstName() + " " + profile.getLastName());
         mEmailEditText.setText(profile.getEmail());
         mPhoneNumberEditText.setText(profile.getPhone());
+
+        mCameraHelper.restoreSavedBitmaps(new AsyncCallback<Bitmap>() {
+            @Override
+            public void onOperationCompleted(Bitmap result) {
+                if (mProfileImageView != null) {
+                    if (result != null)
+                        mProfileImageView.setImageBitmap(result);
+                    else
+                        loadProfilePhoto(profile);
+                }
+            }
+        });
     }
 
+    private void loadProfilePhoto(Profile profile) {
+        Picasso.with(getActivity()).load(profile.getLargeImageUrl())
+                .fit().centerCrop()
+                .placeholder(R.mipmap.test_profile_pic)
+                .error(R.mipmap.test_profile_pic)
+                .into(mProfileImageView);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mCameraHelper.save(outState);
+    }
+
+    @SuppressWarnings("unused")
     @OnClick(R.id.profile_button_save)
     public void saveButtonClicked() {
         if (isFormValid()) {
@@ -77,6 +113,32 @@ public class ProfileFragment extends BaseButterFragment {
                 }
             });
         }
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.profile_image_view)
+    public void onProfilePictureClicked() {
+        mCameraHelper.takePictureGallery(this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mCameraHelper.onActivityResult(requestCode, resultCode, data, new AsyncCallback<Bitmap>() {
+            @Override
+            public void onOperationCompleted(Bitmap result) {
+                if (mProfileImageView != null && result != null) {
+                    mProfileImageView.setImageBitmap(result);
+                    String currentPhotoPath = mCameraHelper.getCurrentPhotoPath();
+                    updateSavedProfilePhoto(currentPhotoPath);
+                }
+            }
+        });
+    }
+
+    private void updateSavedProfilePhoto(String profilePicturePath) {
+        Profile profileToEdit = UserStateManager.getInstance().getProfile();
+        profileToEdit.setProfilePicturePath(profilePicturePath);
     }
 
     public boolean isFormValid() {

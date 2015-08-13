@@ -350,15 +350,17 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     }
 
     private void centerMapOnCurrentPin(float panelHeight) {
-        float rootHeight = getView().getHeight();
-        float remainingHeight = rootHeight - panelHeight;
+        if (mCurrentlyFocusedMarker != null) {
+            float rootHeight = getView().getHeight();
+            float remainingHeight = rootHeight - panelHeight;
 
-        ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
-        ILatLng currentCenterLoc = mMapView.getCenter();
+            ILatLng desiredCenterLoc = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, remainingHeight / 2);
+            ILatLng currentCenterLoc = mMapView.getCenter();
 
-        double dy = mCurrentlyFocusedMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
-        double newLat = currentCenterLoc.getLatitude() + dy;
-        mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
+            double dy = mCurrentlyFocusedMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
+            double newLat = currentCenterLoc.getLatitude() + dy;
+            mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
+        }
     }
 
     private void cancelTicket(Ticket ticket) {

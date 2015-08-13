@@ -14,6 +14,7 @@ android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
     packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE'
@@ -53,9 +54,8 @@ android {
 repositories {
     mavenCentral()
     maven {
-        url "https://mint.splunk.com/gradle/"
+        url 'https://maven.fabric.io/public'
     }
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
@@ -67,10 +67,14 @@ dependencies {
         transitive = true;
     }
 
+    // Support/Google Play services
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:design:22.2.1'
+    compile 'com.google.android.gms:play-services-gcm:7.5.0'
+    compile 'com.google.android.gms:play-services-location:7.5.0'
 
+    // UI Helpers
     compile 'com.github.rey5137:material:1.1.1'
     compile 'com.afollestad:material-dialogs:0.7.6.0'
     compile 'com.sothree.slidinguppanel:library:3.0.0'
@@ -78,16 +82,20 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
+
+    // Misc utils
+    compile 'com.stripe:stripe-android:+'
+    compile 'joda-time:joda-time:2.3'
+    compile 'io.realm:realm-android:0.82.1'
+
+    // Network Utils
+//    compile files('libs/httpcore-4.4.1.jar')
+//    compile files('libs/httpmime-4.5.jar')
     compile 'com.spothero.volley:volley-jackson-extension:1.0.1'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.2.3'
     compile 'com.google.code.gson:gson:1.7.2'
-    compile 'joda-time:joda-time:2.3'
-    compile 'io.realm:realm-android:0.82.0'
-    compile 'com.google.android.gms:play-services-gcm:7.5.0'
-    compile 'com.google.android.gms:play-services-location:7.5.0'
-    compile 'com.stripe:stripe-android:+'
 }
 
 gradle.taskGraph.beforeTask { Task task ->

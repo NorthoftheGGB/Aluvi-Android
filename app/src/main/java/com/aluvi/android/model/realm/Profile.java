@@ -3,7 +3,12 @@ package com.aluvi.android.model.realm;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 
 /**
  * Created by matthewxi on 7/13/15.
@@ -56,6 +61,9 @@ public class Profile extends RealmObject {
     @JsonProperty("image_large")
     private String largeImageUrl;
 
+    @Ignore
+    private String profilePicturePath;
+
     public static ProfileData getProfileData(Profile profile) {
         ProfileData out = new ProfileData();
         out.setFirstName(profile.getFirstName());
@@ -64,6 +72,31 @@ public class Profile extends RealmObject {
         out.setPhoneNumber(profile.getPhone());
         out.setDefaultCardToken(profile.getDefaultCardToken());
         return out;
+    }
+
+    public static Map<String, String> toMap(Profile profile) {
+        HashMap<String, String> out = new HashMap<>();
+        out.put("first_name", profile.getFirstName());
+        out.put("last_name", profile.getLastName());
+        out.put("phone", profile.getPhone());
+        out.put("email", profile.getEmail());
+        out.put("default_card_token", profile.getDefaultCardToken());
+        return out;
+    }
+
+    public static Map<String, File> toFileMap(Profile profile) {
+        HashMap<String, File> out = new HashMap<>();
+        if (profile.getProfilePicturePath() != null)
+            out.put("image", new File(profile.getProfilePicturePath()));
+        return out;
+    }
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
+
+    public void setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
     }
 
     public String getPassword() {

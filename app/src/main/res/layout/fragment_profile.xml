@@ -16,8 +16,8 @@
         android:layout_above="@+id/profile_text_view_name"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:src="@mipmap/test_profile_pic"
-        />
+        android:clickable="true"
+        android:src="@mipmap/test_profile_pic"/>
 
     <TextView
         android:id="@+id/profile_text_view_name"
@@ -73,15 +73,15 @@
             android:id="@+id/profile_edit_text_phone_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:ems="10"
-            android:hint="@string/phone_number"
-            android:inputType="phone"
             android:layout_alignEnd="@+id/profile_edit_text_email"
             android:layout_alignLeft="@+id/profile_edit_text_email"
             android:layout_alignRight="@+id/profile_edit_text_email"
             android:layout_alignStart="@+id/profile_edit_text_email"
-            android:layout_below="@+id/profile_edit_text_email"/>
+            android:layout_below="@+id/profile_edit_text_email"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:hint="@string/phone_number"
+            android:inputType="phone"/>
 
         <EditText
             android:id="@+id/profile_edit_text_work_email"
