@@ -12,6 +12,7 @@ import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Profile;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -47,6 +48,10 @@ public class NavigationDrawerHeaderFragment extends BaseButterFragment {
         if (profile != null) {
             String fullName = profile.getFirstName() + " " + profile.getLastName();
             mUserNameTextView.setText(fullName);
+
+            Picasso.with(getActivity()).load(profile.getSmallImageUrl())
+                    .fit().centerCrop()
+                    .into(mProfilePictureImageView);
         }
     }
 

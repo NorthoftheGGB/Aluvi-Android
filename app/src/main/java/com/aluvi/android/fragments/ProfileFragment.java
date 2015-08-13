@@ -14,9 +14,10 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
-import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.realm.Profile;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -42,6 +43,9 @@ public class ProfileFragment extends BaseButterFragment {
     @Override
     public void initUI() {
         Profile profile = UserStateManager.getInstance().getProfile();
+        Picasso.with(getActivity()).load(profile.getLargeImageUrl())
+                .fit().centerCrop()
+                .into(mProfileImageView);
         mNameTextView.setText(profile.getFirstName() + " " + profile.getLastName());
         mEmailEditText.setText(profile.getEmail());
         mPhoneNumberEditText.setText(profile.getPhone());

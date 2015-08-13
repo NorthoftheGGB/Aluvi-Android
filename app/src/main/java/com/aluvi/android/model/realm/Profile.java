@@ -36,11 +36,18 @@ public class Profile extends RealmObject {
     @JsonProperty("default_card_token")
     private String defaultCardToken;
 
+    @JsonProperty("card_last_four")
     private String cardLastFour;
+
+    @JsonProperty("card_brand")
     private String cardBrand;
 
+    @JsonProperty("recipient_card_brand")
     private String recipientCardBrand;
+
+    @JsonProperty("recipient_card_last_four")
     private String recipientCardLastFour;
+
     private String bankAccountName;
 
     @JsonProperty("image_small")

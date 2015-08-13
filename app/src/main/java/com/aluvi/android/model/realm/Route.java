@@ -46,6 +46,7 @@ public class Route extends RealmObject {
             root.put("pickup_time", route.getPickupTime());
             root.put("return_time", route.getReturnTime());
             root.put("driving", route.isDriving());
+            root.put("pickup_zone_center", new JSONObject());
         } catch (JSONException e) {
             e.printStackTrace();
         }

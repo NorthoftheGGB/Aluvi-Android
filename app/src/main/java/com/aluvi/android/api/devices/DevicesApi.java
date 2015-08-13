@@ -17,10 +17,7 @@ import java.util.Map;
  * Created by matthewxi on 7/15/15.
  */
 public class DevicesApi {
-
     public static final String ANDROID_PUSH_PLATFORM_NAME = "gcm";
-
-
     public interface Callback {
         void success();
 
@@ -68,19 +65,18 @@ public class DevicesApi {
             }
         };
 
-        request.addAcceptedStatusCodes(new int[]{201});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
     public static void disassociateUser(final Callback callback) {
-
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<>(
                 Request.Method.PUT,
                 AluviApi.API_DEVICE_DISASSOCIATE_USER + GlobalIdentifiers.getInstance().getAndroidId(),
                 new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);

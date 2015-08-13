@@ -174,8 +174,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     private void checkCreditCardDetails() {
-        String cardToken = UserStateManager.getInstance().getProfile().getDefaultCardToken();
-        if (cardToken == null || cardToken.equals(""))
+        String lastFourCreditCard = UserStateManager.getInstance().getProfile().getCardLastFour();
+        if (lastFourCreditCard == null || lastFourCreditCard.equals(""))
             CreditCardInfoDialogFragment.newInstance().show(getSupportFragmentManager(), "credit_card_fragment");
     }
 
