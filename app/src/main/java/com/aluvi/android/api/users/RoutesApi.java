@@ -40,7 +40,8 @@ public class RoutesApi {
                 new AluviAuthRequestListener<JSONObject>() {
                     @Override
                     public void onAuthenticatedResponse(JSONObject response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK
+                                || statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                             listener.onSaved(route);
                         } else {
                             if (error != null)
@@ -56,7 +57,8 @@ public class RoutesApi {
                 });
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
-                HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
+                HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST,
+                HttpURLConnection.HTTP_NOT_FOUND});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
@@ -67,7 +69,7 @@ public class RoutesApi {
                 new AluviAuthRealmRequestListener<Route>() {
                     @Override
                     public void onAuthRealmResponse(Route response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                        if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
                             listener.onFetched(response);
                         } else {
                             listener.onFailure(statusCode);

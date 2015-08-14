@@ -88,8 +88,10 @@ dependencies {
     compile 'io.realm:realm-android:0.82.1'
 
     // Network Utils
+    compile('org.apache.httpcomponents:httpmime:4.3.6') {
+        exclude module: 'httpclient'
+    }
     compile files('libs/httpcore-4.4.1.jar')
-    compile files('libs/httpmime-4.5.jar')
     compile 'com.spothero.volley:volley-jackson-extension:1.0.1'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'

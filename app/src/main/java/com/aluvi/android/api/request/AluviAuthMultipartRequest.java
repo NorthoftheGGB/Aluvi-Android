@@ -39,7 +39,8 @@ public class AluviAuthMultipartRequest<T> extends AluviAuthenticatedRequest<T> {
                 .create();
 
         for (Map.Entry<String, String> entry : getParams().entrySet())
-            entityBuilder.addTextBody(entry.getKey(), entry.getValue());
+            entityBuilder.addTextBody(entry.getKey(),
+                    entry.getValue() == null ? "" : entry.getValue());
 
         for (Map.Entry<String, File> entry : mFilePayload.entrySet())
             entityBuilder.addBinaryBody(entry.getKey(), entry.getValue());

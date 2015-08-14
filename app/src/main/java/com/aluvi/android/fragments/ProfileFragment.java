@@ -73,7 +73,10 @@ public class ProfileFragment extends BaseButterFragment {
     }
 
     private void loadProfilePhoto(Profile profile) {
-        Picasso.with(getActivity()).load(profile.getLargeImageUrl())
+        String profilePictureUrl = profile.getLargeImageUrl() == null ?
+                profile.getSmallImageUrl() : profile.getLargeImageUrl();
+
+        Picasso.with(getActivity()).load(profilePictureUrl)
                 .fit().centerCrop()
                 .placeholder(R.mipmap.test_profile_pic)
                 .error(R.mipmap.test_profile_pic)

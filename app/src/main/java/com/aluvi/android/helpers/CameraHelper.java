@@ -50,6 +50,8 @@ public class CameraHelper {
             loadBitmap(mCurrentPhotoPath, savedBitmapCallback);
         else if (mCurrentPhotoUri != null)
             loadBitmap(mCurrentPhotoUri, mContext, savedBitmapCallback);
+        else
+            savedBitmapCallback.onOperationCompleted(null);
     }
 
     public void save(Bundle outState) {
