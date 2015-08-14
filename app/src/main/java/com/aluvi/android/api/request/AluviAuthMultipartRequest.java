@@ -35,9 +35,16 @@ public class AluviAuthMultipartRequest<T> extends AluviAuthenticatedRequest<T> {
             }
         }
 
-        for (Map.Entry<String, File> entry : filePayload.entrySet())
-            mMultipartEntityBuilder.addBinaryBody(entry.getKey(), entry.getValue(), ContentType.MULTIPART_FORM_DATA,
-                    entry.getValue().getName());
+        for (Map.Entry<String, File> entry : filePayload.entrySet()) {
+            ContentType contentType = null;
+            String fileName = entry.getValue().getName();
+            if (fileName.contains("jpg") || fileName.contains("jpeg"))
+                contentType = ContentType.create("image/jpeg");
+            else
+                contentType = ContentType.MULTIPART_FORM_DATA;
+            mMultipartEntityBuilder.addBinaryBody(entry.getKey(), entry.getValue(), contentType, fileName);
+        }
+
 
         mEntity = mMultipartEntityBuilder.build();
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.api.users.models.DriverProfileData;
@@ -202,9 +201,17 @@ public class UserStateManager {
     }
 
     public void saveProfile(final Callback callback) {
-        UsersApi.saveProfile(profile, new ApiCallback() {
+        UsersApi.saveProfile(profile, new UsersApi.ProfileCallback() {
             @Override
-            public void success() {
+            public void success(final Profile responseProfile) {
+                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.clear(Profile.class);
+                        profile = realm.copyToRealm(responseProfile);
+                    }
+                });
+
                 callback.success();
             }
 

@@ -30,6 +30,7 @@ public class NavigationDrawerHeaderFragment extends BaseButterFragment {
     @Bind(R.id.navigation_drawer_header_text_view_user_name) TextView mUserNameTextView;
 
     private ProfileRequestedListener mProfileRequestedListener;
+    private boolean refreshUI = true;
 
     @Override
     public void onAttach(Activity activity) {
@@ -55,6 +56,17 @@ public class NavigationDrawerHeaderFragment extends BaseButterFragment {
                     .error(R.mipmap.test_profile_pic)
                     .into(mProfilePictureImageView);
         }
+
+        refreshUI = false;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (refreshUI)
+            initUI();
+        refreshUI = true;
     }
 
     @OnClick(R.id.navigation_drawer_header_root)

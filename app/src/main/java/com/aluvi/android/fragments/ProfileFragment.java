@@ -1,5 +1,7 @@
 package com.aluvi.android.fragments;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.AsyncCallback;
 import com.aluvi.android.helpers.CameraHelper;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.UserStateManager;
@@ -32,6 +35,10 @@ import io.realm.Realm;
  * Created by usama on 8/8/15.
  */
 public class ProfileFragment extends BaseButterFragment {
+    public interface ProfileListener {
+        void onProfileSavedListener();
+    }
+
     @Bind(R.id.profile_image_view) CircleImageView mProfileImageView;
     @Bind(R.id.profile_text_view_name) TextView mNameTextView;
     @Bind(R.id.profile_edit_text_email) EditText mEmailEditText;
@@ -39,6 +46,14 @@ public class ProfileFragment extends BaseButterFragment {
     @Bind(R.id.profile_edit_text_work_email) EditText mWorkEmailEditText;
 
     private CameraHelper mCameraHelper;
+    private ProfileListener mListener;
+    private Dialog mDefaultProgressDialog;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (ProfileListener) activity;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,10 +88,7 @@ public class ProfileFragment extends BaseButterFragment {
     }
 
     private void loadProfilePhoto(Profile profile) {
-        String profilePictureUrl = profile.getLargeImageUrl() == null ?
-                profile.getSmallImageUrl() : profile.getLargeImageUrl();
-
-        Picasso.with(getActivity()).load(profilePictureUrl)
+        Picasso.with(getActivity()).load(profile.getSmallImageUrl())
                 .fit().centerCrop()
                 .placeholder(R.mipmap.test_profile_pic)
                 .error(R.mipmap.test_profile_pic)
@@ -87,6 +99,16 @@ public class ProfileFragment extends BaseButterFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCameraHelper.save(outState);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mDefaultProgressDialog != null) {
+            mDefaultProgressDialog.dismiss();
+            mDefaultProgressDialog = null;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -102,17 +124,26 @@ public class ProfileFragment extends BaseButterFragment {
                 }
             });
 
+            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), true);
             UserStateManager.getInstance().saveProfile(new Callback() {
                 @Override
                 public void success() {
                     if (getView() != null)
                         Snackbar.make(getView(), R.string.profile_saved, Snackbar.LENGTH_SHORT).show();
+
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.dismiss();
+
+                    mListener.onProfileSavedListener();
                 }
 
                 @Override
                 public void failure(String message) {
                     if (getView() != null)
                         Snackbar.make(getView(), R.string.save_error, Snackbar.LENGTH_SHORT).show();
+
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.dismiss();
                 }
             });
         }

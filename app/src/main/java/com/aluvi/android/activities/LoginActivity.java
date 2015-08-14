@@ -10,8 +10,8 @@ import android.widget.Toast;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseToolBarActivity;
 import com.aluvi.android.helpers.views.DialogUtils;
-import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -24,6 +24,7 @@ public class LoginActivity extends BaseToolBarActivity {
     @Bind(R.id.log_in_edit_text_password) EditText mPasswordEditText;
 
     private final int REGISTER_REQ_CODE = 4223;
+    private Dialog mDefaultProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,12 @@ public class LoginActivity extends BaseToolBarActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onPause() {
+        super.onPause();
+        if (mDefaultProgressDialog != null) {
+            mDefaultProgressDialog.cancel();
+            mDefaultProgressDialog = null;
+        }
     }
 
     @OnClick(R.id.login_button)
@@ -50,20 +55,20 @@ public class LoginActivity extends BaseToolBarActivity {
         String password = mPasswordEditText.getText().toString();
 
         if (!"".equals(username) && !"".equals(password)) {
-            final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
             UserStateManager.getInstance().login(username, password, new Callback() {
                 @Override
                 public void success() {
-                    if (progressDialog != null)
-                        progressDialog.cancel();
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.cancel();
 
                     onLoggedIn();
                 }
 
                 @Override
                 public void failure(String message) {
-                    if (progressDialog != null)
-                        progressDialog.cancel();
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.cancel();
 
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }

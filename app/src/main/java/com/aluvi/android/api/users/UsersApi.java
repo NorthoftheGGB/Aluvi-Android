@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
-import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthMultipartRequest;
 import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
@@ -156,7 +155,7 @@ public class UsersApi {
         AluviApi.getInstance().getRequestQueue().add(profileRequest);
     }
 
-    public static void saveProfile(Profile profile, final ApiCallback callback) {
+    public static void saveProfile(Profile profile, final ProfileCallback callback) {
         AluviAuthMultipartRequest<Profile> profileRequest = new AluviAuthMultipartRequest<>(
                 Request.Method.POST,
                 AluviApi.API_USER_PROFILE,
@@ -166,7 +165,7 @@ public class UsersApi {
                     @Override
                     public void onAuthRealmResponse(Profile response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK)
-                            callback.success();
+                            callback.success(response);
                         else
                             callback.failure(statusCode);
                     }

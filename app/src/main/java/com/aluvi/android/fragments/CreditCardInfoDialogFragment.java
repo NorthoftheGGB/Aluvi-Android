@@ -41,6 +41,8 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
     private static final Pattern CREDIT_CARD_PATTERN = Pattern.compile("([0-9]{0,4})|([0-9]{4}-)+|([0-9]{4}-[0-9]{0,4})+");
     private CreditCardListener mListener;
 
+    private Dialog mDefaultProgressDialog;
+
     public static CreditCardInfoDialogFragment newInstance() {
         return new CreditCardInfoDialogFragment();
     }
@@ -81,6 +83,15 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                     }
                 })
                 .build();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mDefaultProgressDialog != null) {
+            mDefaultProgressDialog.cancel();
+            mDefaultProgressDialog = null;
+        }
     }
 
     private void initCreditCardFormatter() {
@@ -191,7 +202,7 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                 .validate();
 
         if (isValid) {
-            final MaterialDialog progressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
 
             CreditCard card = new CreditCard(cardNumber, extractMonth(cardExpiration), extractYear(cardExpiration), cvv);
             PaymentManager.getInstance().requestToken(card, new DataCallback<String>() {
@@ -200,8 +211,8 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                     if (!isDetached())
                         dismiss();
 
-                    if (progressDialog != null)
-                        progressDialog.cancel();
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.cancel();
 
                     mListener.onStripeTokenReceived(result);
                 }
@@ -214,8 +225,8 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                     if (!isDetached())
                         dismiss();
 
-                    if (progressDialog != null)
-                        progressDialog.cancel();
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.cancel();
 
                     mListener.onError(message);
                 }

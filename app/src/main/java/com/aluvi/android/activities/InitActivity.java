@@ -22,14 +22,25 @@ import java.util.Arrays;
  * Created by usama on 7/30/15
  */
 public class InitActivity extends AluviAuthActivity {
+    private Dialog mDefaultProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initAluvi();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mDefaultProgressDialog != null) {
+            mDefaultProgressDialog.dismiss();
+            mDefaultProgressDialog = null;
+        }
+    }
+
     private void initAluvi() {
-        final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
 
         RequestQueue q1 = UserStateManager.getInstance().buildSyncQueue(null);
         RequestQueue q2 = CommuteManager.getInstance().buildSyncQueue(null);
@@ -37,16 +48,16 @@ public class InitActivity extends AluviAuthActivity {
                 new RequestQueue.RequestQueueListener() {
                     @Override
                     public void onRequestsFinished() {
-                        if (progressDialog != null)
-                            progressDialog.cancel();
+                        if (mDefaultProgressDialog != null)
+                            mDefaultProgressDialog.cancel();
 
                         onInitializationFinished();
                     }
 
                     @Override
                     public void onError(String message) {
-                        if (progressDialog != null)
-                            progressDialog.cancel();
+                        if (mDefaultProgressDialog != null)
+                            mDefaultProgressDialog.cancel();
 
                         showInitErrorMessage();
                     }

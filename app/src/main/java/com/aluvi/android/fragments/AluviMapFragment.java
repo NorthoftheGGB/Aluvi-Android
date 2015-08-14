@@ -62,13 +62,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     @Bind(R.id.map_text_view_commute_pending) TextView mCommutePendingTextView;
     @Bind(R.id.map_sliding_panel_container) View mSlidingPanelContainer;
 
-    private final String TAG = "AluviMapFragment",
-            MAP_STATE_KEY = "map_fragment_main";
+    private final String TAG = "AluviMapFragment", MAP_STATE_KEY = "map_fragment_main";
 
     private Ticket mCurrentTicket;
     private Marker mCurrentlyFocusedMarker;
     private PathOverlay mCurrentPathOverlay;
     private OnMapEventListener mEventListener;
+
+    private Dialog mDefaultProgressDialog;
 
     public AluviMapFragment() {
     }
@@ -123,6 +124,11 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         super.onPause();
         MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
         EventBus.getDefault().unregister(this);
+
+        if (mDefaultProgressDialog != null) {
+            mDefaultProgressDialog.cancel();
+            mDefaultProgressDialog = null;
+        }
     }
 
     @Override
@@ -178,12 +184,12 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     }
 
     public void refreshTickets() {
-        final Dialog refreshProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
         CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {
-                if (refreshProgressDialog != null)
-                    refreshProgressDialog.cancel();
+                if (mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
 
                 handleTicketStateTransitions(stateTransitions);
                 onTicketsRefreshed();
@@ -194,8 +200,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
 
-                if (refreshProgressDialog != null)
-                    refreshProgressDialog.cancel();
+                if (mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
             }
         });
     }

@@ -6,8 +6,9 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
+import com.aluvi.android.fragments.ProfileFragment;
 
-public class ProfileActivity extends AluviAuthActivity {
+public class ProfileActivity extends AluviAuthActivity implements ProfileFragment.ProfileListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,11 @@ public class ProfileActivity extends AluviAuthActivity {
     @Override
     public int getLayoutId() {
         return R.layout.activity_profile;
+    }
+
+    @Override
+    public void onProfileSavedListener() {
+        finish();
     }
 
     @Override

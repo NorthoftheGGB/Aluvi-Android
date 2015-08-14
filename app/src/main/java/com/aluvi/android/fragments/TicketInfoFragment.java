@@ -21,8 +21,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseTicketConsumerFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
-import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 
@@ -53,6 +53,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @Bind({R.id.ticket_info_riders_picked_up}) List<View> mDriverViews;
 
     private OnTicketInfoLayoutListener mListener;
+    private Dialog mDefaultProgressDialog;
 
     public static TicketInfoFragment newInstance(Ticket ticket) {
         TicketInfoFragment infoFragment = new TicketInfoFragment();
@@ -109,6 +110,15 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
         });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mDefaultProgressDialog != null) {
+            mDefaultProgressDialog.cancel();
+            mDefaultProgressDialog = null;
+        }
+    }
+
     private void initRidersUI() {
         RealmList<Rider> riders = getTicket().getRiders();
         if (riders != null) {
@@ -162,12 +172,10 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                 .show();
     }
 
-    private Dialog riderStatusProgressDialog;
-
     @SuppressWarnings("unused")
     @OnClick(R.id.ticket_info_riders_picked_up)
     public void onRidersPickedUpButtonClicked() {
-        riderStatusProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
 
         if (!isRideInProgress())
             CommuteManager.getInstance().ridersPickedUp(getTicket(), ridersStatusUpdatedCallback);
@@ -178,16 +186,16 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     private Callback ridersStatusUpdatedCallback = new Callback() {
         @Override
         public void success() {
-            if (riderStatusProgressDialog != null)
-                riderStatusProgressDialog.cancel();
+            if (mDefaultProgressDialog != null)
+                mDefaultProgressDialog.cancel();
 
             updateRidersPickedUpButton();
         }
 
         @Override
         public void failure(String message) {
-            if (riderStatusProgressDialog != null)
-                riderStatusProgressDialog.cancel();
+            if (mDefaultProgressDialog != null)
+                mDefaultProgressDialog.cancel();
 
             if (getActivity() != null)
                 Snackbar.make(getView(), R.string.unable_rider_picked_up, Snackbar.LENGTH_SHORT).show();
