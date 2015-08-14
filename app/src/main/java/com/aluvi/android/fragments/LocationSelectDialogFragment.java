@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -256,7 +257,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
 
     private Marker getDefaultMarker(String title, String description, LatLng latLng) {
         Marker marker = new Marker(title, description, latLng);
-        marker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+        marker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.ic_marker)));
         return marker;
     }
 

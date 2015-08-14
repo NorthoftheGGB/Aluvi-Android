@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -288,16 +289,19 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         mMapView.addMarker(endMarker);
         mMapView.setCenter(startMarker.getPoint());
         mMapView.setZoom(15);
+
         RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
                 new RouteMappingManager.RouteMappingListener() {
                     @Override
                     public void onRouteFound(RouteData result) {
                         if (result != null && mMapView != null) {
-                            mCurrentPathOverlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 6);
+                            mCurrentPathOverlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 12);
+
                             LatLng[] coordinates = result.getCoordinates();
                             if (coordinates != null)
                                 for (LatLng coordinate : coordinates)
                                     mCurrentPathOverlay.addPoint(coordinate);
+
                             mMapView.addOverlay(mCurrentPathOverlay);
                         }
                     }
@@ -312,7 +316,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     }
 
     private void setMarkerIcon(Marker marker) {
-        marker.setIcon(new Icon(getActivity(), Icon.Size.MEDIUM, "marker-stroked", "FF0000"));
+        marker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.ic_marker)));
     }
 
     private void enableRiderOverlay(Ticket ticket) {
