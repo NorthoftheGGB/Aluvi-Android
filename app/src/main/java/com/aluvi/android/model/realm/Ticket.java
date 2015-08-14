@@ -81,8 +81,8 @@ public class Ticket extends RealmObject {
         Ticket ticket = new Ticket();
         ticket.setRideDate(rideDate);
 
-        LocationWrapper origin = reverseDirection ? route.getDestination() : route.getOrigin();
-        LocationWrapper destination = reverseDirection ? route.getOrigin() : route.getDestination();
+        RealmLatLng origin = reverseDirection ? route.getDestination() : route.getOrigin();
+        RealmLatLng destination = reverseDirection ? route.getOrigin() : route.getDestination();
 
         ticket.setOriginLatitude(origin.getLatitude());
         ticket.setOriginLongitude(origin.getLongitude());

@@ -22,7 +22,7 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.local.TicketLocation;
-import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
@@ -313,15 +313,15 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         Route route = manager.getRoute();
         route.setDriving(mDriveThereCheckbox.isChecked());
 
-        LocationWrapper origin = route.getOrigin();
-        origin = origin == null ? realm.createObject(LocationWrapper.class) : origin;
+        RealmLatLng origin = route.getOrigin();
+        origin = origin == null ? realm.createObject(RealmLatLng.class) : origin;
         origin.setLatitude(mStartLocation.getLatitude());
         origin.setLongitude(mStartLocation.getLongitude());
         route.setOriginPlaceName(mStartLocation.getPlaceName());
         route.setOrigin(origin);
 
-        LocationWrapper destination = route.getDestination();
-        destination = destination == null ? realm.createObject(LocationWrapper.class) : destination;
+        RealmLatLng destination = route.getDestination();
+        destination = destination == null ? realm.createObject(RealmLatLng.class) : destination;
         destination.setLatitude(mEndLocation.getLatitude());
         destination.setLongitude(mEndLocation.getLongitude());
         route.setDestinationPlaceName(mEndLocation.getPlaceName());

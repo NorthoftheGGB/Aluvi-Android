@@ -23,7 +23,7 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.local.TicketLocation;
-import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
 
 import butterknife.Bind;
@@ -175,10 +175,10 @@ public class OnboardingActivity extends BaseButterActivity implements
         AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                LocationWrapper origin = realm.copyToRealm(
-                        new LocationWrapper(mHomeLoc.getLatitude(), mHomeLoc.getLongitude()));
-                LocationWrapper destination = realm.copyToRealm(
-                        new LocationWrapper(mWorkLoc.getLatitude(), mWorkLoc.getLongitude()));
+                RealmLatLng origin = realm.copyToRealm(
+                        new RealmLatLng(mHomeLoc.getLatitude(), mHomeLoc.getLongitude()));
+                RealmLatLng destination = realm.copyToRealm(
+                        new RealmLatLng(mWorkLoc.getLatitude(), mWorkLoc.getLongitude()));
 
                 Route route = CommuteManager.getInstance().getRoute();
                 route.setOrigin(origin);

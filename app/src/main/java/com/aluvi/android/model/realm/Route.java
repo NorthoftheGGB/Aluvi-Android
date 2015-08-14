@@ -16,10 +16,10 @@ import io.realm.RealmObject;
 public class Route extends RealmObject {
 
     @JsonProperty("origin")
-    private LocationWrapper origin;
+    private RealmLatLng origin;
 
     @JsonProperty("destination")
-    private LocationWrapper destination;
+    private RealmLatLng destination;
 
     @JsonProperty("origin_place_name")
     private String originPlaceName;
@@ -39,9 +39,9 @@ public class Route extends RealmObject {
     public static JSONObject toJSON(Route route) {
         JSONObject root = new JSONObject();
         try {
-            root.put("origin", LocationWrapper.toJSON(route.getOrigin()));
+            root.put("origin", RealmLatLng.toJSON(route.getOrigin()));
             root.put("origin_place_name", route.getOriginPlaceName());
-            root.put("destination", LocationWrapper.toJSON(route.getDestination()));
+            root.put("destination", RealmLatLng.toJSON(route.getDestination()));
             root.put("destination_place_name", route.getDestinationPlaceName());
             root.put("pickup_time", route.getPickupTime());
             root.put("return_time", route.getReturnTime());
@@ -110,23 +110,23 @@ public class Route extends RealmObject {
         return location;
     }
 
-    private static TicketLocation getTicketLocation(LocationWrapper wrapper, String placeName) {
+    private static TicketLocation getTicketLocation(RealmLatLng wrapper, String placeName) {
         return new TicketLocation(wrapper.getLatitude(), wrapper.getLongitude(), placeName);
     }
 
-    public LocationWrapper getOrigin() {
+    public RealmLatLng getOrigin() {
         return origin;
     }
 
-    public void setOrigin(LocationWrapper origin) {
+    public void setOrigin(RealmLatLng origin) {
         this.origin = origin;
     }
 
-    public LocationWrapper getDestination() {
+    public RealmLatLng getDestination() {
         return destination;
     }
 
-    public void setDestination(LocationWrapper destination) {
+    public void setDestination(RealmLatLng destination) {
         this.destination = destination;
     }
 

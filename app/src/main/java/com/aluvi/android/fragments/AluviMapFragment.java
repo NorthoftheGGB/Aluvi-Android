@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
-import com.aluvi.android.api.gis.models.RouteData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
@@ -29,8 +28,9 @@ import com.aluvi.android.managers.location.RouteMappingManager;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
-import com.aluvi.android.model.realm.LocationWrapper;
+import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
+import com.aluvi.android.model.realm.RouteDirections;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 import com.aluvi.android.services.push.AluviPushNotificationListenerService;
@@ -49,6 +49,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
+import io.realm.RealmList;
 
 /**
  * Created by usama on 7/13/15.
@@ -268,8 +269,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     }
 
     private void plotRoute(Route savedRoute) {
-        LocationWrapper origin = savedRoute.getOrigin();
-        LocationWrapper destination = savedRoute.getDestination();
+        RealmLatLng origin = savedRoute.getOrigin();
+        RealmLatLng destination = savedRoute.getDestination();
         if (origin != null && destination != null) {
             Marker homeMarker = new Marker(getString(R.string.home), savedRoute.getOriginPlaceName(),
                     new LatLng(origin.getLatitude(), origin.getLongitude()));
@@ -283,7 +284,7 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         }
     }
 
-    private void plotRoute(Marker startMarker, Marker endMarker) {
+    private void plotRoute(final Marker startMarker, final Marker endMarker) {
         mMapView.clear();
         mMapView.addMarker(startMarker);
         mMapView.addMarker(endMarker);
@@ -293,14 +294,14 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
         RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
                 new RouteMappingManager.RouteMappingListener() {
                     @Override
-                    public void onRouteFound(RouteData result) {
+                    public void onRouteFound(RouteDirections result) {
                         if (result != null && mMapView != null) {
                             mCurrentPathOverlay = new PathOverlay(getResources().getColor(R.color.pathOverlayColor), 12);
 
-                            LatLng[] coordinates = result.getCoordinates();
+                            RealmList<RealmLatLng> coordinates = result.getRoutePieces();
                             if (coordinates != null)
-                                for (LatLng coordinate : coordinates)
-                                    mCurrentPathOverlay.addPoint(coordinate);
+                                for (RealmLatLng coordinate : coordinates)
+                                    mCurrentPathOverlay.addPoint(RealmLatLng.toLatLng(coordinate));
 
                             mMapView.addOverlay(mCurrentPathOverlay);
                         }
@@ -308,7 +309,6 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
                     @Override
                     public void onFailure(String message) {
-                        Log.e(TAG, message);
                         if (getView() != null)
                             Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
                     }
