@@ -3,6 +3,8 @@ package com.aluvi.android.api.request;
 import com.android.volley.AuthFailureError;
 import com.spothero.volley.JacksonRequestListener;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.ByteArrayOutputStream;
@@ -14,40 +16,42 @@ import java.util.Map;
  * Created by usama on 7/31/15.
  */
 public class AluviAuthMultipartRequest<T> extends AluviAuthenticatedRequest<T> {
-    private Map<String, File> mFilePayload;
+    private MultipartEntityBuilder mMultipartEntityBuilder = MultipartEntityBuilder
+            .create();
+    private HttpEntity mEntity;
 
     public AluviAuthMultipartRequest(int method, String endpoint, AluviPayload payload, Map<String, File> filePayload,
                                      JacksonRequestListener<T> listener) {
-        super(method, endpoint, payload, listener);
-        this.mFilePayload = filePayload;
+        this(method, endpoint, payload.toMap(), filePayload, listener);
     }
 
     public AluviAuthMultipartRequest(int method, String endpoint, Map<String, String> payload,
                                      Map<String, File> filePayload, JacksonRequestListener<T> listener) {
         super(method, endpoint, payload, listener);
-        this.mFilePayload = filePayload;
+
+        for (Map.Entry<String, String> entry : getParams().entrySet()) {
+            if (entry.getValue() != null) {
+                mMultipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue());
+            }
+        }
+
+        for (Map.Entry<String, File> entry : filePayload.entrySet())
+            mMultipartEntityBuilder.addBinaryBody(entry.getKey(), entry.getValue(), ContentType.MULTIPART_FORM_DATA,
+                    entry.getValue().getName());
+
+        mEntity = mMultipartEntityBuilder.build();
     }
 
     @Override
     public String getBodyContentType() {
-        return "multipart/form-data";
+        return mEntity.getContentType().getValue();
     }
 
     @Override
     public byte[] getBody() throws AuthFailureError {
-        MultipartEntityBuilder entityBuilder = MultipartEntityBuilder
-                .create();
-
-        for (Map.Entry<String, String> entry : getParams().entrySet())
-            entityBuilder.addTextBody(entry.getKey(),
-                    entry.getValue() == null ? "" : entry.getValue());
-
-        for (Map.Entry<String, File> entry : mFilePayload.entrySet())
-            entityBuilder.addBinaryBody(entry.getKey(), entry.getValue());
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            entityBuilder.build().writeTo(outputStream);
+            mEntity.writeTo(outputStream);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
