@@ -14,6 +14,7 @@ import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.fragments.AluviMapFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
+import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Trip;
 
 import butterknife.Bind;
@@ -58,6 +59,12 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
                 return false;
             }
         });
+
+        boolean isDriver = UserStateManager.getInstance().isUserDriver();
+        mNavigationView.getMenu().findItem(R.id.action_car_info)
+                .setVisible(isDriver);
+        mNavigationView.getMenu().findItem(R.id.action_car_payments)
+                .setVisible(isDriver);
     }
 
     @Override

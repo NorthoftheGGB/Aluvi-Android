@@ -1,7 +1,5 @@
 package com.aluvi.android.api.users;
 
-import android.util.Log;
-
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.request.AluviAuthMultipartRequest;
@@ -31,7 +29,7 @@ public class UsersApi {
     }
 
     public interface LoginCallback extends FailureCallback {
-        void success(String token);
+        void success(LoginResponse response);
     }
 
     public interface RegistrationCallback extends FailureCallback {
@@ -53,15 +51,10 @@ public class UsersApi {
                 new JacksonRequestListener<LoginResponse>() {
                     @Override
                     public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK && response.getToken() != null) {
-                            Log.d("Login Success", "Received token: " + response.getToken());
-                            loginCallback.success(response.getToken());
-                        } else {
-                            if (error != null) {
-                                Log.d("JSON", "Did not work " + error.getMessage());
-                            }
+                        if (statusCode == HttpURLConnection.HTTP_OK && response.getToken() != null)
+                            loginCallback.success(response);
+                        else
                             loginCallback.failure(statusCode);
-                        }
                     }
 
                     @Override

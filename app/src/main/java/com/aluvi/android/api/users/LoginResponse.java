@@ -6,14 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by matthewxi on 7/14/15.
  */
 public class LoginResponse {
-
-    public String token;
+    private String token;
 
     @JsonProperty("rider_state")
-    public String riderState;
+    private String riderState;
 
     @JsonProperty("driver_state")
-    public String driverState;
+    private String driverState;
 
     public String getToken() {
         return token;

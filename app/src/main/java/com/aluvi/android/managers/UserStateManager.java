@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
 import com.aluvi.android.api.devices.DevicesApi;
+import com.aluvi.android.api.users.LoginResponse;
 import com.aluvi.android.api.users.UsersApi;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
@@ -13,7 +14,6 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.realm.Profile;
-import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
 
@@ -25,20 +25,17 @@ import io.realm.Realm;
 
 public class UserStateManager {
     private static UserStateManager mInstance;
-
-    private Context context;
     private SharedPreferences preferences;
-    private Gson gson;
 
-    private String apiToken;
     private Profile profile;
-    private String driverState;
-    private String riderState;
+    private String apiToken, driverState, riderState;
+
+    public final static String DRIVER_STATE_ACTIVE = "active",
+            DRIVER_STATE_INACTIVE = "uninterested";
 
     public static synchronized void initialize(Context context) {
-        if (mInstance == null) {
+        if (mInstance == null)
             mInstance = new UserStateManager(context);
-        }
     }
 
     public static synchronized UserStateManager getInstance() {
@@ -46,11 +43,8 @@ public class UserStateManager {
     }
 
     public UserStateManager(Context context) {
-        this.context = context;
-        gson = new Gson();
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         apiToken = preferences.getString(AluviPreferences.API_TOKEN_KEY, null);
-
         profile = AluviRealm.getDefaultRealm().where(Profile.class).findFirst();
     }
 
@@ -110,13 +104,12 @@ public class UserStateManager {
         return profile;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-        preferences.edit().putString(AluviPreferences.PROFILE_STRING_KEY, gson.toJson(profile)).commit();
-    }
-
     public String getDriverState() {
         return driverState;
+    }
+
+    public boolean isUserDriver() {
+        return driverState != null && driverState.equals(DRIVER_STATE_ACTIVE);
     }
 
     public void setDriverState(String driverState) {
@@ -136,8 +129,11 @@ public class UserStateManager {
     public void login(String email, String password, final Callback callback) {
         UsersApi.login(email, password, new UsersApi.LoginCallback() {
             @Override
-            public void success(String token) {
-                setApiToken(token);
+            public void success(LoginResponse response) {
+                setApiToken(response.getToken());
+                setDriverState(response.getDriverState());
+                setRiderState(response.getRiderState());
+
                 DevicesApi.updateUser(new DevicesApi.Callback() {
                     @Override
                     public void success() {
