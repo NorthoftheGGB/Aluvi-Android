@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.aluvi.android.activities.InitActivity;
 import com.aluvi.android.api.devices.DeviceData;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.application.AluviRealm;
@@ -16,6 +15,8 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -76,7 +77,7 @@ public class DebugActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.login_button) public void login(){
-        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.Callback() {
+        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
@@ -109,7 +110,7 @@ public class DebugActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.driver_login_button) public void driverLogin(){
-        UserStateManager.getInstance().login("bartle@b.com", "bartle", new UserStateManager.Callback() {
+        UserStateManager.getInstance().login("bartle@b.com", "bartle", new Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
@@ -143,7 +144,7 @@ public class DebugActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.logout_button) public void logout(){
-        UserStateManager.getInstance().logout(new UserStateManager.Callback() {
+        UserStateManager.getInstance().logout(new Callback() {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged Out", Toast.LENGTH_SHORT).show();
@@ -224,7 +225,7 @@ public class DebugActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.tickets_button) public void refreshTickets(){
-        CommuteManager.getInstance().refreshTickets(new CommuteManager.DataCallback<List<TicketStateTransition>>() {
+        CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> result) {
                 Toast.makeText(getApplicationContext(), "Got them!", Toast.LENGTH_SHORT).show();
