@@ -1,6 +1,8 @@
 package com.aluvi.android.application;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.AluviApi;
@@ -34,6 +36,12 @@ public class AluviApplication extends Application {
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
         PaymentManager.initialize(getString(R.string.stripe_key));
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @Override
