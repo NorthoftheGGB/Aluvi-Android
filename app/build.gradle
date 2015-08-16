@@ -100,7 +100,7 @@ dependencies {
     compile 'com.google.code.gson:gson:1.7.2'
 }
 
-task buildAndOtaRelease(dependsOn: ['build', 'crashlyticsUploadDistributionRelease'])
+task buildAndOtaRelease(dependsOn: ['build', 'crashlyticsUploadDistribution&nightlyDebug'])
 
 gradle.taskGraph.beforeTask { Task task ->
     if (task.name ==~ /process.*GoogleServices/) {
