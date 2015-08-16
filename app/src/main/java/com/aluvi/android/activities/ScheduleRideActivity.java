@@ -18,12 +18,13 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.CreditCardInfoDialogFragment;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
+import com.aluvi.android.fragments.onboarding.DriverRegistrationDialogFragment;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.local.TicketLocation;
-import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Profile;
+import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -280,24 +281,28 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked() {
         if (isCommuteReady()) {
-            updateSavedRoute();
-            try {
-                CommuteManager.getInstance()
-                        .requestRidesForTomorrow(new Callback() {
-                            @Override
-                            public void success() {
-                                onCommuteRequestSuccess();
-                            }
+            if (mDriveThereCheckbox.isChecked() && !UserStateManager.getInstance().isUserDriver()) {
+                DriverRegistrationDialogFragment.newInstance().show(getSupportFragmentManager(), "driver_registration");
+            } else {
+                updateSavedRoute();
+                try {
+                    CommuteManager.getInstance()
+                            .requestRidesForTomorrow(new Callback() {
+                                @Override
+                                public void success() {
+                                    onCommuteRequestSuccess();
+                                }
 
-                            @Override
-                            public void failure(String message) {
-                                Log.e(TAG, message);
-                                onCommuteRequestFail();
-                            }
-                        });
-            } catch (UserRecoverableSystemError error) {
-                error.printStackTrace();
-                onCommuteRequestFail();
+                                @Override
+                                public void failure(String message) {
+                                    Log.e(TAG, message);
+                                    onCommuteRequestFail();
+                                }
+                            });
+                } catch (UserRecoverableSystemError error) {
+                    error.printStackTrace();
+                    onCommuteRequestFail();
+                }
             }
         } else {
             Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();

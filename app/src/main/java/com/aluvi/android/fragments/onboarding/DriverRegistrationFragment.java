@@ -6,12 +6,10 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
-import com.aluvi.android.helpers.views.FormValidator;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -24,12 +22,9 @@ public class DriverRegistrationFragment extends BaseButterFragment {
         void onDriverRegistrationComplete(DriverProfileData data);
     }
 
-    @Bind(R.id.onboarding_register_driver_edit_text_license_number) EditText mLicenseNumberEditText;
-    @Bind(R.id.onboarding_register_driver_edit_text_license_plate_number) EditText mLicensePlateNumberEditText;
-    @Bind(R.id.onboarding_register_driver_edit_text_car_make) EditText mCarMakeEditText;
-    @Bind(R.id.onboarding_register_driver_edit_text_car_model) EditText mCarModelEditText;
-    @Bind(R.id.onboarding_register_driver_edit_text_car_year) EditText mCarYearEditText;
+    @Bind(R.id.onboaring_driver_registration_root_view) View mDriverRegistrationRootView;
 
+    private DriverRegistrationHelper mRegistrationHelper;
     private DriverRegistrationListener mListener;
 
     public static DriverRegistrationFragment newInstance() {
@@ -49,31 +44,18 @@ public class DriverRegistrationFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
+        mRegistrationHelper = new DriverRegistrationHelper(mDriverRegistrationRootView);
     }
 
     @OnClick(R.id.onboarding_register_driver_button_next)
     public void onDriverRegistrationNextButtonClicked() {
-        if (validateForm())
-            mListener.onDriverRegistrationComplete(initData());
+        if (mRegistrationHelper.validateForm())
+            mListener.onDriverRegistrationComplete(mRegistrationHelper.initData());
     }
 
-    private DriverProfileData initData() {
-        DriverProfileData data = new DriverProfileData();
-        data.setLicenseNumber(mLicenseNumberEditText.getText().toString());
-        data.setCarLicensePlate(mLicensePlateNumberEditText.getText().toString());
-        data.setCarBrand(mCarMakeEditText.getText().toString());
-        data.setCarModel(mCarModelEditText.getText().toString());
-        data.setCarYear(mCarYearEditText.getText().toString());
-        return data;
-    }
-
-    private boolean validateForm() {
-        return new FormValidator(getString(R.string.field_required_error))
-                .addField(mLicenseNumberEditText)
-                .addField(mLicensePlateNumberEditText)
-                .addField(mCarMakeEditText)
-                .addField(mCarModelEditText)
-                .addField(mCarYearEditText)
-                .validate();
+    @Override
+    public void onDestroyView() {
+        mRegistrationHelper.destroy();
+        super.onDestroyView();
     }
 }

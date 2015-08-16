@@ -172,6 +172,7 @@ public class UserStateManager {
         UsersApi.registerDriver(data, new UsersApi.RegistrationCallback() {
             @Override
             public void success() {
+                setDriverState(DRIVER_STATE_ACTIVE);
                 callback.success();
             }
 
