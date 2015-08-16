@@ -13,6 +13,7 @@ import android.widget.EditText;
 import com.aluvi.android.R;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
+import com.aluvi.android.helpers.ProfileUtils;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 
@@ -58,6 +59,8 @@ public class RegisterFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
+        mPhoneNumberEditText.setText(ProfileUtils.getUserPhoneNumber(getActivity()));
+        mEmailEditText.setText(ProfileUtils.getUserEmailNumber(getActivity()));
     }
 
     @OnClick(R.id.register_button_sign_up)

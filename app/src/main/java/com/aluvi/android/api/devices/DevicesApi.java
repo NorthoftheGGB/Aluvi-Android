@@ -89,8 +89,8 @@ public class DevicesApi {
                     }
                 }
         );
+
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_UNAUTHORIZED});
         AluviApi.getInstance().getRequestQueue().add(request);
-
     }
 }
