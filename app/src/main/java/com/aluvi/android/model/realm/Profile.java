@@ -1,6 +1,5 @@
 package com.aluvi.android.model.realm;
 
-import com.aluvi.android.api.users.models.ProfileData;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.File;
@@ -63,16 +62,6 @@ public class Profile extends RealmObject {
 
     @Ignore
     private String profilePicturePath;
-
-    public static ProfileData getProfileData(Profile profile) {
-        ProfileData out = new ProfileData();
-        out.setFirstName(profile.getFirstName());
-        out.setLastName(profile.getLastName());
-        out.setEmail(profile.getEmail());
-        out.setPhoneNumber(profile.getPhone());
-        out.setDefaultCardToken(profile.getDefaultCardToken());
-        return out;
-    }
 
     public static Map<String, String> toMap(Profile profile) {
         HashMap<String, String> out = new HashMap<>();

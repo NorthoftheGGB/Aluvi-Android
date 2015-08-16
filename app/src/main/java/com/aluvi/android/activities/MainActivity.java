@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
-import com.aluvi.android.fragments.AluviMapFragment;
+import com.aluvi.android.fragments.CommuteMapFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.managers.UserStateManager;
@@ -20,8 +20,9 @@ import com.aluvi.android.model.realm.Trip;
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
-public class MainActivity extends AluviAuthActivity implements AluviMapFragment.OnMapEventListener,
+public class MainActivity extends AluviAuthActivity implements CommuteMapFragment.OnMapEventListener,
         NavigationDrawerHeaderFragment.ProfileRequestedListener {
+
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
@@ -42,6 +43,17 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
         return R.layout.activity_main;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        boolean isDriver = UserStateManager.getInstance().isUserDriver();
+        mNavigationView.getMenu().findItem(R.id.action_car_info)
+                .setVisible(isDriver);
+        mNavigationView.getMenu().findItem(R.id.action_car_payments)
+                .setVisible(isDriver);
+    }
+
     public void initNavigationView() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 getToolbar(), R.string.drawer_open, R.string.drawer_close);
@@ -59,12 +71,6 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
                 return false;
             }
         });
-
-        boolean isDriver = UserStateManager.getInstance().isUserDriver();
-        mNavigationView.getMenu().findItem(R.id.action_car_info)
-                .setVisible(isDriver);
-        mNavigationView.getMenu().findItem(R.id.action_car_payments)
-                .setVisible(isDriver);
     }
 
     @Override
@@ -92,7 +98,7 @@ public class MainActivity extends AluviAuthActivity implements AluviMapFragment.
 
     public void onHomeClicked() {
         if (getSupportFragmentManager().findFragmentById(R.id.container) == null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, AluviMapFragment.newInstance()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, CommuteMapFragment.newInstance()).commit();
     }
 
     public void onLoginToggleClicked() {

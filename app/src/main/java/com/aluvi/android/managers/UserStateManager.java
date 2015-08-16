@@ -45,6 +45,8 @@ public class UserStateManager {
     public UserStateManager(Context context) {
         preferences = context.getSharedPreferences(AluviPreferences.COMMUTER_PREFERENCES_FILE, 0);
         apiToken = preferences.getString(AluviPreferences.API_TOKEN_KEY, null);
+        driverState = preferences.getString(AluviPreferences.DRIVER_STATE_KEY, null);
+        riderState = preferences.getString(AluviPreferences.RIDER_STATE_KEY, null);
         profile = AluviRealm.getDefaultRealm().where(Profile.class).findFirst();
     }
 

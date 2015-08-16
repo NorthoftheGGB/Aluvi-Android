@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseButterFragment;
-import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
@@ -54,7 +53,7 @@ import io.realm.RealmList;
 /**
  * Created by usama on 7/13/15.
  */
-public class AluviMapFragment extends BaseButterFragment implements TicketInfoFragment.OnTicketInfoLayoutListener {
+public class CommuteMapFragment extends BaseButterFragment implements TicketInfoFragment.OnTicketInfoLayoutListener {
     public interface OnMapEventListener {
         void onCommuteSchedulerRequested(Trip trip);
     }
@@ -73,11 +72,8 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
 
     private Dialog mDefaultProgressDialog;
 
-    public AluviMapFragment() {
-    }
-
-    public static AluviMapFragment newInstance() {
-        return new AluviMapFragment();
+    public static CommuteMapFragment newInstance() {
+        return new CommuteMapFragment();
     }
 
     @Override
@@ -95,13 +91,13 @@ public class AluviMapFragment extends BaseButterFragment implements TicketInfoFr
     @Override
     public void initUI() {
         resetUI();
-        mMapView.setUserLocationEnabled(true);
 
+        mMapView.setUserLocationEnabled(true);
         if (!MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY)) {
             if (mMapView.getUserLocation() != null)
-                mMapView.setCenter(new EasyILatLang(mMapView.getUserLocation()), false);
+                mMapView.setCenter(new LatLng(mMapView.getUserLocation()), false);
             else // Hover over NASA if we have neither location nor saved map data
-                mMapView.setCenter(new EasyILatLang(37.420654, -122.064938), false);
+                mMapView.setCenter(new LatLng(37.420654, -122.064938), false);
 
             mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
         }

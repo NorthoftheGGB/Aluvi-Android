@@ -3,7 +3,6 @@ package com.aluvi.android.helpers.views;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.api.gis.GeocodingApi;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -46,7 +45,7 @@ public class MapBoxStateSaver {
         mapView.setZoom(savedZoom);
 
         if (savedLat != GeocodingApi.INVALID_LOCATION && savedLon != GeocodingApi.INVALID_LOCATION) {
-            mapView.setCenter(new EasyILatLang(savedLat, savedLon));
+            mapView.setCenter(new LatLng(savedLat, savedLon));
             return true;
         } else {
             mapView.setZoom(mapView.getMinZoomLevel());

@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.gis.GeocodingApi;
-import com.aluvi.android.helpers.EasyILatLang;
 import com.aluvi.android.helpers.views.GeocodingAutoCompleteBinder;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.helpers.views.ViewUtils;
@@ -114,7 +113,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
         }
 
         if (centerLocation != null) {
-            mMapView.setCenter(new EasyILatLang(centerLocation));
+            mMapView.setCenter(new LatLng(centerLocation));
             mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
             addMarker(centerLocation);
         } else {
@@ -163,7 +162,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
                 TicketLocation parsedAddress = new TicketLocation(clickedAddress);
                 addMarkerForAddress(parsedAddress);
 
-                mMapView.setCenter(new EasyILatLang(clickedAddress.getLatitude(), clickedAddress.getLongitude()));
+                mMapView.setCenter(new LatLng(clickedAddress.getLatitude(), clickedAddress.getLongitude()));
                 mCurrentlySelectedLocation = parsedAddress;
             }
         });
