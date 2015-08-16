@@ -15,7 +15,12 @@ import com.aluvi.android.fragments.CommuteMapFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.location.DriverLocationManager;
+import com.aluvi.android.managers.location.RiderLocationManager;
+import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
+import com.google.android.gms.maps.model.LatLng;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
@@ -93,6 +98,26 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
             if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK) {
                 onCommuteScheduled();
             }
+        }
+    }
+
+    @Override
+    public void startLocationTracking(Ticket ticket) {
+        if (ticket.isDriving()) {
+            DriverLocationManager.getInstance().startLocationTracking();
+        } else {
+            RiderLocationManager.getInstance().startLocationTracking();
+            RiderLocationManager.getInstance().queueDriverLocationUpdates(5000, new DataCallback<LatLng>() {
+                @Override
+                public void success(LatLng result) {
+
+                }
+
+                @Override
+                public void failure(String message) {
+
+                }
+            });
         }
     }
 

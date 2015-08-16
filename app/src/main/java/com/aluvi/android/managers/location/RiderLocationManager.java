@@ -1,15 +1,16 @@
 package com.aluvi.android.managers.location;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.aluvi.android.api.gis.LocationUpdateAPI;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.aluvi.android.managers.packages.DataCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created by usama on 7/25/15.
  */
 public class RiderLocationManager extends GeoLocationManager {
-
     private static RiderLocationManager mInstance;
 
     public static synchronized void initialize(Context context) {
@@ -23,6 +24,31 @@ public class RiderLocationManager extends GeoLocationManager {
 
     public RiderLocationManager(Context context) {
         super(context);
+    }
+
+    public void getDriverLocation(final DataCallback<LatLng> driverLocationCallback) {
+        LocationUpdateAPI.getDriverLocation(new LocationUpdateAPI.OnLocationFetchedListener() {
+            @Override
+            public void onLocationFetched(LocationUpdateAPI.LocationUpdateResponse location) {
+                LatLng out = location != null ? new LatLng(location.getLatitude(), location.getLongitude()) : null;
+                driverLocationCallback.success(out);
+            }
+
+            @Override
+            public void onFailure(int statusCode) {
+                driverLocationCallback.failure("Unable to fetch driver's location");
+            }
+        });
+    }
+
+    public void queueDriverLocationUpdates(long durationBetweenUpdatesMillis, final DataCallback<LatLng> driverLocationCallback) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getDriverLocation(driverLocationCallback);
+            }
+        }, durationBetweenUpdatesMillis);
     }
 
     @Override

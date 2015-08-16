@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.aluvi.android.services.LocationTrackingService;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.google.android.gms.maps.model.LatLng;
 
 import de.greenrobot.event.EventBus;
 
@@ -36,6 +36,8 @@ abstract class GeoLocationManager {
     @SuppressWarnings("unused")
     public void onEvent(LocationTrackingService.LocationChangedEvent event) {
         LatLng currentLocation = event.getLocation();
+        onLocationUpdated(currentLocation);
+
         if (currentLocation != null) {
             Log.e(TAG, "User's location updated to: " + currentLocation);
         }

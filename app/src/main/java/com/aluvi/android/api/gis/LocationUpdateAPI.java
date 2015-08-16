@@ -9,7 +9,7 @@ import com.android.volley.VolleyError;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.net.HttpURLConnection;
 
@@ -113,30 +113,30 @@ public class LocationUpdateAPI {
         }
 
         public LocationUpdateRequest(LatLng location) {
-            this(location != null ? location.getLatitude() : 0, location != null ? location.getLongitude() : 0);
+            this(location != null ? location.latitude : 0, location != null ? location.longitude : 0);
         }
     }
 
-    private static class LocationUpdateResponse {
+    public static class LocationUpdateResponse {
         @JsonProperty("latitude")
         private double mLatitude;
 
         @JsonProperty("longitude")
         private double mLongitude;
 
-        public double getmLatitude() {
+        public double getLatitude() {
             return mLatitude;
         }
 
-        public void setmLatitude(double mLatitude) {
+        public void setLatitude(double mLatitude) {
             this.mLatitude = mLatitude;
         }
 
-        public double getmLongitude() {
+        public double getLongitude() {
             return mLongitude;
         }
 
-        public void setmLongitude(double mLongitude) {
+        public void setLongitude(double mLongitude) {
             this.mLongitude = mLongitude;
         }
     }

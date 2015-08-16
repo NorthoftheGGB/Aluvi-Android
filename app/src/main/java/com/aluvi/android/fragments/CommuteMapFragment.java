@@ -42,8 +42,6 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -56,6 +54,7 @@ import io.realm.RealmList;
 public class CommuteMapFragment extends BaseButterFragment implements TicketInfoFragment.OnTicketInfoLayoutListener {
     public interface OnMapEventListener {
         void onCommuteSchedulerRequested(Trip trip);
+        void startLocationTracking(Ticket ticket);
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
@@ -234,6 +233,8 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
                         enableDriverOverlay(mCurrentTicket);
                     else
                         enableRiderOverlay(mCurrentTicket);
+
+                    mEventListener.startLocationTracking(mCurrentTicket);
                     break;
             }
         } else {
@@ -328,20 +329,6 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     }
 
     private void handleTicketStateTransitions(List<TicketStateTransition> transitions) {
-        Collections.sort(transitions, new Comparator<TicketStateTransition>() {
-            @Override
-            public int compare(TicketStateTransition lhs, TicketStateTransition rhs) {
-                String lStatus = lhs.getNewState();
-                String rStaus = rhs.getNewState();
-
-                if (lStatus != null && lStatus.equals(Ticket.StateCreated)) {
-                    return -1;
-                } else if (rStaus != null && rStaus.equals(Ticket.StateCreated)) {
-
-                }
-                return 0;
-            }
-        });
     }
 
     @Override
@@ -411,22 +398,18 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
         @Override
         public void onPanelCollapsed(View view) {
-
         }
 
         @Override
         public void onPanelExpanded(View view) {
-
         }
 
         @Override
         public void onPanelAnchored(View view) {
-
         }
 
         @Override
         public void onPanelHidden(View view) {
-
         }
     }
 }

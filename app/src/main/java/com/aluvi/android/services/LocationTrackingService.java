@@ -12,12 +12,16 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.google.android.gms.maps.model.LatLng;
 
 import de.greenrobot.event.EventBus;
 
 public class LocationTrackingService extends Service implements GoogleApiClient.ConnectionCallbacks, LocationListener {
+    public final static String DESTINATION_LAT_LNG = "destinationLatLng";
     private final static String TAG = "LocationTrackingService";
+
+    private final double MIN_METERS_BEFORE_SHUTDOWN = 15;
+    private LatLng mDestination;
     private GoogleApiClient mClient;
 
     public LocationTrackingService() {
@@ -26,8 +30,8 @@ public class LocationTrackingService extends Service implements GoogleApiClient.
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "Starting tracking service");
 
+        Log.d(TAG, "Starting tracking service");
         mClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
@@ -38,6 +42,7 @@ public class LocationTrackingService extends Service implements GoogleApiClient.
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        mDestination = intent.getParcelableExtra(DESTINATION_LAT_LNG);
         return START_STICKY;
     }
 
@@ -74,8 +79,15 @@ public class LocationTrackingService extends Service implements GoogleApiClient.
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null) {
-            EventBus.getDefault().post(new LocationChangedEvent(new LatLng(location.getLatitude(), location.getLongitude())));
+        if (location != null && mDestination != null) {
+            LatLng latLngLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            if (getDistance(latLngLocation, mDestination) > MIN_METERS_BEFORE_SHUTDOWN) {
+
+                EventBus.getDefault().post(new LocationChangedEvent(latLngLocation));
+            } else {
+                Log.d(TAG, "Close enough to destination. Shutting down location tracking");
+                stopSelf();
+            }
         }
     }
 
@@ -83,6 +95,13 @@ public class LocationTrackingService extends Service implements GoogleApiClient.
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private double getDistance(LatLng start, LatLng end) {
+        float[] results = new float[3];
+        Location.distanceBetween(start.latitude, start.longitude,
+                end.latitude, end.longitude, results);
+        return results[0];
     }
 
     public static class LocationChangedEvent {
