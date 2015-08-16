@@ -50,6 +50,9 @@ android {
             applicationId 'com.aluvi.android.dev'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
