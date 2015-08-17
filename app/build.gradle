@@ -41,7 +41,8 @@ android {
             applicationId 'com.aluvi.android.dev'
         }
         nightly {
-            ext.betaDistributionEmails="u3amar@hotmail.com"
+            ext.betaDistributionEmails="u3amar@hotmail.com, gwen.mckay@aluviapp.com, " +
+                    "william.obrien@aluviapp.com, mateo.porter@aluviapp.com, matthew.xi@aluviapp.com"
             minSdkVersion 10
             applicationId 'com.aluvi.android.nightly'
         }
