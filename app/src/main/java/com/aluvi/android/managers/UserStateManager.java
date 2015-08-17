@@ -221,18 +221,35 @@ public class UserStateManager {
         });
     }
 
+    public void clear() {
+        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(Profile.class).findAll().clear();
+            }
+        });
+
+        setApiToken(null);
+        setDriverState(null);
+        setRiderState(null);
+    }
+
     public void logout(final Callback callback) {
         DevicesApi.disassociateUser(new DevicesApi.Callback() {
             @Override
             public void success() {
-                setApiToken(null);
+                CommuteManager.getInstance().clear();
+                clear();
+
                 callback.success();
             }
 
             @Override
             public void failure(int statusCode) {
-                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
-                    setApiToken(null);
+                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    CommuteManager.getInstance().clear();
+                    clear();
+                }
 
                 // we will probably translate the status code to a message here
                 // using a strings file.
@@ -240,7 +257,5 @@ public class UserStateManager {
                     callback.failure("Logout failed for some reason");
             }
         });
-
-        CommuteManager.getInstance().clear();
     }
 }

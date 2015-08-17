@@ -64,7 +64,8 @@ public class UsersApi {
                 }
         );
 
-        request.addAcceptedStatusCodes(new int[]{201, 403, 404});
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
+                HttpURLConnection.HTTP_FORBIDDEN, HttpURLConnection.HTTP_NOT_FOUND});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
@@ -103,8 +104,7 @@ public class UsersApi {
                 new JacksonRequestListener() {
                     @Override
                     public void onResponse(Object response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED
-                                || statusCode == HttpURLConnection.HTTP_OK) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success();
                         } else {
                             callback.failure(statusCode);
