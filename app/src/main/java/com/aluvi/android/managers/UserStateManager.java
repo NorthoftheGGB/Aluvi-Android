@@ -75,12 +75,12 @@ public class UserStateManager {
                             @Override
                             public void execute(Realm realm) {
                                 realm.clear(Profile.class);
-
                                 profile = result;
                                 realm.copyToRealm(result);
-                                onTaskComplete();
                             }
                         });
+
+                        onTaskComplete();
                     }
 
                     @Override

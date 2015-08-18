@@ -1,6 +1,7 @@
 package com.aluvi.android.activities;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,15 +15,17 @@ import com.aluvi.android.activities.base.BaseButterActivity;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.application.AluviRealm;
-import com.aluvi.android.fragments.onboarding.ProfilePhotoFragment;
 import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
+import com.aluvi.android.fragments.onboarding.ProfilePhotoFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
 import com.aluvi.android.fragments.onboarding.TutorialFragment;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.local.TicketLocation;
+import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
 
@@ -40,6 +43,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         DriverRegistrationFragment.DriverRegistrationListener {
 
     @Bind(R.id.onboarding_root_container) View mRootView;
+    private Dialog mDefaultProgressDialog;
 
     private final String REGISTRATION_DATA_KEY = "registration_data",
             DRIVER_REGISTRATION_DATA_KEY = "driver_registration_data",
@@ -99,6 +103,14 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mDefaultProgressDialog != null)
+            mDefaultProgressDialog.cancel();
+    }
+
+    @Override
     public void onRegistered(ProfileData data) {
         mRegistrationData = data;
 
@@ -142,6 +154,8 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     @Override
     public void onTutorialRequested() {
+        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+
         UserStateManager.getInstance()
                 .registerUser(mRegistrationData, new Callback() {
                     @Override
@@ -222,6 +236,31 @@ public class OnboardingActivity extends BaseButterActivity implements
         UserStateManager.getInstance().sync(new Callback() {
             @Override
             public void success() {
+                onSyncComplete();
+            }
+
+            @Override
+            public void failure(String message) {
+                onError(message);
+            }
+        });
+    }
+
+    private void onSyncComplete() {
+        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Profile userProfile = UserStateManager.getInstance().getProfile();
+                userProfile.setProfilePicturePath(mProfileImagePath);
+            }
+        });
+
+        UserStateManager.getInstance().saveProfile(new Callback() {
+            @Override
+            public void success() {
+                if(mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
+
                 setResult(Activity.RESULT_OK);
                 finish();
             }
@@ -236,6 +275,9 @@ public class OnboardingActivity extends BaseButterActivity implements
     private void onError(String message) {
         if (mRootView != null)
             Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+
+        if(mDefaultProgressDialog != null)
+            mDefaultProgressDialog.cancel();
     }
 
     private FragmentTransaction attachOnboardingSlideAnimation(FragmentTransaction transaction) {
