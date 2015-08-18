@@ -24,12 +24,16 @@ abstract class GeoLocationManager {
     }
 
     public void startLocationTracking() {
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+
         mContext.startService(new Intent(mContext, LocationTrackingService.class));
     }
 
     public void stopLocationTracking() {
-        EventBus.getDefault().unregister(this);
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
+
         mContext.stopService(new Intent(mContext, LocationTrackingService.class));
     }
 

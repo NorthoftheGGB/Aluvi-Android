@@ -1,9 +1,9 @@
 package com.aluvi.android.api.gis;
 
 import com.aluvi.android.api.AluviApi;
+import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviPayload;
-import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,12 +46,10 @@ public class LocationUpdateAPI {
                 new AluviAuthRequestListener() {
                     @Override
                     public void onAuthenticatedResponse(Object response, int statusCode, VolleyError error) {
-                        if (listener != null) {
-                            if (statusCode == HttpURLConnection.HTTP_OK) {
-                                listener.onLocationUpdated(newLocation);
-                            } else {
-                                listener.onFailure(statusCode);
-                            }
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                            listener.onLocationUpdated(newLocation);
+                        } else {
+                            listener.onFailure(statusCode);
                         }
                     }
 
@@ -80,12 +78,10 @@ public class LocationUpdateAPI {
                 new AluviAuthRequestListener<LocationUpdateResponse>() {
                     @Override
                     public void onAuthenticatedResponse(LocationUpdateResponse response, int statusCode, VolleyError error) {
-                        if (listener != null) {
-                            if (statusCode == HttpURLConnection.HTTP_OK) {
-                                listener.onLocationFetched(response);
-                            } else {
-                                listener.onFailure(statusCode);
-                            }
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
+                            listener.onLocationFetched(response);
+                        } else {
+                            listener.onFailure(statusCode);
                         }
                     }
 

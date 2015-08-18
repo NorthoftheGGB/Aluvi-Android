@@ -5,7 +5,7 @@
     <fragment
         android:id="@+id/navigation_drawer_header_fragment"
         android:name="com.aluvi.android.fragments.NavigationDrawerHeaderFragment"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

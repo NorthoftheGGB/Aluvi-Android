@@ -25,6 +25,7 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
+import com.squareup.picasso.Picasso;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -97,6 +98,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             updateRidersPickedUpButton();
         } else {
             ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);
+            loadProfilePicture(getTicket().getDriver().getSmallImageUrl(), mDriverProfileImageView);
         }
 
         initRidersUI();
@@ -121,12 +123,10 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
 
     private void initRidersUI() {
         RealmList<Rider> riders = getTicket().getRiders();
-        if (riders != null) {
-            for (Rider rider : riders) {
+        if (riders != null)
+            for (Rider rider : riders)
                 if (rider.getId() != getTicket().getDriver().getId())
                     addRider(rider);
-            }
-        }
     }
 
     private void addRider(Rider rider) {
@@ -143,6 +143,17 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                 }
             });
         }
+
+        loadProfilePicture(rider.getSmallImageUrl(), riderProfileImageView);
+    }
+
+    private void loadProfilePicture(String url, ImageView imageView) {
+        Picasso.with(getActivity()).load(url)
+                .placeholder(R.mipmap.test_profile_pic)
+                .error(R.mipmap.test_profile_pic)
+                .fit()
+                .centerCrop()
+                .into(imageView);
     }
 
     @SuppressWarnings("unused")

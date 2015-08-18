@@ -42,7 +42,8 @@ public class LocationTrackingService extends Service implements GoogleApiClient.
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mDestination = intent.getParcelableExtra(DESTINATION_LAT_LNG);
+        if (intent != null)
+            mDestination = intent.getParcelableExtra(DESTINATION_LAT_LNG);
         return START_STICKY;
     }
 

@@ -1,7 +1,6 @@
 package com.aluvi.android.managers.location;
 
 import android.content.Context;
-import android.os.Handler;
 
 import com.aluvi.android.api.gis.LocationUpdateAPI;
 import com.aluvi.android.managers.packages.DataCallback;
@@ -41,14 +40,15 @@ public class RiderLocationManager extends GeoLocationManager {
         });
     }
 
-    public void queueDriverLocationUpdates(long durationBetweenUpdatesMillis, final DataCallback<LatLng> driverLocationCallback) {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getDriverLocation(driverLocationCallback);
-            }
-        }, durationBetweenUpdatesMillis);
+    public void queueDriverLocationUpdates(final long durationBetweenUpdatesMillis, final DataCallback<LatLng> driverLocationCallback) {
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                getDriverLocation(driverLocationCallback);
+//                handler.postDelayed(this, durationBetweenUpdatesMillis);
+//            }
+//        }, durationBetweenUpdatesMillis);
     }
 
     @Override
