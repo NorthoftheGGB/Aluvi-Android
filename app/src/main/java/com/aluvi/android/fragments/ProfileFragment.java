@@ -47,7 +47,6 @@ public class ProfileFragment extends BaseButterFragment {
     @Bind(R.id.profile_text_view_name) TextView mNameTextView;
     @Bind(R.id.profile_edit_text_email) EditText mEmailEditText;
     @Bind(R.id.profile_edit_text_phone_number) EditText mPhoneNumberEditText;
-    @Bind(R.id.profile_edit_text_work_email) EditText mWorkEmailEditText;
 
     private CameraHelper mCameraHelper;
     private ProfileListener mListener;

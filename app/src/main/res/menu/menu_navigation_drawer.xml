@@ -3,15 +3,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/action_my_commute"
+            android:icon="@mipmap/ic_action_waypoint_map"
             android:title="@string/action_commute"/>
         <item
             android:id="@+id/action_car_info"
+            android:icon="@mipmap/ic_action_car"
             android:title="@string/action_car_info"/>
         <item
             android:id="@+id/action_car_payments"
+            android:icon="@mipmap/ic_action_money_box"
             android:title="@string/action_car_payments"/>
         <item
             android:id="@+id/action_support"
+            android:icon="@mipmap/ic_action_umbrella"
             android:title="@string/action_support"/>
     </group>
 </menu>

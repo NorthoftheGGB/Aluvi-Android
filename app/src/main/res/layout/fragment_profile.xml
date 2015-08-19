@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -11,7 +12,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:clickable="true"
-        android:src="@mipmap/test_profile_pic"/>
+        android:src="@mipmap/test_profile_pic"
+        app:border_color="@color/profilePictureOutline"
+        app:border_width="2dp"/>
 
     <TextView
         android:id="@+id/profile_text_view_name"
@@ -25,53 +28,50 @@
         android:fontFamily="sans-serif-light"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
-
-    <EditText
-        android:id="@+id/profile_edit_text_email"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/profile_edit_text_email_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/textView2"
         android:layout_alignLeft="@+id/textView2"
         android:layout_alignRight="@+id/textView2"
         android:layout_alignStart="@+id/textView2"
-        android:layout_below="@+id/profile_text_view_name"
-        android:ems="10"
-        android:hint="@string/email"
-        android:inputType="textEmailAddress"/>
+        android:layout_below="@+id/profile_text_view_name">
 
-    <EditText
-        android:id="@+id/profile_edit_text_phone_number"
+        <EditText
+            android:id="@+id/profile_edit_text_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/profile_edit_text_phone_number_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/profile_edit_text_email"
-        android:layout_alignLeft="@+id/profile_edit_text_email"
-        android:layout_alignRight="@+id/profile_edit_text_email"
-        android:layout_alignStart="@+id/profile_edit_text_email"
-        android:layout_below="@+id/profile_edit_text_email"
-        android:layout_marginTop="5dp"
-        android:ems="10"
-        android:hint="@string/phone_number"
-        android:inputType="phone"/>
+        android:layout_alignEnd="@+id/profile_edit_text_email_container"
+        android:layout_alignLeft="@+id/profile_edit_text_email_container"
+        android:layout_alignRight="@+id/profile_edit_text_email_container"
+        android:layout_alignStart="@+id/profile_edit_text_email_container"
+        android:layout_below="@+id/profile_edit_text_email_container"
+        android:layout_marginTop="5dp">
 
-    <EditText
-        android:id="@+id/profile_edit_text_work_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/profile_edit_text_phone_number"
-        android:layout_alignLeft="@+id/profile_edit_text_phone_number"
-        android:layout_alignRight="@+id/profile_edit_text_phone_number"
-        android:layout_alignStart="@+id/profile_edit_text_phone_number"
-        android:layout_below="@+id/profile_edit_text_phone_number"
-        android:layout_marginTop="5dp"
-        android:ems="10"
-        android:hint="@string/work_email"
-        android:inputType="textEmailAddress"/>
+        <EditText
+            android:id="@+id/profile_edit_text_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/phone_number"
+            android:inputType="phone"/>
+    </android.support.design.widget.TextInputLayout>
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profile_edit_text_work_email"
+        android:layout_below="@+id/profile_edit_text_phone_number_container"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -80,7 +80,6 @@
         android:fontFamily="sans-serif-light"
         android:gravity="center_horizontal"
         android:text="@string/terms_services"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/white"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
 </RelativeLayout>
