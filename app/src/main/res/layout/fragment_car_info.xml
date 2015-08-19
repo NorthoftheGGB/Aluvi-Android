@@ -4,4 +4,76 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/aluvi_background_gradient">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/car_profile_image_view"
+        android:layout_width="@dimen/large_profile_picture_width"
+        android:layout_height="@dimen/large_profile_picture_height"
+        android:layout_above="@+id/car_profile_text_view_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:clickable="true"
+        android:src="@mipmap/prius"/>
+
+    <TextView
+        android:id="@+id/car_profile_text_view_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/relativeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:fontFamily="sans-serif-light"
+        android:text="Name Placeholder"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/white"/>
+
+    <Button
+        android:id="@+id/car_profile_button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_alignEnd="@+id/relativeLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/relativeLayout"
+        android:background="@drawable/aluvi_background_gradient_selector"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:textSize="@dimen/abc_text_size_large_material"/>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/car_profile_button_save"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@color/light_white_background">
+
+        <EditText
+            android:id="@+id/car_info_edit_text_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:ems="10"
+            android:hint="@string/make"
+            android:inputType="textEmailAddress"
+            android:layout_centerHorizontal="true"/>
+
+        <EditText
+            android:id="@+id/car_profile_edit_text_phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/car_info_edit_text_name"
+            android:layout_alignLeft="@+id/car_info_edit_text_name"
+            android:layout_alignRight="@+id/car_info_edit_text_name"
+            android:layout_alignStart="@+id/car_info_edit_text_name"
+            android:layout_below="@+id/car_info_edit_text_name"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:hint="@string/phone_number"
+            android:inputType="phone"/>
+
+    </RelativeLayout>
 </RelativeLayout>

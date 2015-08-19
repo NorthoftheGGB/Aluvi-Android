@@ -110,18 +110,18 @@
         <activity
             android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark">
         </activity>
+        <activity
+            android:name=".activities.CarInfoActivity"
+            android:label="@string/action_car_info"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.OnboardingActivity"
             android:label="@string/title_activity_onboarding"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark">
         </activity>
-        <!-- Activities responsible for gathering payment info -->
-        <activity
-            android:name="io.card.payment.CardIOActivity"
-            android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name="io.card.payment.DataEntryActivity"/>
     </application>
 </manifest>

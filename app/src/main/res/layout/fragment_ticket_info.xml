@@ -120,14 +120,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ticket_info_parent_container_rider_info"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:minHeight="60dp"
         android:text="@string/late"
         android:theme="@style/ErrorButton"
         android:layout_alignLeft="@+id/ticket_info_parent_container_rider_info"
         android:layout_alignStart="@+id/ticket_info_parent_container_rider_info"
         android:layout_alignRight="@+id/ticket_info_parent_container_rider_info"
-        android:layout_alignEnd="@+id/ticket_info_parent_container_rider_info"/>
+        android:layout_alignEnd="@+id/ticket_info_parent_container_rider_info"
+        />
 
     <Button
         android:id="@+id/ticket_info_riders_picked_up"
@@ -138,7 +139,7 @@
         android:layout_alignRight="@+id/ticket_info_parent_container_rider_info"
         android:layout_alignStart="@+id/ticket_info_parent_container_rider_info"
         android:layout_below="@+id/ticket_info_parent_container_rider_info"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:minHeight="60dp"
         android:text="@string/riders_picked_up"
         android:theme="@style/BlueButton"/>

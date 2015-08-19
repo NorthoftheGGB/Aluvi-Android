@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#D32F2F</color>
-    <color name="colorPrimaryDark">@color/aluvi_gradient_start</color>
+    <color name="colorPrimary">@color/actionBarBackground</color>
+    <color name="colorPrimaryDark">@color/black</color>
     <color name="colorAccent">#2196F3</color>
 
-    <color name="actionBarBackground">#99FFFFFF</color>
+    <color name="actionBarBackground">#FFFFFF</color>
 
     <color name="scheduleRideButtonBackground">#878787</color>
     <color name="scheduleRideButtonBackgroundClicked">#656565</color>

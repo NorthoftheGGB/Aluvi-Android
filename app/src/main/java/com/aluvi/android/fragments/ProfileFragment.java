@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -37,6 +40,7 @@ import io.realm.Realm;
 public class ProfileFragment extends BaseButterFragment {
     public interface ProfileListener {
         void onProfileSavedListener();
+        void onLogOut();
     }
 
     @Bind(R.id.profile_image_view) CircleImageView mProfileImageView;
@@ -49,6 +53,10 @@ public class ProfileFragment extends BaseButterFragment {
     private ProfileListener mListener;
     private Dialog mDefaultProgressDialog;
 
+    public static ProfileFragment newInstance() {
+        return new ProfileFragment();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -58,8 +66,15 @@ public class ProfileFragment extends BaseButterFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         mCameraHelper = new CameraHelper(getActivity());
         mCameraHelper.restore(savedInstanceState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_profile, menu);
     }
 
     @Override
@@ -111,8 +126,21 @@ public class ProfileFragment extends BaseButterFragment {
         }
     }
 
-    @SuppressWarnings("unused")
-    @OnClick(R.id.profile_button_save)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.action_save:
+                saveButtonClicked();
+                break;
+            case R.id.action_log_out:
+                mListener.onLogOut();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void saveButtonClicked() {
         if (isFormValid()) {
             AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
