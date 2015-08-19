@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
+import com.aluvi.android.fragments.CarInfoFragment;
 import com.aluvi.android.fragments.CommuteMapFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
@@ -22,7 +23,8 @@ import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AluviAuthActivity implements CommuteMapFragment.OnMapEventListener,
-        NavigationDrawerHeaderFragment.ProfileRequestedListener {
+        NavigationDrawerHeaderFragment.ProfileRequestedListener,
+        CarInfoFragment.CarInfoListener {
 
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
@@ -63,9 +65,14 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
+                mDrawerLayout.closeDrawers();
+
                 switch (menuItem.getItemId()) {
                     case R.id.action_my_commute:
                         onHomeClicked();
+                        break;
+                    case R.id.action_car_info:
+                        onCarInfoClicked();
                         break;
                 }
 
@@ -121,16 +128,26 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
 
     public void onHomeClicked() {
         if (getSupportFragmentManager().findFragmentById(R.id.container) == null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, CommuteMapFragment.newInstance()).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, CommuteMapFragment.newInstance())
+                    .commit();
     }
 
-    public void onLoginToggleClicked() {
-        logOut();
+    public void onCarInfoClicked() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, CarInfoFragment.newInstance())
+                .addToBackStack("car_info")
+                .commit();
     }
 
     public void onCommuteScheduled() {
         supportInvalidateOptionsMenu();
         EventBus.getDefault().post(new CommuteScheduledEvent());
+    }
+
+    @Override
+    public void onInfoSaved() {
+        getSupportFragmentManager().popBackStack();
     }
 
     @Override

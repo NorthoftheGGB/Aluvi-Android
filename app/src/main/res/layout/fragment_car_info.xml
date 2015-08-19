@@ -16,12 +16,11 @@
         app:border_width="2dp"/>
 
     <include
-        layout="@layout/layout_car_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        layout="@layout/layout_register_driver"
         android:layout_below="@+id/car_profile_image_view"
         android:layout_centerHorizontal="true"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="8dp"/>
+
 </RelativeLayout>

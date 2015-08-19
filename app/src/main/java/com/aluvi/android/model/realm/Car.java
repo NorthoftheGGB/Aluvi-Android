@@ -1,6 +1,9 @@
 package com.aluvi.android.model.realm;
 
 import com.aluvi.android.api.tickets.model.CarData;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.HashMap;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -12,12 +15,25 @@ public class Car extends RealmObject {
 
     private RealmList<Ticket> tickets;
 
+    @JsonProperty("id")
     private int id;
+
+    @JsonProperty("make")
     private String make;
+
+    @JsonProperty("model")
     private String model;
+
+    @JsonProperty("license_plate")
     private String licensePlate;
+
+    @JsonProperty("state")
     private String state;
-    private String year;
+
+    @JsonProperty("year")
+    private int year;
+
+    @JsonProperty("car_photo")
     private String carPhotoUrl;
 
     public static void updateCarWithCarData(Car car, CarData data) {
@@ -25,10 +41,20 @@ public class Car extends RealmObject {
         car.setMake(data.getMake());
         car.setModel(data.getModel());
         car.setLicensePlate(data.getLicensePlate());
-
         car.setState(data.getState());
         car.setYear(data.getYear());
         car.setCarPhotoUrl(data.getCarPhoto());
+    }
+
+    public static HashMap<String, String> toMap(Car car) {
+        HashMap<String, String> out = new HashMap<>();
+        out.put("id", Integer.toString(car.getId()));
+        out.put("make", car.getMake());
+        out.put("model", car.getModel());
+        out.put("license_plate", car.getLicensePlate());
+        out.put("state", car.getState());
+        out.put("car_photo", car.getCarPhotoUrl());
+        return out;
     }
 
     public int getId() {
@@ -71,11 +97,11 @@ public class Car extends RealmObject {
         this.state = state;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 

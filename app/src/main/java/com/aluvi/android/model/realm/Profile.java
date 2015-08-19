@@ -60,6 +60,9 @@ public class Profile extends RealmObject {
     @JsonProperty("image_large")
     private String largeImageUrl;
 
+    @JsonProperty("car")
+    private Car car;
+
     @Ignore
     private String profilePicturePath;
 
@@ -78,6 +81,14 @@ public class Profile extends RealmObject {
         if (profile.getProfilePicturePath() != null)
             out.put("image", new File(profile.getProfilePicturePath()));
         return out;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
     }
 
     public String getProfilePicturePath() {

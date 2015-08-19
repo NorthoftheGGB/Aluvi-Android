@@ -20,7 +20,7 @@ public class CarData {
     private String model;
 
     @JsonProperty("year")
-    private String year;
+    private int year;
 
     @JsonProperty("license_plate")
     private String licensePlate;
@@ -63,11 +63,11 @@ public class CarData {
         this.model = model;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 

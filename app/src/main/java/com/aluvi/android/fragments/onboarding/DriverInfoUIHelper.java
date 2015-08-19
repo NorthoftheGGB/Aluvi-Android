@@ -6,6 +6,8 @@ import android.widget.EditText;
 import com.aluvi.android.R;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.helpers.views.FormValidator;
+import com.aluvi.android.model.realm.Car;
+import com.aluvi.android.model.realm.Profile;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -13,7 +15,7 @@ import butterknife.ButterKnife;
 /**
  * Created by usama on 8/15/15.
  */
-public class DriverRegistrationHelper {
+public class DriverInfoUIHelper {
 
     @Bind(R.id.onboarding_register_driver_edit_text_license_number) EditText mLicenseNumberEditText;
     @Bind(R.id.onboarding_register_driver_edit_text_license_plate_number) EditText mLicensePlateNumberEditText;
@@ -23,7 +25,7 @@ public class DriverRegistrationHelper {
 
     private View mRootView;
 
-    public DriverRegistrationHelper(View registrationRootView) {
+    public DriverInfoUIHelper(View registrationRootView) {
         mRootView = registrationRootView;
         ButterKnife.bind(this, registrationRootView);
     }
@@ -40,6 +42,14 @@ public class DriverRegistrationHelper {
         data.setCarModel(mCarModelEditText.getText().toString());
         data.setCarYear(mCarYearEditText.getText().toString());
         return data;
+    }
+
+    public void updateData(Profile profile) {
+        Car car = profile.getCar();
+        mLicensePlateNumberEditText.setText(car.getLicensePlate());
+        mCarMakeEditText.setText(car.getMake());
+        mCarModelEditText.setText(car.getModel());
+        mCarYearEditText.setText(Integer.toString(car.getYear()));
     }
 
     public boolean validateForm() {

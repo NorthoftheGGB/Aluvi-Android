@@ -33,7 +33,7 @@ public class DriverRegistrationDialogFragment extends DialogFragment {
         View rootView = View.inflate(getActivity(), R.layout.dialog_fragment_register_driver, null);
         ButterKnife.bind(this, rootView);
 
-        final DriverRegistrationHelper helper = new DriverRegistrationHelper(mRegisterDriverRootView);
+        final DriverInfoUIHelper helper = new DriverInfoUIHelper(mRegisterDriverRootView);
         return new MaterialDialog.Builder(getActivity())
                 .title(R.string.car_details)
                 .customView(rootView, true)

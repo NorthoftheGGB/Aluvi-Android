@@ -24,7 +24,7 @@ public class DriverRegistrationFragment extends BaseButterFragment {
 
     @Bind(R.id.onboaring_driver_registration_root_view) View mDriverRegistrationRootView;
 
-    private DriverRegistrationHelper mRegistrationHelper;
+    private DriverInfoUIHelper mRegistrationHelper;
     private DriverRegistrationListener mListener;
 
     public static DriverRegistrationFragment newInstance() {
@@ -44,7 +44,7 @@ public class DriverRegistrationFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
-        mRegistrationHelper = new DriverRegistrationHelper(mDriverRegistrationRootView);
+        mRegistrationHelper = new DriverInfoUIHelper(mDriverRegistrationRootView);
     }
 
     @OnClick(R.id.onboarding_register_driver_button_next)

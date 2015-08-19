@@ -105,9 +105,11 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
         getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                if (mListener != null)
-                    mListener.onTicketInfoUIMeasured(mTicketPriceTextView.getHeight(), getView().getHeight());
+                if (getView() != null) {
+                    getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    if (mListener != null)
+                        mListener.onTicketInfoUIMeasured(mTicketPriceTextView.getHeight(), getView().getHeight());
+                }
             }
         });
     }
