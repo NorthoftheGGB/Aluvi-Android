@@ -14,7 +14,7 @@
         android:clickable="true"
         android:src="@mipmap/test_profile_pic"
         app:border_color="@color/profilePictureOutline"
-        app:border_width="2dp"/>
+        app:border_width="1dp"/>
 
     <TextView
         android:id="@+id/profile_text_view_name"

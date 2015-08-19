@@ -58,10 +58,12 @@
         </activity>
         <activity android:name=".activities.InitActivity">
         </activity>
+
         <activity
             android:name=".activities.ScheduleRideActivity"
             android:label="@string/title_activity_schedule_ride"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark.DarkAccent">
         </activity>
 
         <receiver

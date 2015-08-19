@@ -21,8 +21,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/driver_divider"
         android:src="@mipmap/test_profile_pic"
-        app:border_color="@color/profilePictureOutline"
-        app:border_width="2dp"/>
+        app:border_color="@color/black"
+        app:border_width="1dp"/>
 
     <TextView
         android:id="@+id/navigation_drawer_header_text_view_user_name"

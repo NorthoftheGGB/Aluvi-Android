@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/actionBarBackground</color>
+    <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">@color/black</color>
-    <color name="colorAccent">#2196F3</color>
+    <color name="colorAccent">#1085E2</color>
 
-    <color name="actionBarBackground">#FFFFFF</color>
+    <color name="actionBarBackground">#ffffff</color>
 
     <color name="scheduleRideButtonBackground">#878787</color>
     <color name="scheduleRideButtonBackgroundClicked">#656565</color>

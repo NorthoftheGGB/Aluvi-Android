@@ -7,42 +7,60 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin">
 
-    <EditText
-        android:id="@+id/credit_card_info_edit_text_number"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/credit_card_info_edit_text_number_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:hint="@string/card_number"
-        android:imeOptions="actionNext"
-        android:inputType="number"/>
+        android:layout_alignParentTop="true">
 
-    <EditText
-        android:id="@+id/credit_card_info_edit_text_expiration_date"
+        <EditText
+            android:id="@+id/credit_card_info_edit_text_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/card_number"
+            android:imeOptions="actionNext"
+            android:inputType="number"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/credit_card_info_edit_text_expiration_date_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/credit_card_info_edit_text_number"
-        android:layout_alignStart="@+id/credit_card_info_edit_text_number"
-        android:layout_below="@+id/credit_card_info_edit_text_number"
-        android:layout_toLeftOf="@+id/credit_card_info_edit_text_cvv"
-        android:layout_toStartOf="@+id/credit_card_info_edit_text_cvv"
-        android:ems="10"
-        android:hint="@string/expiration_date"
-        android:imeOptions="actionNext"
-        android:inputType="date"/>
+        android:layout_alignLeft="@+id/credit_card_info_edit_text_number_container"
+        android:layout_alignStart="@+id/credit_card_info_edit_text_number_container"
+        android:layout_below="@+id/credit_card_info_edit_text_number_container"
+        android:layout_toLeftOf="@+id/credit_card_info_edit_text_cvv_container"
+        android:layout_toStartOf="@+id/credit_card_info_edit_text_cvv_container">
 
-    <EditText
-        android:id="@+id/credit_card_info_edit_text_cvv"
+        <EditText
+            android:id="@+id/credit_card_info_edit_text_expiration_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/expiration_date"
+            android:imeOptions="actionNext"
+            android:inputType="date"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/credit_card_info_edit_text_cvv_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/credit_card_info_edit_text_number"
-        android:layout_alignRight="@+id/credit_card_info_edit_text_number"
-        android:layout_below="@+id/credit_card_info_edit_text_number"
-        android:ems="10"
-        android:hint="@string/cvv"
-        android:imeOptions="actionDone"
-        android:inputType="number"/>
+        android:layout_alignEnd="@+id/credit_card_info_edit_text_number_container"
+        android:layout_alignRight="@+id/credit_card_info_edit_text_number_container"
+        android:layout_below="@+id/credit_card_info_edit_text_number_container">
+
+        <EditText
+            android:id="@+id/credit_card_info_edit_text_cvv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/cvv"
+            android:imeOptions="actionDone"
+            android:inputType="number"/>
+    </android.support.design.widget.TextInputLayout>
 </RelativeLayout>
