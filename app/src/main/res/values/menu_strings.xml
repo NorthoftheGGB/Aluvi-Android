@@ -3,6 +3,7 @@
     <string name="action_schedule_ride">Schedule Ride</string>
     <string name="action_settings">Settings</string>
     <string name="action_commute_pending">Commute Pending</string>
+    <string name="action_commute_tomorrow">Commute Tomorrow</string>
     <string name="action_view_commute">View Commute</string>
     <string name="action_cancel_schedule_ride">Cancel</string>
     <string name="action_rider_ticket">Rider Ticket</string>

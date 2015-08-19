@@ -1,20 +1,22 @@
 <resources>
+    <string name="title_activity_main">@string/app_name</string>
+    <string name="title_activity_schedule_ride">@string/my_commute</string>
+    <string name="title_activity_profile">Profile</string>
+
     <string name="app_name">Aluvi</string>
     <string name="scheduled_commute">Scheduled Commute</string>
-    <string name="title_activity_main">@string/app_name</string>
+    <string name="my_commute">My Commute</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
-    <string name="title_activity_schedule_ride">Schedule Ride</string>
 
     <string name="drive_there_user">I\'ll drive us there!</string>
     <string name="forget_pickup_point">Don\'t forget to review the pickup point - you may need to drive to reach it.</string>
     <string name="commute_tomorrow">Commute Tomorrow</string>
-    <string name="return_home">return home at:</string>
-    <string name="at">at:</string>
+    <string name="return_home">Return home at:</string>
+    <string name="at">At:</string>
     <string name="to">To:</string>
     <string name="from">From:</string>
     <string name="cancelled_trips">Cancelled Trips</string>
@@ -51,7 +53,6 @@
         <item>Text</item>
     </string-array>
 
-    <string name="title_activity_profile">Profile</string>
 
     <string name="save">Save</string>
     <string name="email">Email</string>

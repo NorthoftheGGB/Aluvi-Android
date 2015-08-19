@@ -51,14 +51,12 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Bind(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
     @Bind(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
     @Bind(R.id.schedule_ride_button_drive_there) CheckBox mDriveThereCheckbox;
-    @Bind(R.id.schedule_ride_button_commute_tomorrow) Button mCommuteTomorrowButton;
 
     @Bind({R.id.schedule_ride_button_from, R.id.schedule_ride_button_to, R.id.schedule_ride_button_start_time,
-            R.id.schedule_ride_button_end_time, R.id.schedule_ride_button_drive_there, R.id.schedule_ride_button_commute_tomorrow})
+            R.id.schedule_ride_button_end_time, R.id.schedule_ride_button_drive_there})
     List<View> mScheduleEditViews;
 
-    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354, RESULT_ERROR = 431,
-            CARD_IO_REQUEST_CODE = 1241;
+    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
 
     public final static String COMMUTE_TO_VIEW_ID_KEY = "commute_view__id_key";
 
@@ -77,6 +75,9 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUI();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_action_close);
     }
 
     @Override
@@ -104,6 +105,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     private boolean initUISavedTrip() {
+        boolean successfulInit = false;
         if (getIntent() != null && getIntent().getExtras() != null) {
             int tripId = getIntent().getExtras().getInt(COMMUTE_TO_VIEW_ID_KEY);
             RealmResults<Ticket> tickets = getTicketsForTripId(tripId);
@@ -134,14 +136,13 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 });
 
                 mIsInViewMode = true;
-                mCommuteTomorrowButton.setText(R.string.action_commute_pending);
-                getToolbar().setTitle(R.string.scheduled_commute);
                 supportInvalidateOptionsMenu();
-                return true;
+                successfulInit = true;
             }
         }
 
-        return false;
+        getToolbar().setTitle(mIsInViewMode ? R.string.action_commute_pending : R.string.my_commute);
+        return successfulInit;
     }
 
     @Nullable
@@ -278,7 +279,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             mStartTimeButton.setText(getString(R.string.at) + " " + getAmPm(mStartHour, mStartMin));
     }
 
-    @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked() {
         if (isCommuteReady()) {
             if (mDriveThereCheckbox.isChecked() && !UserStateManager.getInstance().isUserDriver()) {
@@ -382,7 +382,10 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_cancel_schedule_ride:
+            case R.id.action_commute_tomorrow:
+                onConfirmCommuteButtonClicked();
+                break;
+            case android.R.id.home:
                 setResult(RESULT_CANCEL);
                 finish();
                 break;
@@ -393,10 +396,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mIsInViewMode)
-            menu.findItem(R.id.action_cancel_schedule_ride)
-                    .setTitle(R.string.close);
-
+        menu.findItem(R.id.action_commute_tomorrow).setVisible(!mIsInViewMode);
         return super.onPrepareOptionsMenu(menu);
     }
 

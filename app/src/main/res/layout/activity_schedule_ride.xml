@@ -12,7 +12,6 @@
 
     <Button
         android:id="@+id/schedule_ride_button_from"
-        style="@style/ScheduleRideButtonStyle.Dark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -21,7 +20,6 @@
 
     <Button
         android:id="@+id/schedule_ride_button_to"
-        style="@style/ScheduleRideButtonStyle.ExtraLight"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -30,7 +28,6 @@
 
     <Button
         android:id="@+id/schedule_ride_button_start_time"
-        style="@style/ScheduleRideButtonStyle.Light"
         android:layout_width="match_parent"
         android:layout_height="00dp"
         android:layout_weight="1"
@@ -39,7 +36,6 @@
 
     <Button
         android:id="@+id/schedule_ride_button_end_time"
-        style="@style/ScheduleRideButtonStyle.Dark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -68,13 +64,4 @@
         android:text="@string/forget_pickup_point"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"/>
-
-    <Button
-        android:id="@+id/schedule_ride_button_commute_tomorrow"
-        style="@style/ScheduleRideButtonStyle.Light"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="@string/commute_tomorrow"
-        android:textStyle="bold"/>
 </LinearLayout>
