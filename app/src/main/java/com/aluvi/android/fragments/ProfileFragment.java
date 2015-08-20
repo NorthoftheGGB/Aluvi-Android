@@ -40,6 +40,7 @@ import io.realm.Realm;
 public class ProfileFragment extends BaseButterFragment {
     public interface ProfileListener {
         void onProfileSavedListener();
+
         void onLogOut();
     }
 
@@ -127,8 +128,7 @@ public class ProfileFragment extends BaseButterFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.action_save:
                 saveButtonClicked();
                 break;

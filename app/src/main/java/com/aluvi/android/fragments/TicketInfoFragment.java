@@ -22,7 +22,9 @@ import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseTicketConsumerFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 import com.squareup.picasso.Picasso;
@@ -129,13 +131,24 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             for (Rider rider : riders)
                 if (rider.getId() != getTicket().getDriver().getId())
                     addRider(rider);
+
+        if (!getTicket().isDriving()) {
+            Profile userProfile = UserStateManager.getInstance().getProfile();
+
+            String profilePictureUrl = userProfile.getSmallImageUrl();
+            String firstName = userProfile.getFirstName();
+            addRider(firstName, profilePictureUrl);
+        }
     }
 
     private void addRider(Rider rider) {
+        addRider(rider.getFirstName(), rider.getSmallImageUrl());
+    }
+
+    private void addRider(String firstName, String profilePictureUrl) {
         View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, mRiderProfilePictureContainer);
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
-        riderNameTextView.setText(rider.getFirstName());
 
         if (getTicket().isDriving()) {
             riderProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +159,8 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             });
         }
 
-        loadProfilePicture(rider.getSmallImageUrl(), riderProfileImageView);
+        riderNameTextView.setText(firstName);
+        loadProfilePicture(profilePictureUrl, riderProfileImageView);
     }
 
     private void loadProfilePicture(String url, ImageView imageView) {

@@ -50,11 +50,8 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
     public void onResume() {
         super.onResume();
 
-        boolean isDriver = UserStateManager.getInstance().isUserDriver();
         mNavigationView.getMenu().findItem(R.id.action_car_info)
-                .setVisible(isDriver);
-        mNavigationView.getMenu().findItem(R.id.action_car_payments)
-                .setVisible(isDriver);
+                .setVisible(UserStateManager.getInstance().isUserDriver());
     }
 
     public void initNavigationView() {
