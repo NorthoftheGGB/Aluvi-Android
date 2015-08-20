@@ -2,12 +2,15 @@ package com.aluvi.android.api.users;
 
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
+import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthMultipartRequest;
 import com.aluvi.android.api.request.AluviAuthRealmRequestListener;
+import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
+import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
@@ -172,5 +175,32 @@ public class UsersApi {
 
         profileRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(profileRequest);
+    }
+
+    public static void saveCarInfo(Car car, final ApiCallback callback) {
+        AluviAuthenticatedRequest carRequest = new AluviAuthenticatedRequest<>(
+                Request.Method.POST,
+                AluviApi.API_CAR,
+                Car.toMap(car),
+                new AluviAuthRequestListener<Void>() {
+                    @Override
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK
+                                || statusCode == HttpURLConnection.HTTP_CREATED)
+                            callback.success();
+                        else
+                            callback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Void.class);
+                    }
+                }
+        );
+
+        carRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
+                HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
+        AluviApi.getInstance().getRequestQueue().add(carRequest);
     }
 }

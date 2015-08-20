@@ -44,6 +44,15 @@ public class DriverInfoUIHelper {
         return data;
     }
 
+    public Car initCarData() {
+        Car car = new Car();
+        car.setLicensePlate(mLicensePlateNumberEditText.getText().toString());
+        car.setMake(mCarMakeEditText.getText().toString());
+        car.setModel(mCarModelEditText.getText().toString());
+        car.setYear(Integer.parseInt(mCarYearEditText.getText().toString()));
+        return car;
+    }
+
     public void updateData(Profile profile) {
         Car car = profile.getCar();
         mLicensePlateNumberEditText.setText(car.getLicensePlate());

@@ -48,6 +48,7 @@ public class AluviApi implements AluviApiConstants {
     // drivers
     final public static String API_DRIVER_REGISTRATION = "drivers/driver_registration";
     final public static String API_GET_DRIVER_FARE_PATH_PATTERN = "drivers/fares/:id";
+    final public static String API_CAR = "drivers/car";
 
     //Singleton
     private static AluviApi mInstance;
