@@ -160,21 +160,6 @@ public class OnboardingActivity extends BaseButterActivity implements
                 .registerUser(mRegistrationData, new Callback() {
                     @Override
                     public void success() {
-                        onRegistrationSuccess();
-                    }
-
-                    @Override
-                    public void failure(String message) {
-                        onError(message);
-                    }
-                });
-    }
-
-    public void onRegistrationSuccess() {
-        UserStateManager.getInstance().login(mRegistrationData.getEmail(),
-                mRegistrationData.getPassword(), new Callback() {
-                    @Override
-                    public void success() {
                         saveRoutePreferences();
                     }
 
@@ -258,7 +243,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         UserStateManager.getInstance().saveProfile(new Callback() {
             @Override
             public void success() {
-                if(mDefaultProgressDialog != null)
+                if (mDefaultProgressDialog != null)
                     mDefaultProgressDialog.cancel();
 
                 setResult(Activity.RESULT_OK);
@@ -276,7 +261,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         if (mRootView != null)
             Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
 
-        if(mDefaultProgressDialog != null)
+        if (mDefaultProgressDialog != null)
             mDefaultProgressDialog.cancel();
     }
 

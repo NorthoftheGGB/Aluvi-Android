@@ -36,6 +36,10 @@ public class UsersApi {
     }
 
     public interface RegistrationCallback extends FailureCallback {
+        void success(LoginResponse response);
+    }
+
+    public interface DriverRegistrationCallback extends FailureCallback {
         void success();
     }
 
@@ -73,15 +77,15 @@ public class UsersApi {
     }
 
     public static void registerUser(ProfileData riderData, final RegistrationCallback callback) {
-        AluviUnauthenticatedRequest userRegistrationRequest = new AluviUnauthenticatedRequest(
+        AluviUnauthenticatedRequest<LoginResponse> userRegistrationRequest = new AluviUnauthenticatedRequest(
                 Request.Method.POST,
                 AluviApi.API_USERS,
                 riderData,
-                new JacksonRequestListener<JSONObject>() {
+                new JacksonRequestListener<LoginResponse>() {
                     @Override
-                    public void onResponse(JSONObject response, int statusCode, VolleyError error) {
+                    public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success();
+                            callback.success(response);
                         } else {
                             callback.failure(statusCode);
                         }
@@ -89,7 +93,7 @@ public class UsersApi {
 
                     @Override
                     public JavaType getReturnType() {
-                        return SimpleType.construct(JSONObject.class);
+                        return SimpleType.construct(LoginResponse.class);
                     }
                 }
         );
@@ -99,7 +103,7 @@ public class UsersApi {
         AluviApi.getInstance().getRequestQueue().add(userRegistrationRequest);
     }
 
-    public static void registerDriver(DriverProfileData driverData, final RegistrationCallback callback) {
+    public static void registerDriver(DriverProfileData driverData, final DriverRegistrationCallback callback) {
         AluviAuthenticatedRequest registerDriverRequest = new AluviAuthenticatedRequest(
                 Request.Method.POST,
                 AluviApi.API_DRIVER_REGISTRATION,

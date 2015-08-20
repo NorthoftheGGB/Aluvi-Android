@@ -161,7 +161,10 @@ public class UserStateManager {
     public void registerUser(ProfileData data, final Callback callback) {
         UsersApi.registerUser(data, new UsersApi.RegistrationCallback() {
             @Override
-            public void success() {
+            public void success(LoginResponse response) {
+                setApiToken(response.getToken());
+                setDriverState(response.getDriverState());
+                setRiderState(response.getRiderState());
                 callback.success();
             }
 
@@ -173,7 +176,7 @@ public class UserStateManager {
     }
 
     public void registerDriver(DriverProfileData data, final Callback callback) {
-        UsersApi.registerDriver(data, new UsersApi.RegistrationCallback() {
+        UsersApi.registerDriver(data, new UsersApi.DriverRegistrationCallback() {
             @Override
             public void success() {
                 setDriverState(DRIVER_STATE_ACTIVE);

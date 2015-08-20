@@ -66,7 +66,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
-
                 switch (menuItem.getItemId()) {
                     case R.id.action_my_commute:
                         onHomeClicked();
@@ -97,11 +96,9 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SCHEDULE_RIDE_REQUEST_CODE) {
-            if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK) {
+        if (requestCode == SCHEDULE_RIDE_REQUEST_CODE)
+            if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK)
                 onCommuteScheduled();
-            }
-        }
     }
 
     @Override
