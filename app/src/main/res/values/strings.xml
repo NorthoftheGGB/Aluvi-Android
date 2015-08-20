@@ -102,4 +102,6 @@
     <string name="cvv">CVV</string>
     <string name="card_number">Card Number</string>
     <string name="invalid_expiration_date">Invalid expiration date</string>
+    <string name="am_pickup">AM Pickup</string>
+    <string name="pm_dropoff">PM Dropoff</string>
 </resources>

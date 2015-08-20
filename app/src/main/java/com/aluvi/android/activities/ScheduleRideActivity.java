@@ -7,8 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -46,24 +46,21 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         CreditCardInfoDialogFragment.CreditCardListener {
 
     @Bind(R.id.schedule_ride_root_view) View mRootView;
-    @Bind(R.id.schedule_ride_button_from) Button mFromButton;
-    @Bind(R.id.schedule_ride_button_to) Button mToButton;
-    @Bind(R.id.schedule_ride_button_start_time) Button mStartTimeButton;
-    @Bind(R.id.schedule_ride_button_end_time) Button mEndTimeButton;
-    @Bind(R.id.schedule_ride_button_drive_there) CheckBox mDriveThereCheckbox;
+    @Bind(R.id.schedule_ride_text_view_home) TextView mFromButton;
+    @Bind(R.id.schedule_ride_text_view_work) TextView mToButton;
+    @Bind(R.id.schedule_ride_text_view_start_time) TextView mStartTimeButton;
+    @Bind(R.id.schedule_ride_text_view_end_time) TextView mEndTimeButton;
+    @Bind(R.id.schedule_ride_checkbox_drive_there) CheckBox mDriveThereCheckbox;
 
-    @Bind({R.id.schedule_ride_button_from, R.id.schedule_ride_button_to, R.id.schedule_ride_button_start_time,
-            R.id.schedule_ride_button_end_time, R.id.schedule_ride_button_drive_there})
-    List<View> mScheduleEditViews;
-
-    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
+    @Bind({R.id.schedule_ride_home_button_container, R.id.schedule_ride_work_button_container, R.id.schedule_ride_start_time_container,
+            R.id.schedule_ride_end_time_container, R.id.schedule_ride_checkbox_drive_there}) List<View> mScheduleEditViews;
 
     public final static String COMMUTE_TO_VIEW_ID_KEY = "commute_view__id_key";
-
     private final String TAG = "ScheduleRideActivity",
             FROM_LOCATION_TAG = "from_location",
             TO_LOCATION_TAG = "to_location";
 
+    public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
     private final int MIN_HOME_LEAVE_HOUR = 7, MAX_HOME_LEAVE_HOUR = 9,
             MIN_WORK_LEAVE_HOUR = 16, MAX_WORK_LEAVE_HOUR = 19;
 
@@ -77,7 +74,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         initUI();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_action_close);
     }
 
     @Override
@@ -150,13 +146,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         Trip trip = AluviRealm.getDefaultRealm().where(Trip.class)
                 .equalTo("tripId", tripId)
                 .findFirst();
-        if (trip != null) {
-            return trip.getTickets().where()
-                    .findAllSorted("pickupTime");
-
-        }
-
-        return null;
+        return trip != null ? trip.getTickets().where().findAllSorted("pickupTime") : null;
     }
 
     private void initUICommuteManager() {
@@ -219,9 +209,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 if (progressDialog != null)
                     progressDialog.cancel();
 
-                if (mRootView != null) {
+                if (mRootView != null)
                     Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-                }
 
                 onCreditCardProcessingError();
             }
@@ -232,19 +221,22 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         finish();
     }
 
-    @OnClick(R.id.schedule_ride_button_from)
+    @SuppressWarnings("unused")
+    @OnClick(R.id.schedule_ride_home_button_container)
     public void onFromButtonClicked() {
         LocationSelectDialogFragment.newInstance(mStartLocation)
                 .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
     }
 
-    @OnClick(R.id.schedule_ride_button_to)
+    @SuppressWarnings("unused")
+    @OnClick(R.id.schedule_ride_work_button_container)
     public void onToButtonClicked() {
         LocationSelectDialogFragment.newInstance(mEndLocation)
                 .show(getSupportFragmentManager(), TO_LOCATION_TAG);
     }
 
-    @OnClick(R.id.schedule_ride_button_start_time)
+    @SuppressWarnings("unused")
+    @OnClick(R.id.schedule_ride_start_time_container)
     public void onStartTimeButtonClicked() {
         showTimePicker(mStartHour, mStartMin, MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR,
                 new OnTimeSetListener() {
@@ -257,7 +249,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 });
     }
 
-    @OnClick(R.id.schedule_ride_button_end_time)
+    @SuppressWarnings("unused")
+    @OnClick(R.id.schedule_ride_end_time_container)
     public void onEndTimeButtonClicked() {
         showTimePicker(mEndHour, mEndMin, MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, new OnTimeSetListener() {
             @Override
@@ -271,12 +264,12 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
     public void updateEndTimeButton() {
         if (mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME)
-            mEndTimeButton.setText(getString(R.string.return_home) + " " + getAmPm(mEndHour, mEndMin));
+            mEndTimeButton.setText(getAmPm(mEndHour, mEndMin));
     }
 
     public void updateStartTimeButton() {
         if (mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME)
-            mStartTimeButton.setText(getString(R.string.at) + " " + getAmPm(mStartHour, mStartMin));
+            mStartTimeButton.setText(getAmPm(mStartHour, mStartMin));
     }
 
     public void onConfirmCommuteButtonClicked() {
@@ -431,9 +424,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         hour = hour > 12 ? hour - 12 : hour;
         hour = hour == 0 ? 12 : hour;
 
-        String formattedHour = hour < 10 ? "0" + hour : Integer.toString(hour);
         String formattedMin = min < 10 ? "0" + min : Integer.toString(min);
-        return formattedHour + ":" + formattedMin + modifier;
+        return hour + ":" + formattedMin + modifier;
     }
 
     private interface OnTimeSetListener {

@@ -23,7 +23,7 @@ android {
     }
     defaultConfig {
         applicationId "com.aluvi.android"
-        minSdkVersion 10
+        minSdkVersion 11
         targetSdkVersion 22
         versionCode 3
         versionName "1.5"

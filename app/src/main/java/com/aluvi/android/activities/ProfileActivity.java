@@ -14,7 +14,6 @@ public class ProfileActivity extends AluviAuthActivity implements ProfileFragmen
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_action_close);
     }
 
     @Override

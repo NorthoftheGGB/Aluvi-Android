@@ -59,4 +59,26 @@
         <item name="android:textColor">@color/onboarding_button_text_color</item>
         <item name="android:background">@drawable/onboarding_button_background</item>
     </style>
+
+    <style name="BorderlessPreferenceContainer">
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/md_btn_selector</item>
+    </style>
+
+    <style name="PreferenceTitle">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="PreferenceContent">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:gravity">center_vertical|right</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:layout_marginLeft">16dp</item>
+    </style>
 </resources>
