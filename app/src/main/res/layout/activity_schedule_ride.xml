@@ -117,9 +117,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/schedule_ride_end_time_container"
+        android:layout_alignRight="@+id/schedule_ride_end_time_container"
         android:layout_below="@+id/schedule_ride_end_time_container"
         android:layout_marginTop="8dp"
-        android:layout_alignRight="@+id/schedule_ride_end_time_container"
         android:text="@string/drive_there_user"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -127,13 +127,24 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingBottom="10dp"
-        android:paddingLeft="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_vertical_margin"
-        android:paddingTop="16dp"
-        android:text="@string/forget_pickup_point"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignLeft="@+id/schedule_ride_checkbox_drive_there"
+        android:layout_alignRight="@+id/schedule_ride_checkbox_drive_there"
+        android:layout_below="@+id/schedule_ride_checkbox_drive_there"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-light"
-        android:layout_below="@+id/schedule_ride_checkbox_drive_there"/>
+        android:gravity="center_vertical"
+        android:text="@string/forget_pickup_point"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <Button
+        android:id="@+id/schedule_ride_commute_tomorrow_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/schedule_ride_checkbox_drive_there"
+        android:layout_alignRight="@+id/schedule_ride_checkbox_drive_there"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="8dp"
+        android:text="@string/commute_tomorrow"
+        android:theme="@style/BlueButton.Large"/>
 </RelativeLayout>

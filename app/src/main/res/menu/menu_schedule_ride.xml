@@ -3,8 +3,4 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.aluvi.android.activities.ScheduleRideActivity">
 
-    <item
-        android:id="@+id/action_commute_tomorrow"
-        android:title="@string/action_commute_tomorrow"
-        app:showAsAction="always"/>
 </menu>
