@@ -16,11 +16,11 @@ public class AluviAuthenticatedRequest<T> extends JacksonRequest<T> {
     private static int ALUVI_API_TIMEOUT = 30000;
 
     // Custom Constructors For Aluvi
-    public AluviAuthenticatedRequest(int method, String endpoint, AluviPayload payload, JacksonRequestListener listener) {
+    public AluviAuthenticatedRequest(int method, String endpoint, AluviPayload payload, JacksonRequestListener<T> listener) {
         super(AluviAuthenticatedRequest.ALUVI_API_TIMEOUT, method, AluviApi.constructUrl(endpoint), payload.toMap(), listener);
     }
 
-    public AluviAuthenticatedRequest(int method, String endpoint, Map<String,String> payload, JacksonRequestListener listener) {
+    public AluviAuthenticatedRequest(int method, String endpoint, Map<String,String> payload, JacksonRequestListener<T> listener) {
         super(AluviAuthenticatedRequest.ALUVI_API_TIMEOUT, method, AluviApi.constructUrl(endpoint), payload, listener);
     }
 

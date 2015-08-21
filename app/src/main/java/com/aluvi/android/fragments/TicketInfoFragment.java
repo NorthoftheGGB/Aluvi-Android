@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseTicketConsumerFragment;
+import com.aluvi.android.helpers.CurrencyUtils;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -29,11 +30,7 @@ import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
 import com.squareup.picasso.Picasso;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,8 +38,9 @@ import butterknife.OnClick;
 import io.realm.RealmList;
 
 public class TicketInfoFragment extends BaseTicketConsumerFragment {
-    public interface OnTicketInfoLayoutListener {
+    public interface TicketInfoListener {
         void onTicketInfoUIMeasured(int headerHeight, int panelHeight);
+        void onRiderStateChanged();
     }
 
     @Bind(R.id.ticket_info_text_view_price_info) TextView mTicketPriceTextView;
@@ -55,7 +53,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @Bind({R.id.ticket_info_relative_layout_driver_info, R.id.ticket_info_late_button}) List<View> mRiderViews;
     @Bind({R.id.ticket_info_riders_picked_up}) List<View> mDriverViews;
 
-    private OnTicketInfoLayoutListener mListener;
+    private TicketInfoListener mListener;
     private Dialog mDefaultProgressDialog;
 
     public static TicketInfoFragment newInstance(Ticket ticket) {
@@ -71,9 +69,9 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         if (getParentFragment() != null) {
-            mListener = (OnTicketInfoLayoutListener) getParentFragment();
+            mListener = (TicketInfoListener) getParentFragment();
         } else {
-            mListener = (OnTicketInfoLayoutListener) activity;
+            mListener = (TicketInfoListener) activity;
         }
     }
 
@@ -85,7 +83,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @Override
     public void initUI() {
         int price = getTicket().isDriving() ? getTicket().getEstimatedEarnings() : getTicket().getFixedPrice();
-        mTicketPriceTextView.setText(getFormattedDollars(price));
+        mTicketPriceTextView.setText(CurrencyUtils.getFormattedDollars(price));
 
         if (getTicket().getCar() != null) {
             mCarNameTextView.setText(getTicket().getCar().getMake());
@@ -216,6 +214,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             if (mDefaultProgressDialog != null)
                 mDefaultProgressDialog.cancel();
 
+            mListener.onRiderStateChanged();
             updateRidersPickedUpButton();
         }
 
@@ -235,8 +234,8 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     }
 
     private boolean isRideInProgress() {
-        return getTicket().getState().equals(Ticket.StateInProgress) ||
-                getTicket().getState().equals(Ticket.StateStarted);
+        return getTicket().getState().equals(Ticket.STATE_IN_PROGRESS) ||
+                getTicket().getState().equals(Ticket.STATE_STARTED);
     }
 
     private void textNumber(String phoneNumber) {
@@ -269,11 +268,4 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             view.setVisibility(View.VISIBLE);
         }
     };
-
-    private String getFormattedDollars(int cents) {
-        BigDecimal displayDecimal = new BigDecimal(cents)
-                .divide(new BigDecimal(100))
-                .setScale(2, RoundingMode.HALF_EVEN);
-        return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(displayDecimal.doubleValue());
-    }
 }
