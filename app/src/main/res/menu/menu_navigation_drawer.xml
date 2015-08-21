@@ -10,9 +10,9 @@
             android:icon="@mipmap/ic_action_car"
             android:title="@string/action_car_info"/>
         <item
-            android:id="@+id/action_car_payments"
+            android:id="@+id/action_payments"
             android:icon="@mipmap/ic_action_money_box"
-            android:title="@string/action_car_payments"/>
+            android:title="@string/action_payments"/>
         <item
             android:id="@+id/action_support"
             android:icon="@mipmap/ic_action_umbrella"

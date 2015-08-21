@@ -144,7 +144,7 @@ public class TicketsApi {
     }
 
     public static void ridersPickedUp(Ticket ticket, final ApiCallback callback) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
         AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
                 Request.Method.POST,
@@ -172,9 +172,9 @@ public class TicketsApi {
     }
 
     public static void ridersDroppedOff(Ticket ticket, final ApiCallback callback) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_DROPOFF,
                 params,

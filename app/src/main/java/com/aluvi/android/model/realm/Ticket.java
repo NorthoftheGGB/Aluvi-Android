@@ -17,56 +17,41 @@ import io.realm.RealmObject;
  * Created by matthewxi on 7/13/15.
  */
 public class Ticket extends RealmObject {
-    public static final String StateCreated = "created";
-    public static final String StateRequested = "requested";
-    public static final String StateCancelled = "cancelled"; // cancelled before scheduled
-    public static final String StateScheduled = "scheduled";
-    public static final String StateStarted = "started";
-    public static final String StateCommuteSchedulerFailed = "commute_scheduler_failed";
-    public static final String StateInProgress = "in_progress";
-    public static final String StateComplete = "complete";
-    public static final String StateAborted = "aborted";  // cancelled after scheduled
-    public static final String StateIrrelevant = "irrelevant";
+    public static final String STATE_CREATED = "created";
+    public static final String STATE_REQUESTED = "requested";
+    public static final String STATE_CANCELLED = "cancelled"; // cancelled before scheduled
+    public static final String STATE_SCHEDULED = "scheduled";
+    public static final String STATE_STARTED = "started";
+    public static final String STATE_COMMUTE_SCHEDULER_FAILED = "commute_scheduler_failed";
+    public static final String STATE_IN_PROGRESS = "in_progress";
+    public static final String STATE_COMPLETE = "complete";
+    public static final String STATE_ABORTED = "aborted";  // cancelled after scheduled
+    public static final String STATE_IRRELEVANT = "irrelevant";
 
-    public static String RideRequestTypeCommuter = "commuter";
+    // These primary keys could be retrieved from related objects
+    private int id, carId, driverId, fare_id;
 
-    private int id;
-    private int carId;   // These primary keys could be retrieved from related objects
-    private int driverId;
-    private int fare_id;
+    private double originLatitude, originLongitude;
+    private String originPlaceName, originShortName;
 
-    private double originLatitude;
-    private double originLongitude;
-    private String originPlaceName;
-    private String originShortName;
+    private double destinationLatitude, destinationLongitude;
+    private String destinationPlaceName, destinationShortName;
 
-    private double destinationLatitude;
-    private double destinationLongitude;
-    private String destinationPlaceName;
-    private String destinationShortName;
-
-    private double meetingPointLatitude;
-    private double meetingPointLongitude;
+    private double meetingPointLatitude, meetingPointLongitude;
     private String meetingPointPlaceName;
 
-    private double dropOffPointLatitude;
-    private double dropOffPointLongitude;
+    private double dropOffPointLatitude, dropOffPointLongitude;
     private String dropOffPointPlaceName;
 
     private boolean confirmed; // User has viewed the itinerary and accepted
     private boolean driving;
     private int fixedPrice, estimatedEarnings;
 
-    private Date requestedTimestamp;
-    private Date estimatedArrivalTime;
-    private Date desiredArrival;
-    private Date pickupTime;
-    private Date lastUpdated;
-    private Date rideDate;
+    private Date requestedTimestamp, estimatedArrivalTime,
+            desiredArrival, pickupTime,
+            lastUpdated, rideDate;
 
-    private String state;
-    private String rideType;
-    private String direction;
+    private String state, rideType, direction;
 
     private Driver driver;
     private Car car;

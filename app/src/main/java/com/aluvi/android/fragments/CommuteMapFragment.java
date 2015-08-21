@@ -51,9 +51,10 @@ import io.realm.RealmList;
 /**
  * Created by usama on 7/13/15.
  */
-public class CommuteMapFragment extends BaseButterFragment implements TicketInfoFragment.OnTicketInfoLayoutListener {
+public class CommuteMapFragment extends BaseButterFragment implements TicketInfoFragment.TicketInfoListener {
     public interface OnMapEventListener {
         void onCommuteSchedulerRequested(Trip trip);
+
         void startLocationTracking(Ticket ticket);
     }
 
@@ -136,7 +137,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateRequested);
+        boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
         boolean isTicketScheduled = isTicketScheduled(mCurrentTicket);
         boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
 
@@ -158,7 +159,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
                 mEventListener.onCommuteSchedulerRequested(activeTrip);
                 break;
             case R.id.action_cancel:
-                if (mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.StateScheduled))
+                if (mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_SCHEDULED))
                     cancelTicket(mCurrentTicket);
                 else
                     cancelTrip(activeTrip);
@@ -203,6 +204,36 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         });
     }
 
+    private void onTicketsRefreshed() {
+        if (getActivity() != null) {
+            resetUI(); // Reset UI to original state
+            mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
+
+            if (mCurrentTicket != null) {
+                plotTicketRoute(mCurrentTicket);
+                switch (mCurrentTicket.getState()) {
+                    case Ticket.STATE_REQUESTED:
+                        mCommutePendingTextView.setVisibility(View.VISIBLE);
+                        break;
+                    case Ticket.STATE_IN_PROGRESS:
+                    case Ticket.STATE_STARTED:
+                    case Ticket.STATE_SCHEDULED:
+                        if (mCurrentTicket.isDriving())
+                            enableDriverOverlay(mCurrentTicket);
+                        else
+                            enableRiderOverlay(mCurrentTicket);
+
+                        mEventListener.startLocationTracking(mCurrentTicket);
+                        break;
+                }
+            } else {
+                plotRoute(CommuteManager.getInstance().getRoute());
+            }
+
+            getActivity().supportInvalidateOptionsMenu();
+        }
+    }
+
     private void resetUI() {
         mCommutePendingTextView.setVisibility(View.INVISIBLE);
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
@@ -216,37 +247,9 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
             getChildFragmentManager().beginTransaction().remove(ticketInfoFragment).commit();
     }
 
-    private void onTicketsRefreshed() {
-        resetUI(); // Reset UI to original state
-        mCurrentTicket = CommuteManager.getInstance().getActiveTicket(); // Reset cached ticket; use most recent data
-
-        if (mCurrentTicket != null) {
-            plotTicketRoute(mCurrentTicket);
-            switch (mCurrentTicket.getState()) {
-                case Ticket.StateRequested:
-                    mCommutePendingTextView.setVisibility(View.VISIBLE);
-                    break;
-                case Ticket.StateInProgress:
-                case Ticket.StateStarted:
-                case Ticket.StateScheduled:
-                    if (mCurrentTicket.isDriving())
-                        enableDriverOverlay(mCurrentTicket);
-                    else
-                        enableRiderOverlay(mCurrentTicket);
-
-                    mEventListener.startLocationTracking(mCurrentTicket);
-                    break;
-            }
-        } else {
-            plotRoute(CommuteManager.getInstance().getRoute());
-        }
-
-        getActivity().supportInvalidateOptionsMenu();
-    }
-
     private void plotTicketRoute(final Ticket ticket) {
         String markerText = "";
-        if (ticket.getState().equals(Ticket.StateScheduled)) {
+        if (ticket.getState().equals(Ticket.STATE_SCHEDULED)) {
             SimpleDateFormat pickupTime = new SimpleDateFormat("h:mm a");
             markerText = "Be here at " + pickupTime.format(ticket.getPickupTime());
         } else {
@@ -332,6 +335,11 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     }
 
     @Override
+    public void onRiderStateChanged() {
+        onTicketsRefreshed();
+    }
+
+    @Override
     public void onTicketInfoUIMeasured(int headerHeight, int panelHeight) {
         float rootHeight = getView().getHeight();
         float anchor = panelHeight / rootHeight;
@@ -387,9 +395,9 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     private boolean isTicketScheduled(Ticket ticket) {
         if (ticket != null) {
             String state = ticket.getState();
-            return state.equals(Ticket.StateScheduled) ||
-                    state.equals(Ticket.StateStarted) ||
-                    state.equals(Ticket.StateInProgress);
+            return state.equals(Ticket.STATE_SCHEDULED) ||
+                    state.equals(Ticket.STATE_STARTED) ||
+                    state.equals(Ticket.STATE_IN_PROGRESS);
         }
 
         return false;

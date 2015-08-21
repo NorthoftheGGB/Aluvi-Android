@@ -23,13 +23,13 @@ import butterknife.OnClick;
  * Created by usama on 8/6/15.
  */
 public class ProfilePhotoFragment extends BaseButterFragment {
-
     public interface AboutUserListener {
         void onUserDetailsPopulated(String userProfilePicture);
     }
 
     @Bind(R.id.onboarding_image_view_profile_picture) ImageView mProfilePictureView;
 
+    private Bitmap mCurrentProfilePhoto;
     private CameraHelper mCameraHelper;
     private AboutUserListener mListener;
 
@@ -76,9 +76,13 @@ public class ProfilePhotoFragment extends BaseButterFragment {
         mCameraHelper.save(outState);
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.onboarding_about_button_next)
     public void onNextClicked() {
-        mListener.onUserDetailsPopulated(mCameraHelper.getCurrentPhotoPath());
+        if (mCurrentProfilePhoto != null)
+            mListener.onUserDetailsPopulated(mCameraHelper.getCurrentPhotoPath());
+        else
+            Snackbar.make(getView(), R.string.photo_required, Snackbar.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("unused")
@@ -109,5 +113,6 @@ public class ProfilePhotoFragment extends BaseButterFragment {
     public void updateProfilePicture(Bitmap bitmap) {
         if (bitmap != null && mProfilePictureView != null)
             mProfilePictureView.setImageBitmap(bitmap);
+        mCurrentProfilePhoto = bitmap;
     }
 }

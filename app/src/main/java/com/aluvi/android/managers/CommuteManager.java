@@ -205,10 +205,10 @@ public class CommuteManager {
 
     private void updateTickets(Ticket toWorkTicket, Ticket fromWorkTicket, CommuterTicketsResponse response) {
         toWorkTicket.setId(response.ticketToWorkRideId);
-        toWorkTicket.setState(Ticket.StateRequested);
+        toWorkTicket.setState(Ticket.STATE_REQUESTED);
 
         fromWorkTicket.setId(response.ticketFromWorkRideId);
-        fromWorkTicket.setState(Ticket.StateRequested);
+        fromWorkTicket.setState(Ticket.STATE_REQUESTED);
 
         Trip trip = new Trip();
         trip.setTripId(response.tripId);
@@ -231,11 +231,11 @@ public class CommuteManager {
         RealmResults<Ticket> results = realm.where(Ticket.class) // Look for a pre-existing request for tomorrow
                 .greaterThanOrEqualTo("rideDate", startDate) // Rides that are tomorrow or later which have been created, requested, or scheduled
                 .beginGroup()
-                    .equalTo("state", Ticket.StateCreated)
+                    .equalTo("state", Ticket.STATE_CREATED)
                     .or()
-                    .equalTo("state", Ticket.StateRequested)
+                    .equalTo("state", Ticket.STATE_REQUESTED)
                     .or()
-                    .equalTo("state", Ticket.StateScheduled)
+                    .equalTo("state", Ticket.STATE_SCHEDULED)
                 .endGroup()
                 .findAll();
         // @formatter:on
@@ -322,7 +322,7 @@ public class CommuteManager {
         List<Ticket> nonRelevantTickets = query.findAll();
         for (int i = 0; i < nonRelevantTickets.size(); i++) {
             Ticket t = nonRelevantTickets.get(i);
-            ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.StateIrrelevant));
+            ticketStateTransitions.add(new TicketStateTransition(t.getId(), t.getState(), Ticket.STATE_IRRELEVANT));
             t.removeFromRealm();
         }
     }
@@ -384,12 +384,11 @@ public class CommuteManager {
         });
     }
 
-    public void ridersPickedUp(Ticket ticket, final Callback callback) {
+    public void ridersPickedUp(final Ticket ticket, final Callback callback) {
         TicketsApi.ridersPickedUp(ticket, new ApiCallback() {
             @Override
             public void success() {
-                // TODO update ticket state (change ticket state to in progress)
-                callback.success();
+                onRiderStateUpdated(callback);
             }
 
             @Override
@@ -399,18 +398,31 @@ public class CommuteManager {
         });
     }
 
-    public void ridersDroppedOff(Ticket ticket, final Callback callback) {
+    public void ridersDroppedOff(final Ticket ticket, final Callback callback) {
         TicketsApi.ridersDroppedOff(ticket, new ApiCallback() {
             @Override
             public void success() {
-                // TODO update ticket state to irrelevant
-                callback.success();
+                onRiderStateUpdated(callback);
             }
 
             @Override
             public void failure(int statusCode) {
                 callback.failure("Problem communicating with server");
 
+            }
+        });
+    }
+
+    private void onRiderStateUpdated(final Callback callback) {
+        refreshTickets(new DataCallback<List<TicketStateTransition>>() {
+            @Override
+            public void success(List<TicketStateTransition> result) {
+                callback.success();
+            }
+
+            @Override
+            public void failure(String message) {
+                callback.failure(message);
             }
         });
     }
@@ -435,13 +447,13 @@ public class CommuteManager {
                 .where(Ticket.class)
                 .greaterThan("pickupTime", new Date())
                 .beginGroup()
-                    .equalTo("state", Ticket.StateRequested)
+                    .equalTo("state", Ticket.STATE_REQUESTED)
                     .or()
-                    .equalTo("state", Ticket.StateScheduled)
+                    .equalTo("state", Ticket.STATE_SCHEDULED)
                     .or()
-                    .equalTo("state", Ticket.StateInProgress)
+                    .equalTo("state", Ticket.STATE_IN_PROGRESS)
                     .or()
-                    .equalTo("state", Ticket.StateStarted)
+                    .equalTo("state", Ticket.STATE_STARTED)
                 .endGroup()
                 .findAllSorted("pickupTime");
         // @formatter:on

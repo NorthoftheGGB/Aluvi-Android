@@ -1,20 +1,27 @@
 package com.aluvi.android.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.fragments.onboarding.DriverInfoUIHelper;
+import com.aluvi.android.helpers.views.DialogUtils;
+import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 
 import butterknife.Bind;
@@ -27,10 +34,12 @@ public class CarInfoFragment extends BaseButterFragment {
         void onInfoSaved();
     }
 
+    @Bind(R.id.onboarding_register_driver_edit_text_license_number) EditText mLicenseNumberEditText;
     @Bind(R.id.car_profile_image_view) ImageView mCarProfileImageView;
 
     private DriverInfoUIHelper mInfoUIHelper;
     private CarInfoListener mListener;
+    private Dialog mProgressDialog;
 
     public static CarInfoFragment newInstance() {
         return new CarInfoFragment();
@@ -50,8 +59,9 @@ public class CarInfoFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
-        Profile userProfile = AluviRealm.getDefaultRealm().where(Profile.class).findFirst();
+        mLicenseNumberEditText.setVisibility(View.GONE);
 
+        Profile userProfile = AluviRealm.getDefaultRealm().where(Profile.class).findFirst();
         mInfoUIHelper = new DriverInfoUIHelper(getView());
         mInfoUIHelper.updateData(userProfile);
     }
@@ -60,6 +70,16 @@ public class CarInfoFragment extends BaseButterFragment {
     public void onDestroyView() {
         mInfoUIHelper.destroy();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mProgressDialog != null) {
+            mProgressDialog.cancel();
+            mProgressDialog = null;
+        }
     }
 
     @Override
@@ -79,6 +99,44 @@ public class CarInfoFragment extends BaseButterFragment {
     }
 
     private void saveCarInfo() {
-        mListener.onInfoSaved();
+        mProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), true);
+
+        Car car = mInfoUIHelper.initCarData();
+        UserStateManager.getInstance().saveCarInfo(car, new Callback() {
+            @Override
+            public void success() {
+                onCarInfoSaved();
+            }
+
+            @Override
+            public void failure(String message) {
+                onError(message);
+            }
+        });
+    }
+
+    private void onCarInfoSaved() {
+        UserStateManager.getInstance().sync(new Callback() {
+            @Override
+            public void success() {
+                if (mProgressDialog != null)
+                    mProgressDialog.cancel();
+
+                mListener.onInfoSaved();
+            }
+
+            @Override
+            public void failure(String message) {
+                onError(message);
+            }
+        });
+    }
+
+    private void onError(String error) {
+        if (getView() != null)
+            Snackbar.make(getView(), error, Snackbar.LENGTH_SHORT).show();
+
+        if (mProgressDialog != null)
+            mProgressDialog.cancel();
     }
 }

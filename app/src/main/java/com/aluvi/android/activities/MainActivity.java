@@ -14,6 +14,7 @@ import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.fragments.CarInfoFragment;
 import com.aluvi.android.fragments.CommuteMapFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
+import com.aluvi.android.fragments.ReceiptsFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Ticket;
@@ -50,11 +51,8 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
     public void onResume() {
         super.onResume();
 
-        boolean isDriver = UserStateManager.getInstance().isUserDriver();
         mNavigationView.getMenu().findItem(R.id.action_car_info)
-                .setVisible(isDriver);
-        mNavigationView.getMenu().findItem(R.id.action_car_payments)
-                .setVisible(isDriver);
+                .setVisible(UserStateManager.getInstance().isUserDriver());
     }
 
     public void initNavigationView() {
@@ -66,13 +64,15 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
-
                 switch (menuItem.getItemId()) {
                     case R.id.action_my_commute:
                         onHomeClicked();
                         break;
                     case R.id.action_car_info:
                         onCarInfoClicked();
+                        break;
+                    case R.id.action_payments:
+                        onPaymentInfoClicked();
                         break;
                 }
 
@@ -97,11 +97,9 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SCHEDULE_RIDE_REQUEST_CODE) {
-            if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK) {
+        if (requestCode == SCHEDULE_RIDE_REQUEST_CODE)
+            if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK)
                 onCommuteScheduled();
-            }
-        }
     }
 
     @Override
@@ -137,6 +135,13 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, CarInfoFragment.newInstance())
                 .addToBackStack("car_info")
+                .commit();
+    }
+
+    public void onPaymentInfoClicked() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, ReceiptsFragment.newInstance())
+                .addToBackStack("receipts_info")
                 .commit();
     }
 

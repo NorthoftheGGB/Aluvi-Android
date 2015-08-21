@@ -24,4 +24,5 @@
     <string name="field_required_error">Please fill out this field</string>
     <string name="save_error">Unable to save your profile</string>
     <string name="camera_unavailable">Camera Unavailable</string>
+    <string name="photo_required">You must submit a profile photo</string>
 </resources>

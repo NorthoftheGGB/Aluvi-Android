@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
+import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.devices.DevicesApi;
 import com.aluvi.android.api.users.LoginResponse;
 import com.aluvi.android.api.users.UsersApi;
@@ -13,6 +14,7 @@ import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.managers.packages.Callback;
 import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 
 import java.net.HttpURLConnection;
@@ -159,7 +161,10 @@ public class UserStateManager {
     public void registerUser(ProfileData data, final Callback callback) {
         UsersApi.registerUser(data, new UsersApi.RegistrationCallback() {
             @Override
-            public void success() {
+            public void success(LoginResponse response) {
+                setApiToken(response.getToken());
+                setDriverState(response.getDriverState());
+                setRiderState(response.getRiderState());
                 callback.success();
             }
 
@@ -171,7 +176,7 @@ public class UserStateManager {
     }
 
     public void registerDriver(DriverProfileData data, final Callback callback) {
-        UsersApi.registerDriver(data, new UsersApi.RegistrationCallback() {
+        UsersApi.registerDriver(data, new UsersApi.DriverRegistrationCallback() {
             @Override
             public void success() {
                 setDriverState(DRIVER_STATE_ACTIVE);
@@ -217,6 +222,20 @@ public class UserStateManager {
             @Override
             public void failure(int statusCode) {
                 callback.failure("Unable to save profile");
+            }
+        });
+    }
+
+    public void saveCarInfo(Car car, final Callback callback) {
+        UsersApi.saveCarInfo(car, new ApiCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to save car info");
             }
         });
     }

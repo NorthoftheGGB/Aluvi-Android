@@ -1,5 +1,7 @@
 package com.aluvi.android.managers;
 
+import com.aluvi.android.api.users.ReceiptsApi;
+import com.aluvi.android.api.users.models.ReceiptData;
 import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.CreditCard;
 import com.stripe.android.Stripe;
@@ -7,6 +9,8 @@ import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.exception.AuthenticationException;
+
+import java.util.List;
 
 /**
  * Created by usama on 8/11/15.
@@ -51,5 +55,19 @@ public class PaymentManager {
         } else {
             tokenCallback.failure("Invalid credit card");
         }
+    }
+
+    public void getReceipts(final DataCallback<List<ReceiptData>> receiptCallback) {
+        ReceiptsApi.getReceipts(new ReceiptsApi.ReceiptsCallback() {
+            @Override
+            public void success(List<ReceiptData> receipts) {
+                receiptCallback.success(receipts);
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                receiptCallback.failure("Unable to fetch receipts");
+            }
+        });
     }
 }

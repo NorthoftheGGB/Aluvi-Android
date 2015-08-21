@@ -52,8 +52,7 @@ public class Car extends RealmObject {
         out.put("make", car.getMake());
         out.put("model", car.getModel());
         out.put("license_plate", car.getLicensePlate());
-        out.put("state", car.getState());
-        out.put("car_photo", car.getCarPhotoUrl());
+        out.put("color", "silver");
         return out;
     }
 
