@@ -21,6 +21,7 @@
     <color name="profilePictureOutline">#5FA262</color>
     <color name="pathOverlayColor">#B95040</color>
 
+    <color name="aluvi_background">#D1E1D7</color>
     <color name="aluvi_gradient_start">#60c196</color>
     <color name="aluvi_gradient_end">#388C94</color>
     <color name="aluvi_gradient_end_sign_up">#149B70</color>
