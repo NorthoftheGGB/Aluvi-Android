@@ -20,7 +20,7 @@ import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.fragments.onboarding.DriverInfoUIHelper;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.UserStateManager;
-import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 

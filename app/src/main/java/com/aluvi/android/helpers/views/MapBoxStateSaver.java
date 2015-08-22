@@ -3,7 +3,7 @@ package com.aluvi.android.helpers.views;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.aluvi.android.api.gis.GeocodingApi;
+import com.aluvi.android.helpers.GeoLocationUtils;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 
@@ -39,12 +39,12 @@ public class MapBoxStateSaver {
      */
     public static boolean restoreMapState(MapView mapView, int defaultZoom, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mapView.getContext());
-        float savedLat = prefs.getFloat(MAP_PAN_LAT_KEY + key, GeocodingApi.INVALID_LOCATION);
-        float savedLon = prefs.getFloat(MAP_PAN_LON_KEY + key, GeocodingApi.INVALID_LOCATION);
+        float savedLat = prefs.getFloat(MAP_PAN_LAT_KEY + key, GeoLocationUtils.INVALID_LOCATION);
+        float savedLon = prefs.getFloat(MAP_PAN_LON_KEY + key, GeoLocationUtils.INVALID_LOCATION);
         float savedZoom = prefs.getFloat(ZOOM_KEY + key, defaultZoom);
         mapView.setZoom(savedZoom);
 
-        if (savedLat != GeocodingApi.INVALID_LOCATION && savedLon != GeocodingApi.INVALID_LOCATION) {
+        if (savedLat != GeoLocationUtils.INVALID_LOCATION && savedLon != GeoLocationUtils.INVALID_LOCATION) {
             mapView.setCenter(new LatLng(savedLat, savedLon));
             return true;
         } else {

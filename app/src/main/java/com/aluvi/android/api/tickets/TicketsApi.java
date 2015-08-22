@@ -13,8 +13,8 @@ import com.aluvi.android.model.realm.Trip;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.spothero.volley.JacksonRequest;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
@@ -134,7 +134,7 @@ public class TicketsApi {
 
                     @Override
                     public JavaType getReturnType() {
-                        return JacksonRequest.getObjectMapper().getTypeFactory().constructCollectionType(List.class, TicketData.class);
+                        return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
                     }
                 }
         );
@@ -143,18 +143,18 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void ridersPickedUp(Ticket ticket, final ApiCallback callback) {
+    public static void ridersPickedUp(Ticket ticket, final RefreshTicketsCallback callback) {
         Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+        AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_PICKUP,
                 params,
-                new AluviAuthRequestListener<Void>() {
+                new AluviAuthRequestListener<List<TicketData>>() {
                     @Override
-                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                    public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success();
+                            callback.success(response);
                         } else {
                             callback.failure(statusCode);
                         }
@@ -162,7 +162,7 @@ public class TicketsApi {
 
                     @Override
                     public JavaType getReturnType() {
-                        return SimpleType.construct(Void.class);
+                        return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
                     }
                 }
         );
@@ -171,18 +171,18 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void ridersDroppedOff(Ticket ticket, final ApiCallback callback) {
+    public static void ridersDroppedOff(Ticket ticket, final RefreshTicketsCallback callback) {
         Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<>(
+        AluviAuthenticatedRequest<List<TicketData>>  request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_DROPOFF,
                 params,
-                new AluviAuthRequestListener<Void>() {
+                new AluviAuthRequestListener<List<TicketData>>() {
                     @Override
-                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                    public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
                         if (statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success();
+                            callback.success(response);
                         } else {
                             callback.failure(statusCode);
                         }
@@ -190,7 +190,7 @@ public class TicketsApi {
 
                     @Override
                     public JavaType getReturnType() {
-                        return SimpleType.construct(Void.class);
+                        return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
                     }
                 }
         );

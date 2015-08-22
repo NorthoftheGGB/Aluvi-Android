@@ -14,7 +14,7 @@ import com.aluvi.android.api.users.models.ReceiptData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.CurrencyUtils;
 import com.aluvi.android.managers.PaymentManager;
-import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 
 import java.util.ArrayList;
 import java.util.List;

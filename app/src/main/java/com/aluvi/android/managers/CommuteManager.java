@@ -11,8 +11,8 @@ import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.api.users.RoutesApi;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
-import com.aluvi.android.managers.packages.Callback;
-import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.managers.callbacks.Callback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.RealmHelper;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Route;
@@ -284,19 +284,8 @@ public class CommuteManager {
         TicketsApi.refreshTickets(new TicketsApi.RefreshTicketsCallback() {
             @Override
             public void success(final List<TicketData> tickets) {
-                Realm realm = AluviRealm.getDefaultRealm();
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
-                        if (tickets != null)
-                            for (TicketData ticket : tickets)
-                                updateTicketForData(ticket, ticketStateTransitions);
-
-                        removeNonRelevantTickets(tickets, ticketStateTransitions);
-                        callback.success(ticketStateTransitions);
-                    }
-                });
+                List<TicketStateTransition> transitions = onTicketsRefreshed(tickets);
+                callback.success(transitions);
             }
 
             @Override
@@ -304,6 +293,19 @@ public class CommuteManager {
                 callback.failure("Unable to refresh tickets");
             }
         });
+    }
+
+    private List<TicketStateTransition> onTicketsRefreshed(final List<TicketData> tickets) {
+        Realm realm = AluviRealm.getDefaultRealm();
+        realm.beginTransaction();
+        List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
+        if (tickets != null)
+            for (TicketData ticket : tickets)
+                updateTicketForData(ticket, ticketStateTransitions);
+
+        removeNonRelevantTickets(tickets, ticketStateTransitions);
+        realm.commitTransaction();
+        return ticketStateTransitions;
     }
 
     /**
@@ -385,9 +387,10 @@ public class CommuteManager {
     }
 
     public void ridersPickedUp(final Ticket ticket, final Callback callback) {
-        TicketsApi.ridersPickedUp(ticket, new ApiCallback() {
+        TicketsApi.ridersPickedUp(ticket, new TicketsApi.RefreshTicketsCallback() {
             @Override
-            public void success() {
+            public void success(List<TicketData> data) {
+                onTicketsRefreshed(data);
                 onRiderStateUpdated(callback);
             }
 
@@ -399,16 +402,16 @@ public class CommuteManager {
     }
 
     public void ridersDroppedOff(final Ticket ticket, final Callback callback) {
-        TicketsApi.ridersDroppedOff(ticket, new ApiCallback() {
+        TicketsApi.ridersDroppedOff(ticket, new TicketsApi.RefreshTicketsCallback() {
             @Override
-            public void success() {
+            public void success(List<TicketData> data) {
+                onTicketsRefreshed(data);
                 onRiderStateUpdated(callback);
             }
 
             @Override
             public void failure(int statusCode) {
                 callback.failure("Problem communicating with server");
-
             }
         });
     }

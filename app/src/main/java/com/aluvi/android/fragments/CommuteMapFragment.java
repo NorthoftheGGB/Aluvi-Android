@@ -23,9 +23,9 @@ import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.callbacks.Callback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.managers.location.RouteMappingManager;
-import com.aluvi.android.managers.packages.Callback;
-import com.aluvi.android.managers.packages.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
@@ -42,6 +42,7 @@ import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
@@ -172,13 +173,6 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     @SuppressWarnings("unused")
     public void onEvent(AluviPushNotificationListenerService.PushNotificationEvent event) {
         refreshTickets();
-
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.update)
-                .content(event.getPushData())
-                .positiveText(android.R.string.ok)
-                .build()
-                .show();
     }
 
     public void refreshTickets() {
@@ -332,6 +326,19 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     }
 
     private void handleTicketStateTransitions(List<TicketStateTransition> transitions) {
+        if (transitions != null) {
+            Dialog currTransitionDialog = null;
+            HashMap<String, String> shownTransitions = new HashMap<>();
+            for (TicketStateTransition transition : transitions) {
+                if (shownTransitions.get(transition.getOldState()) == null) {
+                    currTransitionDialog = showTransitionDialog(transition, currTransitionDialog);
+                    shownTransitions.put(transition.getOldState(), transition.getNewState());
+                }
+            }
+
+            if (currTransitionDialog != null)
+                currTransitionDialog.show();
+        }
     }
 
     @Override
@@ -419,5 +426,51 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         @Override
         public void onPanelHidden(View view) {
         }
+    }
+
+    private MaterialDialog showTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {
+        return new MaterialDialog.Builder(getActivity())
+                .title(R.string.ticket_updated)
+                .content(getMessageForTransition(transition))
+                .positiveText(android.R.string.ok)
+                .negativeText(android.R.string.no)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onAny(MaterialDialog dialog) {
+                        super.onAny(dialog);
+                        if (nextDialog != null)
+                            nextDialog.show();
+                    }
+                })
+                .build();
+    }
+
+    private String getMessageForTransition(TicketStateTransition transition) {
+        int res = getMessageResouceForTransition(transition);
+        return res != -1 ? getString(res) : null;
+    }
+
+    private int getMessageResouceForTransition(TicketStateTransition transition) {
+        String oldState = transition.getOldState();
+        String newState = transition.getNewState();
+
+        if (oldState != null && newState != null) {
+            if (oldState.equals(Ticket.STATE_REQUESTED)) {
+                if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
+                    return R.string.unable_schedule_commute;
+                } else if (newState.equals(Ticket.STATE_SCHEDULED)) {
+                    return R.string.trip_fulfilled;
+                }
+            }
+
+            if (oldState.equals(Ticket.STATE_SCHEDULED) || oldState.equals(Ticket.STATE_IN_PROGRESS)) {
+                if (newState.equals(Ticket.STATE_ABORTED) || newState.equals(Ticket.STATE_CANCELLED)
+                        || newState.equals(Ticket.STATE_DRIVER_CANCELLED)) {
+                    return R.string.ticket_cancelled;
+                }
+            }
+        }
+
+        return -1;
     }
 }

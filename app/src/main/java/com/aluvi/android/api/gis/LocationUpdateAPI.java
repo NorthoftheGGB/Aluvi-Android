@@ -16,7 +16,7 @@ import java.net.HttpURLConnection;
 /**
  * Created by usama on 7/25/15.
  */
-public class LocationUpdateAPI {
+public class LocationUpdateApi {
 
     public interface OnLocationUpdatedListener {
         void onLocationUpdated(LatLng newLocation);

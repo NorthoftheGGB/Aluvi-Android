@@ -17,10 +17,12 @@ import android.widget.ProgressBar;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
-import com.aluvi.android.api.gis.GeocodingApi;
+import com.aluvi.android.helpers.GeoLocationUtils;
 import com.aluvi.android.helpers.views.GeocodingAutoCompleteBinder;
 import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.helpers.views.ViewUtils;
+import com.aluvi.android.managers.callbacks.DataCallback;
+import com.aluvi.android.managers.location.GeocodingManager;
 import com.aluvi.android.model.local.TicketLocation;
 import com.mapbox.mapboxsdk.api.ILatLng;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -105,8 +107,8 @@ public class LocationSelectDialogFragment extends DialogFragment {
 
         LatLng centerLocation = null;
         if (mCurrentlySelectedLocation != null &&
-                mCurrentlySelectedLocation.getLatitude() != GeocodingApi.INVALID_LOCATION &&
-                mCurrentlySelectedLocation.getLongitude() != GeocodingApi.INVALID_LOCATION)
+                mCurrentlySelectedLocation.getLatitude() != GeoLocationUtils.INVALID_LOCATION &&
+                mCurrentlySelectedLocation.getLongitude() != GeoLocationUtils.INVALID_LOCATION)
             centerLocation = new LatLng(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude());
         else if (mMapView.getUserLocation() != null) {
             centerLocation = mMapView.getUserLocation();
@@ -203,16 +205,16 @@ public class LocationSelectDialogFragment extends DialogFragment {
 
             Log.d(TAG, "Looking for address for custom marker location");
             onLocationSearchStarted();
-            GeocodingApi.getInstance()
-                    .getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(), new GeocodingApi.GeocodingApiCallback() {
+            GeocodingManager.getInstance().getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(),
+                    new DataCallback<List<Address>>() {
                         @Override
-                        public void onAddressesFound(String query, List<Address> data) {
+                        public void success(List<Address> data) {
                             onAddressesFoundForLocation(latLng.getLatitude(), latLng.getLongitude(), data);
                         }
 
                         @Override
-                        public void onFailure(int statusCode) {
-                            Log.e(TAG, "Error geocoding latlng. Status code: " + statusCode);
+                        public void failure(String message) {
+                            Log.e(TAG, message);
                         }
                     });
         }
@@ -238,7 +240,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
             addMarkerForAddress(parsedAddress);
             mGeocodingAutoCompleteBinder.updateAddresses(data);
             if (address != null && mLocationSearchAutoCompleteTextView != null)
-                mLocationSearchAutoCompleteTextView.setText(GeocodingApi.getFormattedAddress(address));
+                mLocationSearchAutoCompleteTextView.setText(GeoLocationUtils.getFormattedAddress(address));
 
             mCurrentlySelectedLocation = parsedAddress;
         }
