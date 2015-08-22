@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.MainActivity;
@@ -66,14 +67,24 @@ public class AluviPushNotificationListenerService extends com.google.android.gms
         final String message = type.equals(TRIP_STATE_GENERIC) ? data.getString("message")
                 : getString(getNotificationMessageForType(type));
 
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                EventBus.getDefault().post(new PushNotificationEvent(type, message));
-            }
-        });
+        Log.e(TAG, "Received message: " + message);
 
+        mMainThreadHandler.post(new MessageRunnable(type, message));
         sendNotification(message);
+    }
+
+    private static class MessageRunnable implements Runnable {
+        private String type, message;
+
+        public MessageRunnable(String type, String message) {
+            this.type = type;
+            this.message = message;
+        }
+
+        @Override
+        public void run() {
+            EventBus.getDefault().post(new PushNotificationEvent(type, message));
+        }
     }
 
     private void sendNotification(String message) {

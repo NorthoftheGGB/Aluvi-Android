@@ -24,7 +24,7 @@ import com.aluvi.android.helpers.CurrencyUtils;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
-import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;

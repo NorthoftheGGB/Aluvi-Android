@@ -12,8 +12,8 @@ import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.application.AluviPreferences;
 import com.aluvi.android.application.AluviRealm;
-import com.aluvi.android.managers.packages.Callback;
-import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.managers.callbacks.Callback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 
@@ -134,21 +134,7 @@ public class UserStateManager {
         UsersApi.login(email, password, new UsersApi.LoginCallback() {
             @Override
             public void success(LoginResponse response) {
-                setApiToken(response.getToken());
-                setDriverState(response.getDriverState());
-                setRiderState(response.getRiderState());
-
-                DevicesApi.updateUser(new DevicesApi.Callback() {
-                    @Override
-                    public void success() {
-                        callback.success();
-                    }
-
-                    @Override
-                    public void failure(int statusCode) {
-                        callback.failure("Could not update user");
-                    }
-                });
+                onLoginSuccess(response, callback);
             }
 
             @Override
@@ -162,15 +148,30 @@ public class UserStateManager {
         UsersApi.registerUser(data, new UsersApi.RegistrationCallback() {
             @Override
             public void success(LoginResponse response) {
-                setApiToken(response.getToken());
-                setDriverState(response.getDriverState());
-                setRiderState(response.getRiderState());
-                callback.success();
+                onLoginSuccess(response, callback);
             }
 
             @Override
             public void failure(int statusCode) {
                 callback.failure("Unable to register user");
+            }
+        });
+    }
+
+    private void onLoginSuccess(LoginResponse response, final Callback callback) {
+        setApiToken(response.getToken());
+        setDriverState(response.getDriverState());
+        setRiderState(response.getRiderState());
+
+        DevicesApi.updateUser(new DevicesApi.Callback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Could not update user");
             }
         });
     }

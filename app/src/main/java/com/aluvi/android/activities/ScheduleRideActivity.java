@@ -21,7 +21,7 @@ import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.fragments.onboarding.DriverRegistrationDialogFragment;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
-import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.model.local.TicketLocation;
 import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.RealmLatLng;
@@ -72,7 +72,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUI();
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 

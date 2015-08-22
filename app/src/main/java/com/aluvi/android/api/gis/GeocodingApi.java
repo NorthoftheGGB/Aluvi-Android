@@ -119,23 +119,36 @@ public class GeocodingApi {
         address.setLatitude(location.getLat());
         address.setLongitude(location.getLon());
 
-        address.setThoroughfare(location.getStreet());
-        address.setAddressLine(0, location.getStreet());
+        int addressLine = 0;
 
-        address.setLocality(location.getCity());
-        address.setAdminArea(location.getState());
-        address.setAddressLine(1, location.getCity() + ", " + location.getState());
+        String street = location.getStreet();
+        street = street != null && !location.getStreet().contains("null") ? location.getStreet() : "";
+        address.setThoroughfare(street);
+        address.setAddressLine(addressLine, street);
+
+        String city = location.getCity();
+        String state = location.getState();
+        address.setLocality(city);
+        address.setAdminArea(state);
+
+        String cityState = "";
+        if (city != null && !city.equals("")) {
+            cityState += location.getCity();
+            if (state != null && !state.equals(""))
+                cityState += ", ";
+        }
+
+        cityState += state;
+        address.setAddressLine(++addressLine, cityState);
 
         address.setPostalCode(location.getPostalCode());
-        address.setAddressLine(2, location.getPostalCode());
-
         address.setCountryName(location.getCountry());
         return address;
     }
 
     public static String getFormattedAddress(Address address) {
         StringBuilder out = new StringBuilder();
-        int addressLines = Math.min(2, address.getMaxAddressLineIndex());
+        int addressLines = address.getMaxAddressLineIndex() + 1;
         for (int i = 0; i < addressLines; i++) {
             String line = address.getAddressLine(i);
             if (line != null && !line.trim().equals("")) {

@@ -25,7 +25,7 @@ import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.UserStateManager;
-import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.model.realm.Profile;
 import com.squareup.picasso.Picasso;
 

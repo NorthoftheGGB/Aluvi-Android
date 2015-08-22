@@ -2,7 +2,7 @@ package com.aluvi.android.managers;
 
 import com.aluvi.android.api.users.ReceiptsApi;
 import com.aluvi.android.api.users.models.ReceiptData;
-import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.local.CreditCard;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;

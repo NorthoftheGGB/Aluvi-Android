@@ -16,7 +16,7 @@ import com.aluvi.android.R;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.PaymentManager;
-import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.local.CreditCard;
 
 import java.util.regex.Pattern;

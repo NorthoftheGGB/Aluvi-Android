@@ -3,7 +3,7 @@ package com.aluvi.android.managers.location;
 import android.content.Context;
 
 import com.aluvi.android.api.gis.LocationUpdateAPI;
-import com.aluvi.android.managers.packages.DataCallback;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 /**

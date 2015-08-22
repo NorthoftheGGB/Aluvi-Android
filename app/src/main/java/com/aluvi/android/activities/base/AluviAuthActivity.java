@@ -12,7 +12,7 @@ import com.aluvi.android.R;
 import com.aluvi.android.activities.LoginActivity;
 import com.aluvi.android.api.AuthFailEvent;
 import com.aluvi.android.managers.UserStateManager;
-import com.aluvi.android.managers.packages.Callback;
+import com.aluvi.android.managers.callbacks.Callback;
 
 import de.greenrobot.event.EventBus;
 
