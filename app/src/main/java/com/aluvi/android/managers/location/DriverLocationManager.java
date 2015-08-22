@@ -2,7 +2,7 @@ package com.aluvi.android.managers.location;
 
 import android.content.Context;
 
-import com.aluvi.android.api.gis.LocationUpdateAPI;
+import com.aluvi.android.api.gis.LocationUpdateApi;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -27,9 +27,9 @@ public class DriverLocationManager extends GeoLocationManager {
     }
 
     public void getRiderLocation(final DataCallback<LatLng> riderLocationCallback) {
-        LocationUpdateAPI.getRiderLocation(new LocationUpdateAPI.OnLocationFetchedListener() {
+        LocationUpdateApi.getRiderLocation(new LocationUpdateApi.OnLocationFetchedListener() {
             @Override
-            public void onLocationFetched(LocationUpdateAPI.LocationUpdateResponse location) {
+            public void onLocationFetched(LocationUpdateApi.LocationUpdateResponse location) {
                 LatLng out = location != null ? new LatLng(location.getLatitude(), location.getLongitude()) : null;
                 riderLocationCallback.success(out);
             }
@@ -43,6 +43,6 @@ public class DriverLocationManager extends GeoLocationManager {
 
     @Override
     public void onLocationUpdated(LatLng newLocation) {
-        LocationUpdateAPI.updateDriverLocation(newLocation, null);
+        LocationUpdateApi.updateDriverLocation(newLocation, null);
     }
 }

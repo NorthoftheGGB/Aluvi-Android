@@ -6,7 +6,7 @@ import android.support.multidex.MultiDex;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.AluviApi;
-import com.aluvi.android.api.gis.GeocodingApi;
+import com.aluvi.android.managers.location.GeocodingManager;
 import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.PaymentManager;
@@ -32,7 +32,7 @@ public class AluviApplication extends Application {
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
         CommuteManager.initialize();
-        GeocodingApi.initialize(this, getString(R.string.mapbox_access_token));
+        GeocodingManager.initialize(getString(R.string.mapbox_access_token));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
         PaymentManager.initialize(getString(R.string.stripe_key));

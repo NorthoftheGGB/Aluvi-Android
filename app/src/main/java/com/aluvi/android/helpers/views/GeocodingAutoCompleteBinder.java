@@ -9,7 +9,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.TextView;
 
-import com.aluvi.android.api.gis.GeocodingApi;
+import com.aluvi.android.helpers.GeoLocationUtils;
+import com.aluvi.android.managers.callbacks.DataCallback;
+import com.aluvi.android.managers.location.GeocodingManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +26,6 @@ public class GeocodingAutoCompleteBinder {
 
         void onGeoCodeFinished(List<Address> addresses);
     }
-
 
     private final String TAG = "GeocodingBinder";
     private OnGeoLocationUpdateListener mLocationUpdateListener;
@@ -70,21 +71,20 @@ public class GeocodingAutoCompleteBinder {
                 if (mLocationUpdateListener != null)
                     mLocationUpdateListener.onGeoCodeStarted();
 
-                GeocodingApi.getInstance()
-                        .getAddressesForName(query, new GeocodingApi.GeocodingApiCallback() {
-                            @Override
-                            public void onAddressesFound(String query, List<Address> data) {
-                                if (mGeoCodeCache != null)
-                                    mGeoCodeCache.put(query, data);
+                GeocodingManager.getInstance().getAddressesForName(query, new DataCallback<List<Address>>() {
+                    @Override
+                    public void success(List<Address> data) {
+                        if (mGeoCodeCache != null)
+                            mGeoCodeCache.put(query, data);
 
-                                onAddressesFetched(data);
-                            }
+                        onAddressesFetched(data);
+                    }
 
-                            @Override
-                            public void onFailure(int statusCode) {
-                                Log.e(TAG, "Error fetching geocode data. Status code: " + statusCode);
-                            }
-                        });
+                    @Override
+                    public void failure(String message) {
+                        Log.e(TAG, message);
+                    }
+                });
             }
         }
     }
@@ -128,13 +128,13 @@ public class GeocodingAutoCompleteBinder {
         @Override
         protected void initView(ViewHolder holder, int position) {
             TextView addressTextView = (TextView) holder.getView(android.R.id.text1);
-            addressTextView.setText(GeocodingApi.getFormattedAddress(getItem(position)));
+            addressTextView.setText(GeoLocationUtils.getFormattedAddress(getItem(position)));
         }
 
         private final NoFilter<Address> NO_FILTER = new NoFilter<Address>() {
             @Override
             public CharSequence convertToString(Address resultValue) {
-                return GeocodingApi.getFormattedAddress(resultValue);
+                return GeoLocationUtils.getFormattedAddress(resultValue);
             }
         };
 
