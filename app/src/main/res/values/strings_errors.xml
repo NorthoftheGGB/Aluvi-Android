@@ -25,4 +25,6 @@
     <string name="save_error">Unable to save your profile</string>
     <string name="camera_unavailable">Camera Unavailable</string>
     <string name="photo_required">You must submit a profile photo</string>
+    <string name="commute_schedule_failed">Unable to schedule commute</string>
+    <string name="ticket_cancelled">Ticket cancelled</string>
 </resources>
