@@ -173,13 +173,6 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     @SuppressWarnings("unused")
     public void onEvent(AluviPushNotificationListenerService.PushNotificationEvent event) {
         refreshTickets();
-
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.update)
-                .content(event.getPushData())
-                .positiveText(android.R.string.ok)
-                .build()
-                .show();
     }
 
     public void refreshTickets() {
@@ -461,15 +454,20 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         String oldState = transition.getOldState();
         String newState = transition.getNewState();
 
-        if (oldState.equals(Ticket.STATE_REQUESTED)) {
-            if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
-                return R.string.unable_schedule_commute;
+        if (oldState != null && newState != null) {
+            if (oldState.equals(Ticket.STATE_REQUESTED)) {
+                if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
+                    return R.string.unable_schedule_commute;
+                } else if (newState.equals(Ticket.STATE_SCHEDULED)) {
+                    return R.string.trip_fulfilled;
+                }
             }
-        }
 
-        if (oldState.equals(Ticket.STATE_SCHEDULED) || oldState.equals(Ticket.STATE_IN_PROGRESS)) {
-            if (newState.equals(Ticket.STATE_ABORTED)) {
-                return R.string.ticket_cancelled;
+            if (oldState.equals(Ticket.STATE_SCHEDULED) || oldState.equals(Ticket.STATE_IN_PROGRESS)) {
+                if (newState.equals(Ticket.STATE_ABORTED) || newState.equals(Ticket.STATE_CANCELLED)
+                        || newState.equals(Ticket.STATE_DRIVER_CANCELLED)) {
+                    return R.string.ticket_cancelled;
+                }
             }
         }
 
