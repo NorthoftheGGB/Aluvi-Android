@@ -4,6 +4,7 @@
                 android:layout_height="match_parent">
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -12,42 +13,42 @@
         android:layout_alignParentStart="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:id="@+id/view">
+        android:layout_marginTop="@dimen/activity_vertical_margin">
 
         <EditText
+            android:id="@+id/support_edit_text_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/support_edit_text_message"
             android:ems="10"
+            android:gravity="top"
             android:hint="@string/write_message"
-            android:lines="5"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine"
+            android:lines="5"/>
     </android.support.design.widget.TextInputLayout>
 
     <Button
+        android:id="@+id/support_button_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/submit"
-        android:id="@+id/support_button_submit"
-        android:theme="@style/BlueButton.Large"
-        android:layout_below="@+id/view"
-        android:layout_alignRight="@+id/view"
         android:layout_alignEnd="@+id/view"
         android:layout_alignLeft="@+id/view"
+        android:layout_alignRight="@+id/view"
         android:layout_alignStart="@+id/view"
-        android:layout_marginTop="8dp"/>
+        android:layout_below="@+id/view"
+        android:layout_marginTop="8dp"
+        android:text="@string/submit"
+        android:theme="@style/BlueButton.Large"/>
 
     <Button
+        android:id="@+id/support_button_emergency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/error"
-        android:theme="@style/ErrorButton.Large"
-        android:id="@+id/support_button_error"
-        android:layout_below="@+id/support_button_submit"
-        android:layout_alignRight="@+id/support_button_submit"
         android:layout_alignEnd="@+id/support_button_submit"
         android:layout_alignLeft="@+id/support_button_submit"
+        android:layout_alignRight="@+id/support_button_submit"
         android:layout_alignStart="@+id/support_button_submit"
-        android:layout_marginTop="8dp"/>
+        android:layout_below="@+id/support_button_submit"
+        android:layout_marginTop="8dp"
+        android:text="@string/emergency"
+        android:theme="@style/ErrorButton.Large"/>
 </RelativeLayout>

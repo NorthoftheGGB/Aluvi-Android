@@ -139,7 +139,24 @@ public class UserStateManager {
 
             @Override
             public void failure(int statusCode) {
-                callback.failure("Could not log in");
+                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
+                    callback.failure("Invalid username or password");
+                else
+                    callback.failure("Unable to log in");
+            }
+        });
+    }
+
+    public void isUserRegistered(String email, final Callback callback) {
+        UsersApi.isUserAlreadyRegistered(email, new UsersApi.RegisteredCheckCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure() {
+                callback.failure("User isn't registered");
             }
         });
     }
@@ -209,15 +226,17 @@ public class UserStateManager {
         UsersApi.saveProfile(profile, new UsersApi.ProfileCallback() {
             @Override
             public void success(final Profile responseProfile) {
-                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.clear(Profile.class);
-                        profile = realm.copyToRealm(responseProfile);
-                    }
-                });
 
-                callback.success();
+                // TODO revert back to this once API fix has been made
+//                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+//                    @Override
+//                    public void execute(Realm realm) {
+//                        realm.clear(Profile.class);
+//                        profile = realm.copyToRealm(responseProfile);
+//                    }
+//                });
+
+                sync(callback);
             }
 
             @Override
