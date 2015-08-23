@@ -111,9 +111,31 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     @Override
-    public void onRegistered(ProfileData data) {
-        mRegistrationData = data;
+    public void onRegistered(final ProfileData data) {
+        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
 
+        UserStateManager.getInstance().isUserRegistered(data.getEmail(), new Callback() {
+            @Override
+            public void success() {
+                onError("Username already taken");
+
+                if (mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
+            }
+
+            @Override
+            public void failure(String message) {
+                if (getSupportFragmentManager() != null)
+                    onUnregisteredUserConfirmed(data);
+
+                if (mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
+            }
+        });
+    }
+
+    public void onUnregisteredUserConfirmed(ProfileData data) {
+        mRegistrationData = data;
         Fragment nextFragment = mRegistrationData.isInterestedDriver() ? DriverRegistrationFragment.newInstance()
                 : LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc);
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())

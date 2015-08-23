@@ -35,6 +35,11 @@ public class UsersApi {
         void success(LoginResponse response);
     }
 
+    public interface RegisteredCheckCallback {
+        void success();
+        void failure();
+    }
+
     public interface RegistrationCallback extends FailureCallback {
         void success(LoginResponse response);
     }
@@ -74,6 +79,23 @@ public class UsersApi {
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
                 HttpURLConnection.HTTP_FORBIDDEN, HttpURLConnection.HTTP_NOT_FOUND});
         AluviApi.getInstance().getRequestQueue().add(request);
+    }
+
+    public static void isUserAlreadyRegistered(String email, final RegisteredCheckCallback callback) {
+        login(email, "a", new LoginCallback() {
+            @Override
+            public void success(LoginResponse response) {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
+                    callback.success();
+                else
+                    callback.failure();
+            }
+        });
     }
 
     public static void registerUser(ProfileData riderData, final RegistrationCallback callback) {

@@ -105,4 +105,7 @@
     <string name="am_pickup">AM Pickup</string>
     <string name="pm_dropoff">PM Dropoff</string>
     <string name="ticket_updated">Ticket Updated</string>
+    <string name="write_message">Write us a message and we\'ll get back to you via email</string>
+    <string name="submit">Submit</string>
+    <string name="emergency">Emergency</string>
 </resources>

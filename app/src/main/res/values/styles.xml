@@ -43,6 +43,11 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="ErrorButton.Large">
+        <item name="android:textSize">@dimen/abc_text_size_medium_material</item>
+        <item name="android:height">60dp</item>
+    </style>
+
     <style name="BlueButton" parent="@android:style/Widget.Button">
         <item name="colorButtonNormal">@color/successButtonBackground</item>
         <item name="android:textColor">@android:color/white</item>
