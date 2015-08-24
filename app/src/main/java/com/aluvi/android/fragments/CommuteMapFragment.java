@@ -458,7 +458,9 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
             if (oldState.equals(Ticket.STATE_REQUESTED)) {
                 if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
                     return R.string.unable_schedule_commute;
-                } else if (newState.equals(Ticket.STATE_SCHEDULED)) {
+                } else if (newState.equals(Ticket.STATE_SCHEDULED)
+                        || newState.equals(Ticket.STATE_IN_PROGRESS)
+                        || newState.equals(Ticket.STATE_STARTED)) {
                     return R.string.trip_fulfilled;
                 }
             }

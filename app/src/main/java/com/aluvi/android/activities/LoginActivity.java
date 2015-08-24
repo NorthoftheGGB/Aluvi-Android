@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseToolBarActivity;
+import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
@@ -28,8 +29,10 @@ public class LoginActivity extends BaseToolBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (UserStateManager.getInstance().getApiToken() != null) {
-            onLoggedIn();
+        if (PushManager.checkAndRespondGooglePlayServices(this)) {
+            if (UserStateManager.getInstance().getApiToken() != null) {
+                onLoggedIn();
+            }
         }
 
         super.onCreate(savedInstanceState);

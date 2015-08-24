@@ -6,12 +6,12 @@ import android.support.multidex.MultiDex;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.AluviApi;
-import com.aluvi.android.managers.location.GeocodingManager;
 import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.PaymentManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.location.DriverLocationManager;
+import com.aluvi.android.managers.location.GeocodingManager;
 import com.aluvi.android.managers.location.RiderLocationManager;
 import com.crashlytics.android.Crashlytics;
 
