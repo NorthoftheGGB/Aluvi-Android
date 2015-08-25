@@ -91,7 +91,7 @@ public class LocationSelectFragment extends BaseButterFragment
 
     @OnClick(R.id.onboarding_button_work_location)
     public void onWorkLocationButtonClicked() {
-        LocationSelectDialogFragment.newInstance(null).show(getChildFragmentManager(), WORK_LOC);
+        LocationSelectDialogFragment.newInstance(false).show(getChildFragmentManager(), WORK_LOC);
     }
 
     @OnClick(R.id.onboarding_location_next_button)

@@ -40,6 +40,7 @@ import io.realm.RealmList;
 public class TicketInfoFragment extends BaseTicketConsumerFragment {
     public interface TicketInfoListener {
         void onTicketInfoUIMeasured(int headerHeight, int panelHeight);
+
         void onRiderStateChanged();
     }
 
@@ -144,7 +145,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     }
 
     private void addRider(String firstName, String profilePictureUrl) {
-        View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, mRiderProfilePictureContainer);
+        View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, null);
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
 
@@ -159,6 +160,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
 
         riderNameTextView.setText(firstName);
         loadProfilePicture(profilePictureUrl, riderProfileImageView);
+        mRiderProfilePictureContainer.addView(riderInfoView);
     }
 
     private void loadProfilePicture(String url, ImageView imageView) {

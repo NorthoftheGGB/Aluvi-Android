@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">@color/black</color>
     <color name="colorAccent">#1085E2</color>
 
-    <color name="actionBarBackground">#ffffff</color>
+    <color name="actionBarBackground">#AAffffff</color>
 
     <color name="scheduleRideButtonBackground">#878787</color>
     <color name="scheduleRideButtonBackgroundClicked">#656565</color>

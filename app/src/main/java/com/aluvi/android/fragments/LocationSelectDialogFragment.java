@@ -49,15 +49,25 @@ public class LocationSelectDialogFragment extends DialogFragment {
     @Bind(R.id.location_select_map_view) MapView mMapView;
 
     private final static String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map",
-            TICKET_KEY = "ticket_location";
+            TICKET_KEY = "ticket_location", DEFAULT_USER_LOCATION_KEY = "default_user_location";
 
     private OnLocationSelectedListener mLocationSelectedListener;
     private TicketLocation mCurrentlySelectedLocation;
     private GeocodingAutoCompleteBinder mGeocodingAutoCompleteBinder;
+    private boolean mDefaultToUserLocation;
 
     public static LocationSelectDialogFragment newInstance(TicketLocation currentlySelectionLocation) {
         Bundle args = new Bundle();
         args.putParcelable(TICKET_KEY, currentlySelectionLocation);
+
+        LocationSelectDialogFragment fragment = new LocationSelectDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static LocationSelectDialogFragment newInstance(boolean defaultToUserLocation) {
+        Bundle args = new Bundle();
+        args.putBoolean(DEFAULT_USER_LOCATION_KEY, defaultToUserLocation);
 
         LocationSelectDialogFragment fragment = new LocationSelectDialogFragment();
         fragment.setArguments(args);
@@ -73,12 +83,19 @@ public class LocationSelectDialogFragment extends DialogFragment {
             mLocationSelectedListener = (OnLocationSelectedListener) activity;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null){
+            mCurrentlySelectedLocation = getArguments().getParcelable(TICKET_KEY);
+            mDefaultToUserLocation = getArguments().getBoolean(DEFAULT_USER_LOCATION_KEY, true);
+        }
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (getArguments() != null)
-            mCurrentlySelectedLocation = getArguments().getParcelable(TICKET_KEY);
-
         final View rootView = View.inflate(getActivity(), R.layout.fragment_location_select, null);
         ButterKnife.bind(this, rootView);
 
@@ -110,7 +127,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
                 mCurrentlySelectedLocation.getLatitude() != GeoLocationUtils.INVALID_LOCATION &&
                 mCurrentlySelectedLocation.getLongitude() != GeoLocationUtils.INVALID_LOCATION)
             centerLocation = new LatLng(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude());
-        else if (mMapView.getUserLocation() != null) {
+        else if (mDefaultToUserLocation && mMapView.getUserLocation() != null) {
             centerLocation = mMapView.getUserLocation();
         }
 

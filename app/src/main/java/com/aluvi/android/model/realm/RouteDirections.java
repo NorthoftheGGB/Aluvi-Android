@@ -22,11 +22,13 @@ public class RouteDirections extends RealmObject {
 
     public static RealmList<RealmLatLng> wrapLatLng(LatLng[] list) {
         RealmList<RealmLatLng> latLngs = new RealmList<>();
-        for (int i = 0; i < list.length; i++) {
-            RealmLatLng latLng = new RealmLatLng();
-            latLng.setLatitude(list[i].getLatitude());
-            latLng.setLongitude(list[i].getLongitude());
-            latLngs.add(latLng);
+        if (list != null) {
+            for (int i = 0; i < list.length; i++) {
+                RealmLatLng latLng = new RealmLatLng();
+                latLng.setLatitude(list[i].getLatitude());
+                latLng.setLongitude(list[i].getLongitude());
+                latLngs.add(latLng);
+            }
         }
 
         return latLngs;
