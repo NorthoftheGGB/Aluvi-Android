@@ -2,8 +2,8 @@ package com.aluvi.android.model.realm;
 
 import com.aluvi.android.api.tickets.model.DriverData;
 
-import io.realm.RealmObject;
 import io.realm.RealmList;
+import io.realm.RealmObject;
 
 /**
  * Created by matthewxi on 7/13/15.
@@ -24,8 +24,13 @@ public class Driver extends RealmObject {
         driver.setId(data.getId());
         driver.setFirstName(data.getFirstName());
         driver.setLastName(data.getLastName());
-        driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
-        driver.setPhone(data.getPhone());
+
+        if (data.getDriversLicenseNumber() != null)
+            driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
+
+        if (data.getPhone() != null)
+            driver.setPhone(data.getPhone());
+
         driver.setSmallImageUrl(data.getSmallImage());
         driver.setLargeImageUrl(data.getLargeImage());
     }

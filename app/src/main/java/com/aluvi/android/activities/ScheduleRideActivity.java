@@ -176,8 +176,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     @Override
-    public void onError(String message) {
-        onCreditCardProcessingError();
+    public void onCreditCardProcessingError(String message) {
+        Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
     }
 
     private void updateUserPaymentToken(final String token) {
@@ -210,14 +210,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
                 if (mRootView != null)
                     Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-
-                onCreditCardProcessingError();
             }
         });
-    }
-
-    private void onCreditCardProcessingError() {
-        finish();
     }
 
     @SuppressWarnings("unused")

@@ -123,9 +123,9 @@ public class AluviPushNotificationListenerService extends com.google.android.gms
                 return R.string.ride_payment_problem;
             case TRIP_STATE_USER_STATE_CHANGED:
                 return R.string.user_state_change;
+            default:
+                return R.string.aluvi_default;
         }
-
-        return -1;
     }
 
     public static class PushNotificationEvent {

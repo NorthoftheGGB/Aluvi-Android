@@ -29,7 +29,7 @@ public class LoginActivity extends BaseToolBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (PushManager.checkAndRespondGooglePlayServices(this)) {
+        if (PushManager.updateGooglePlayServicesIfNeeded(this)) {
             if (UserStateManager.getInstance().getApiToken() != null) {
                 onLoggedIn();
             }

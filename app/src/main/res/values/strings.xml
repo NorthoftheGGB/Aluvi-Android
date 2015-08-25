@@ -108,4 +108,5 @@
     <string name="write_message">Write us a message and we\'ll get back to you via email</string>
     <string name="submit">Submit</string>
     <string name="emergency">Emergency</string>
+    <string name="aluvi_default">Aluvi Update</string>
 </resources>
