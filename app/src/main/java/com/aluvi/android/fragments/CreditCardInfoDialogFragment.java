@@ -31,7 +31,7 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
     public interface CreditCardListener {
         void onStripeTokenReceived(String token);
 
-        void onError(String message);
+        void onCreditCardProcessingError(String message);
     }
 
     @Bind(R.id.credit_card_info_edit_text_number) EditText mCreditCardNumberEditExt;
@@ -79,7 +79,7 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                         super.onNegative(dialog);
                         dismiss();
 
-                        mListener.onError("User cancelled credit card registration");
+                        mListener.onCreditCardProcessingError("User cancelled credit card registration");
                     }
                 })
                 .build();
@@ -152,12 +152,10 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -219,16 +217,13 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
 
                 @Override
                 public void failure(String message) {
-                    if (getView() != null)
-                        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-
-                    if (!isDetached())
-                        dismiss();
-
                     if (mDefaultProgressDialog != null)
                         mDefaultProgressDialog.cancel();
 
-                    mListener.onError(message);
+                    if(getView() != null)
+                        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+
+                    mListener.onCreditCardProcessingError(message);
                 }
             });
         }

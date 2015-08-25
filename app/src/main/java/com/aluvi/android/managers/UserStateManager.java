@@ -226,17 +226,15 @@ public class UserStateManager {
         UsersApi.saveProfile(profile, new UsersApi.ProfileCallback() {
             @Override
             public void success(final Profile responseProfile) {
+                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.clear(Profile.class);
+                        profile = realm.copyToRealm(responseProfile);
+                    }
+                });
 
-                // TODO revert back to this once API fix has been made
-//                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
-//                    @Override
-//                    public void execute(Realm realm) {
-//                        realm.clear(Profile.class);
-//                        profile = realm.copyToRealm(responseProfile);
-//                    }
-//                });
-
-                sync(callback);
+                callback.success();
             }
 
             @Override

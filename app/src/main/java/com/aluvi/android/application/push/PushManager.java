@@ -33,8 +33,6 @@ public class PushManager {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-//                GooglePlayServicesUtil.getErrorDialog(resultCode, context,
-//                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
                 Log.i("PushManager", "Google play services not found");
 
             } else {
@@ -45,17 +43,16 @@ public class PushManager {
         return true;
     }
 
-    public static boolean checkAndRespondGooglePlayServices(final Activity context) {
+    public static boolean updateGooglePlayServicesIfNeeded(final Activity context) {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, context,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
-                Log.i("PushManager", "Google play services not found");
-
             } else {
                 Log.i("PushManager", "This device is not supported.");
             }
+
             return false;
         }
         return true;

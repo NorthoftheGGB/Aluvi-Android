@@ -256,9 +256,13 @@ public class CommuteManager {
             TicketsApi.cancelTicket(ticket, new ApiCallback() {
                 @Override
                 public void success() {
-                    Trip trip = ticket.getTrip();
-                    RealmHelper.removeFromRealm(ticket);
-                    Trip.removeIfEmpty(trip);
+                    AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            ticket.setState(Ticket.STATE_CANCELLED);
+                        }
+                    });
+
                     callback.success();
                 }
 
@@ -369,14 +373,13 @@ public class CommuteManager {
         TicketsApi.cancelTrip(trip, new ApiCallback() {
             @Override
             public void success() {
-                AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        trip.getTickets().where().findAll().clear();
-                        trip.removeFromRealm();
-                        callback.success();
-                    }
-                });
+                final RealmResults<Ticket> tickets = trip.getTickets().where().findAll();
+                Realm realm = AluviRealm.getDefaultRealm();
+                realm.beginTransaction();
+                for (int i = 0; i < tickets.size(); i++)
+                    tickets.get(i).setState(Ticket.STATE_CANCELLED);
+                realm.commitTransaction();
+                callback.success();
             }
 
             @Override
