@@ -87,7 +87,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null){
+        if (getArguments() != null) {
             mCurrentlySelectedLocation = getArguments().getParcelable(TICKET_KEY);
             mDefaultToUserLocation = getArguments().getBoolean(DEFAULT_USER_LOCATION_KEY, true);
         }
