@@ -96,6 +96,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 mToButton.setText(workAddress);
         }
 
+        normalizeStartEndTimes();
         updateStartTimeButton();
         updateEndTimeButton();
         checkCreditCardDetails();
@@ -263,32 +264,50 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     private void updateEndTimeButton() {
-        if (mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME) {
-            ArrayList<TimeHolder> pmTimes = getTimes(MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, 15);
-            mEndTimeSpinner.setAdapter(new TimesAdapter(this, pmTimes));
-        }
+        ArrayList<TimeHolder> pmTimes = getTimes(MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, 15);
+        TimesAdapter adapter = new TimesAdapter(this, pmTimes);
+        mEndTimeSpinner.setAdapter(adapter);
+
+        int currPos = adapter.getPosition(mEndHour, mEndMin);
+        if (currPos != -1)
+            mEndTimeSpinner.setSelection(currPos);
     }
 
     private void updateStartTimeButton() {
-        if (mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME) {
-            ArrayList<TimeHolder> amTimes = getTimes(MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR, 15);
-            mStartTimeSpinner.setAdapter(new TimesAdapter(this, amTimes));
-        }
+        ArrayList<TimeHolder> amTimes = getTimes(MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR, 15);
+        TimesAdapter adapter = new TimesAdapter(this, amTimes);
+        mStartTimeSpinner.setAdapter(adapter);
+
+        int currPos = adapter.getPosition(mStartHour, mStartMin);
+        if (currPos != -1)
+            mStartTimeSpinner.setSelection(currPos);
     }
 
     private ArrayList<TimeHolder> getTimes(int start, int end, int interval) {
         ArrayList<TimeHolder> times = new ArrayList<>();
         int iters = 60 / interval;
-        for (int i = start; i < end; i++) {
+        int hour = start;
+        for (; hour < end; hour++) {
             for (int j = 0; j < iters; j++) {
                 TimeHolder holder = new TimeHolder();
-                holder.hour = i;
+                holder.hour = hour;
                 holder.minute = j * interval;
                 times.add(holder);
             }
         }
 
+        TimeHolder holder = new TimeHolder();
+        holder.hour = hour;
+        holder.minute = 0;
+        times.add(holder);
         return times;
+    }
+
+    private void normalizeStartEndTimes() {
+        mStartHour = mStartHour == CommuteManager.INVALID_TIME ? MIN_HOME_LEAVE_HOUR : mStartHour;
+        mStartMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mStartMin;
+        mEndHour = mEndHour == CommuteManager.INVALID_TIME ? MIN_WORK_LEAVE_HOUR : mEndHour;
+        mEndMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mEndMin;
     }
 
     private void updateSavedRoute() {
@@ -408,6 +427,17 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         private void initTimesRow(ViewHolder holder, int position) {
             TextView contentView = (TextView) holder.getView(R.id.spinner_text_view);
             contentView.setText(getItem(position).formattedTime());
+        }
+
+        public int getPosition(int hour, int min) {
+            int count = getCount();
+            for (int i = 0; i < count; i++) {
+                TimeHolder holder = getItem(i);
+                if (holder.hour == hour && holder.minute == min)
+                    return i;
+            }
+
+            return -1;
         }
     }
 }
