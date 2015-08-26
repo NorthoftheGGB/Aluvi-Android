@@ -1,5 +1,6 @@
 package com.aluvi.android.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -8,8 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
@@ -19,6 +20,8 @@ import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.CreditCardInfoDialogFragment;
 import com.aluvi.android.fragments.LocationSelectDialogFragment;
 import com.aluvi.android.fragments.onboarding.DriverRegistrationDialogFragment;
+import com.aluvi.android.helpers.views.BaseSpinnerArrayAdapter;
+import com.aluvi.android.helpers.views.ViewHolder;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
@@ -28,11 +31,10 @@ import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
-import com.rey.material.app.DialogFragment;
-import com.rey.material.app.TimePickerDialog;
 
 import org.joda.time.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -48,8 +50,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Bind(R.id.schedule_ride_root_view) View mRootView;
     @Bind(R.id.schedule_ride_text_view_home) TextView mFromButton;
     @Bind(R.id.schedule_ride_text_view_work) TextView mToButton;
-    @Bind(R.id.schedule_ride_text_view_start_time) TextView mStartTimeButton;
-    @Bind(R.id.schedule_ride_text_view_end_time) TextView mEndTimeButton;
+    @Bind(R.id.schedule_ride_spinner_start_time) Spinner mStartTimeSpinner;
+    @Bind(R.id.schedule_ride_spinner_end_time) Spinner mEndTimeSpinner;
     @Bind(R.id.schedule_ride_checkbox_drive_there) CheckBox mDriveThereCheckbox;
 
     @Bind({R.id.schedule_ride_home_button_container, R.id.schedule_ride_work_button_container, R.id.schedule_ride_start_time_container,
@@ -229,33 +231,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.schedule_ride_start_time_container)
-    public void onStartTimeButtonClicked() {
-        showTimePicker(mStartHour, mStartMin, MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR,
-                new OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(int hour, int min) {
-                        mStartHour = hour;
-                        mStartMin = min == CommuteManager.INVALID_TIME ? 0 : min;
-                        updateStartTimeButton();
-                    }
-                });
-    }
-
-    @SuppressWarnings("unused")
-    @OnClick(R.id.schedule_ride_end_time_container)
-    public void onEndTimeButtonClicked() {
-        showTimePicker(mEndHour, mEndMin, MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, new OnTimeSetListener() {
-            @Override
-            public void onTimeSet(int hour, int min) {
-                mEndHour = hour;
-                mEndMin = min == CommuteManager.INVALID_TIME ? 0 : min;
-                updateEndTimeButton();
-            }
-        });
-    }
-
-    @SuppressWarnings("unused")
     @OnClick(R.id.schedule_ride_commute_tomorrow_button)
     public void onConfirmCommuteButtonClicked() {
         if (isCommuteReady()) {
@@ -288,13 +263,32 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     private void updateEndTimeButton() {
-        if (mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME)
-            mEndTimeButton.setText(getAmPm(mEndHour, mEndMin));
+        if (mEndHour != CommuteManager.INVALID_TIME && mEndMin != CommuteManager.INVALID_TIME) {
+            ArrayList<TimeHolder> pmTimes = getTimes(MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, 15);
+            mEndTimeSpinner.setAdapter(new TimesAdapter(this, pmTimes));
+        }
     }
 
     private void updateStartTimeButton() {
-        if (mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME)
-            mStartTimeButton.setText(getAmPm(mStartHour, mStartMin));
+        if (mStartHour != CommuteManager.INVALID_TIME && mStartMin != CommuteManager.INVALID_TIME) {
+            ArrayList<TimeHolder> amTimes = getTimes(MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR, 15);
+            mStartTimeSpinner.setAdapter(new TimesAdapter(this, amTimes));
+        }
+    }
+
+    private ArrayList<TimeHolder> getTimes(int start, int end, int interval) {
+        ArrayList<TimeHolder> times = new ArrayList<>();
+        int iters = 60 / interval;
+        for (int i = start; i < end; i++) {
+            for (int j = 0; j < iters; j++) {
+                TimeHolder holder = new TimeHolder();
+                holder.hour = i;
+                holder.minute = j * interval;
+                times.add(holder);
+            }
+        }
+
+        return times;
     }
 
     private void updateSavedRoute() {
@@ -379,42 +373,41 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public void showTimePicker(int startHour, int startMin, final OnTimeSetListener listener) {
-        showTimePicker(startHour, startMin, 0, 24, listener);
+    private static class TimeHolder {
+        private int hour, minute;
+
+        private String formattedTime() {
+            return getAmPm(hour, minute);
+        }
+
+        public static String getAmPm(int hour, int min) {
+            String modifier = hour >= 12 ? "PM" : "AM";
+            hour = hour > 12 ? hour - 12 : hour;
+            hour = hour == 0 ? 12 : hour;
+
+            String formattedMin = min < 10 ? "0" + min : Integer.toString(min);
+            return hour + ":" + formattedMin + " " + modifier;
+        }
     }
 
-    public void showTimePicker(int startHour, int startMin, final int minHour, final int maxHour, final OnTimeSetListener listener) {
-        final TimePickerDialog.Builder builder = new TimePickerDialog.Builder(startHour, startMin) {
-            @Override
-            public void onPositiveActionClicked(DialogFragment fragment) {
-                if (getHour() >= minHour && getHour() < maxHour) {
-                    listener.onTimeSet(getHour(), getMinute());
-                    super.onPositiveActionClicked(fragment);
-                } else {
-                    Toast.makeText(ScheduleRideActivity.this, "Time must be within " + getAmPm(minHour, 0)
-                            + " and " + getAmPm(maxHour, 0), Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        };
+    private static class TimesAdapter extends BaseSpinnerArrayAdapter<TimeHolder> {
+        public TimesAdapter(Context context, ArrayList<TimeHolder> data) {
+            super(context, R.layout.row_layout_spinner, R.layout.row_layout_spinner, data);
+        }
 
-        builder.positiveAction(getString(android.R.string.ok))
-                .negativeAction(getString(android.R.string.cancel));
+        @Override
+        protected void initView(ViewHolder holder, int position) {
+            initTimesRow(holder, position);
+        }
 
-        DialogFragment.newInstance(builder)
-                .show(getSupportFragmentManager(), "time_picker");
-    }
+        @Override
+        protected void initDropDownBiew(ViewHolder holder, int position) {
+            initTimesRow(holder, position);
+        }
 
-    public String getAmPm(int hour, int min) {
-        String modifier = hour >= 12 ? "PM" : "AM";
-        hour = hour > 12 ? hour - 12 : hour;
-        hour = hour == 0 ? 12 : hour;
-
-        String formattedMin = min < 10 ? "0" + min : Integer.toString(min);
-        return hour + ":" + formattedMin + modifier;
-    }
-
-    private interface OnTimeSetListener {
-        void onTimeSet(int hour, int min);
+        private void initTimesRow(ViewHolder holder, int position) {
+            TextView contentView = (TextView) holder.getView(R.id.spinner_text_view);
+            contentView.setText(getItem(position).formattedTime());
+        }
     }
 }

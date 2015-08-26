@@ -2,7 +2,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#149B70"
+              android:background="@color/aluvi_activity_background_color"
               android:orientation="vertical"
               android:id="@+id/log_in_root_view"
               tools:context="com.aluvi.android.activities.LoginActivity">

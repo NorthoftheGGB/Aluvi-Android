@@ -20,7 +20,7 @@
     <color name="transparent_white_darker">#AA444444</color>
 
     <color name="button_transparent_white">#66FFFFFF</color>
-    <color name="button_transparent_white_darker">#AADDDDDD</color>
+    <color name="button_transparent_white_darker">#66DDDDDD</color>
 
     <color name="ticketInfoPriceBackground">#2360DD</color>
     <color name="profilePictureOutline">#5FA262</color>
@@ -32,9 +32,10 @@
     <color name="aluvi_gradient_end_sign_up">#149B70</color>
     <color name="aluvi_gradient_end_location_select">#149A86</color>
     <color name="aluvi_gradient_end_tutorial">#159386</color>
-
     <color name="aluvi_gradient_start_darker">#40A074</color>
     <color name="aluvi_gradient_end_darker">#266A72</color>
+
+    <color name="aluvi_activity_background_color">#149B70</color>
 
     <color name="light_white_background">#CEDFE0</color>
 

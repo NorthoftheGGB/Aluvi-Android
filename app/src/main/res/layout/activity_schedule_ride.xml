@@ -1,4 +1,4 @@
-<RelativeLayout
+<LinearLayout
     android:id="@+id/schedule_ride_root_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,140 +11,145 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar"/>
 
-    <LinearLayout
-        android:id="@+id/schedule_ride_home_button_container"
-        style="@style/BorderlessPreferenceContainer"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
 
-        <TextView
-            android:id="@+id/textView7"
-            style="@style/PreferenceTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/textView8"
-            android:layout_below="@+id/toolbar"
-            android:text="@string/home"/>
-
-        <TextView
-            android:id="@+id/schedule_ride_text_view_home"
-            style="@style/PreferenceContent"
+        <LinearLayout
+            android:id="@+id/schedule_ride_home_button_container"
+            style="@style/BorderlessPreferenceContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="horizontal">
 
-    <LinearLayout
-        android:id="@+id/schedule_ride_work_button_container"
-        style="@style/BorderlessPreferenceContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/schedule_ride_home_button_container"
-        android:layout_alignRight="@+id/schedule_ride_home_button_container"
-        android:layout_below="@+id/schedule_ride_home_button_container"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView7"
+                style="@style/PreferenceTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/textView8"
+                android:layout_below="@+id/toolbar"
+                android:text="@string/home"/>
+
+            <TextView
+                android:id="@+id/schedule_ride_text_view_home"
+                style="@style/PreferenceContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/schedule_ride_work_button_container"
+            style="@style/BorderlessPreferenceContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/schedule_ride_home_button_container"
+            android:layout_alignRight="@+id/schedule_ride_home_button_container"
+            android:layout_below="@+id/schedule_ride_home_button_container"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView8"
+                style="@style/PreferenceTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/work"/>
+
+            <TextView
+                android:id="@+id/schedule_ride_text_view_work"
+                style="@style/PreferenceContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/schedule_ride_start_time_container"
+            style="@style/BorderlessPreferenceContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/schedule_ride_work_button_container"
+            android:layout_alignRight="@+id/schedule_ride_work_button_container"
+            android:layout_below="@+id/schedule_ride_work_button_container"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView9"
+                style="@style/PreferenceTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/am_pickup"/>
+
+            <Spinner
+                android:id="@+id/schedule_ride_spinner_start_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/schedule_ride_end_time_container"
+            style="@style/BorderlessPreferenceContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/schedule_ride_start_time_container"
+            android:layout_alignRight="@+id/schedule_ride_start_time_container"
+            android:layout_below="@+id/schedule_ride_start_time_container"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView10"
+                style="@style/PreferenceTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pm_dropoff"/>
+
+            <Spinner
+                android:id="@+id/schedule_ride_spinner_end_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"/>
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/schedule_ride_checkbox_drive_there"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/schedule_ride_end_time_container"
+            android:layout_alignRight="@+id/schedule_ride_end_time_container"
+            android:layout_below="@+id/schedule_ride_end_time_container"
+            android:layout_marginTop="8dp"
+            android:text="@string/drive_there_user"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <TextView
-            android:id="@+id/textView8"
-            style="@style/PreferenceTitle"
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/schedule_ride_checkbox_drive_there"
+            android:layout_alignRight="@+id/schedule_ride_checkbox_drive_there"
+            android:layout_below="@+id/schedule_ride_checkbox_drive_there"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:text="@string/forget_pickup_point"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <Button
+            android:id="@+id/schedule_ride_commute_tomorrow_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/work"/>
-
-        <TextView
-            android:id="@+id/schedule_ride_text_view_work"
-            style="@style/PreferenceContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/schedule_ride_start_time_container"
-        style="@style/BorderlessPreferenceContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/schedule_ride_work_button_container"
-        android:layout_alignRight="@+id/schedule_ride_work_button_container"
-        android:layout_below="@+id/schedule_ride_work_button_container"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView9"
-            style="@style/PreferenceTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/am_pickup"/>
-
-        <TextView
-            android:id="@+id/schedule_ride_text_view_start_time"
-            style="@style/PreferenceContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/schedule_ride_end_time_container"
-        style="@style/BorderlessPreferenceContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/schedule_ride_start_time_container"
-        android:layout_alignRight="@+id/schedule_ride_start_time_container"
-        android:layout_below="@+id/schedule_ride_start_time_container"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView10"
-            style="@style/PreferenceTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pm_dropoff"/>
-
-        <TextView
-            android:id="@+id/schedule_ride_text_view_end_time"
-            style="@style/PreferenceContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <CheckBox
-        android:id="@+id/schedule_ride_checkbox_drive_there"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/schedule_ride_end_time_container"
-        android:layout_alignRight="@+id/schedule_ride_end_time_container"
-        android:layout_below="@+id/schedule_ride_end_time_container"
-        android:layout_marginTop="8dp"
-        android:text="@string/drive_there_user"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/schedule_ride_checkbox_drive_there"
-        android:layout_alignRight="@+id/schedule_ride_checkbox_drive_there"
-        android:layout_below="@+id/schedule_ride_checkbox_drive_there"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="sans-serif-light"
-        android:gravity="center_vertical"
-        android:text="@string/forget_pickup_point"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-    <Button
-        android:id="@+id/schedule_ride_commute_tomorrow_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/schedule_ride_checkbox_drive_there"
-        android:layout_alignRight="@+id/schedule_ride_checkbox_drive_there"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="8dp"
-        android:text="@string/commute_tomorrow"
-        android:theme="@style/AluviButton.Large"/>
-</RelativeLayout>
+            android:layout_alignLeft="@+id/schedule_ride_checkbox_drive_there"
+            android:layout_alignRight="@+id/schedule_ride_checkbox_drive_there"
+            android:layout_below="@+id/textView"
+            android:layout_marginTop="8dp"
+            android:text="@string/commute_tomorrow"
+            android:theme="@style/AluviButton.Large"/>
+    </RelativeLayout>
+</LinearLayout>
