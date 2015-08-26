@@ -37,7 +37,7 @@
         android:layout_below="@+id/view"
         android:layout_marginTop="8dp"
         android:text="@string/submit"
-        android:theme="@style/BlueButton.Large"/>
+        android:theme="@style/AluviButton.Large"/>
 
     <Button
         android:id="@+id/support_button_emergency"

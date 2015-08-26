@@ -109,4 +109,7 @@
     <string name="submit">Submit</string>
     <string name="emergency">Emergency</string>
     <string name="aluvi_default">Aluvi Update</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_up_aluvi">Sign Up for Aluvi</string>
+    <string name="reset_password">Reset Password</string>
 </resources>

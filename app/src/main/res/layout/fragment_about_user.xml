@@ -32,7 +32,7 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="20dp"
             android:text="@string/take_photo"
-            android:theme="@style/BlueButton.Large"/>
+            android:theme="@style/AluviButton.Large"/>
 
         <Button
             android:id="@+id/onboarding_about_button_choose_existing_photo"
@@ -44,7 +44,7 @@
             android:layout_alignStart="@+id/onboarding_about_button_take_photo"
             android:layout_below="@+id/onboarding_about_button_take_photo"
             android:text="@string/choose_existing"
-            android:theme="@style/BlueButton.Large"/>
+            android:theme="@style/AluviButton.Large"/>
     </RelativeLayout>
 
     <Button

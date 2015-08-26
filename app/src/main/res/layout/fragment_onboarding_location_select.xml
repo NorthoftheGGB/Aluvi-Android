@@ -23,7 +23,7 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/home_location"
-            android:theme="@style/BlueButton"/>
+            android:theme="@style/AluviButton"/>
 
         <Button
             android:id="@+id/onboarding_button_work_location"
@@ -35,7 +35,7 @@
             android:layout_alignStart="@+id/onboarding_button_home_location"
             android:layout_below="@+id/onboarding_button_home_location"
             android:text="@string/work_location"
-            android:theme="@style/BlueButton"/>
+            android:theme="@style/AluviButton"/>
     </RelativeLayout>
 
     <Button

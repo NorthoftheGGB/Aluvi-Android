@@ -175,6 +175,20 @@ public class UserStateManager {
         });
     }
 
+    public void sendPasswordResetEmail(String email, final Callback callback) {
+        UsersApi.sendPasswordResetEmail(email, new UsersApi.EmailResetCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to send reset email");
+            }
+        });
+    }
+
     private void onLoginSuccess(LoginResponse response, final Callback callback) {
         setApiToken(response.getToken());
         setDriverState(response.getDriverState());

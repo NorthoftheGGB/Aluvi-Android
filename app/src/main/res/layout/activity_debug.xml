@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:id="@+id/login_button"
+        android:id="@+id/log_in_button"
         android:layout_alignParentLeft="true" />
 
     <Button
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:text="Logout"
         android:id="@+id/logout_button"
-        android:layout_below="@+id/login_button"
+        android:layout_below="@+id/log_in_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -75,8 +75,8 @@
         android:layout_height="wrap_content"
         android:text="Driver Login"
         android:id="@+id/driver_login_button"
-        android:layout_alignBottom="@+id/login_button"
-        android:layout_toRightOf="@+id/login_button"
-        android:layout_toEndOf="@+id/login_button" />
+        android:layout_alignBottom="@+id/log_in_button"
+        android:layout_toRightOf="@+id/log_in_button"
+        android:layout_toEndOf="@+id/log_in_button" />
 
 </RelativeLayout>

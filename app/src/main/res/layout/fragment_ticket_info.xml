@@ -142,5 +142,5 @@
         android:layout_marginTop="15dp"
         android:minHeight="60dp"
         android:text="@string/riders_picked_up"
-        android:theme="@style/BlueButton"/>
+        android:theme="@style/AluviButton"/>
 </RelativeLayout>

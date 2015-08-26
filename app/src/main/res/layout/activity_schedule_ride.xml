@@ -146,5 +146,5 @@
         android:layout_below="@+id/textView"
         android:layout_marginTop="8dp"
         android:text="@string/commute_tomorrow"
-        android:theme="@style/BlueButton.Large"/>
+        android:theme="@style/AluviButton.Large"/>
 </RelativeLayout>

@@ -10,6 +10,7 @@ import com.aluvi.android.api.request.AluviAuthenticatedRequest;
 import com.aluvi.android.api.request.AluviUnauthenticatedRequest;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
+import com.aluvi.android.api.users.requests.EmailResetRequest;
 import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 import com.android.volley.Request;
@@ -37,6 +38,7 @@ public class UsersApi {
 
     public interface RegisteredCheckCallback {
         void success();
+
         void failure();
     }
 
@@ -50,6 +52,10 @@ public class UsersApi {
 
     public interface ProfileCallback extends FailureCallback {
         void success(Profile profile);
+    }
+
+    public interface EmailResetCallback extends FailureCallback {
+        void success();
     }
 
     public static void login(String email, String password, final LoginCallback loginCallback) {
@@ -96,6 +102,29 @@ public class UsersApi {
                     callback.failure();
             }
         });
+    }
+
+    public static void sendPasswordResetEmail(String email, final EmailResetCallback callback) {
+        AluviUnauthenticatedRequest<JSONObject> passwordResetRequest = new AluviUnauthenticatedRequest<JSONObject>(
+                Request.Method.POST,
+                AluviApi.API_FORGOT_PASSWORD,
+                new EmailResetRequest(email),
+                new JacksonRequestListener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK)
+                            callback.success();
+                        else
+                            callback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(JSONObject.class);
+                    }
+                });
+
+        AluviApi.getInstance().getRequestQueue().add(passwordResetRequest);
     }
 
     public static void registerUser(ProfileData riderData, final RegistrationCallback callback) {

@@ -31,7 +31,7 @@ import io.realm.Realm;
 
 public class DebugActivity extends AppCompatActivity {
 
-    @Bind(R.id.login_button) Button loginButton;
+    @Bind(R.id.log_in_button) Button loginButton;
     @Bind(R.id.driver_login_button) Button driverLoginButton;
     @Bind(R.id.logout_button) Button logoutButton;
     @Bind(R.id.schedule_button) Button scheduleButton;
@@ -76,7 +76,7 @@ public class DebugActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.login_button) public void login(){
+    @OnClick(R.id.log_in_button) public void login(){
         UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new Callback() {
             @Override
             public void success() {
