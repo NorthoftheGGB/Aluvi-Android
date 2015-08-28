@@ -1,4 +1,4 @@
-package com.aluvi.android.helpers.views;
+package com.aluvi.android.helpers.views.mapbox;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;

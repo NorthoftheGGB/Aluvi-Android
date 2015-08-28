@@ -1,4 +1,4 @@
-package com.aluvi.android.fragments;
+package com.aluvi.android.fragments.gis;
 
 
 import android.app.Activity;
@@ -19,9 +19,10 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
+import com.aluvi.android.fragments.TicketInfoFragment;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
-import com.aluvi.android.helpers.views.MapBoxStateSaver;
+import com.aluvi.android.helpers.views.mapbox.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
@@ -454,19 +455,34 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         String oldState = transition.getOldState();
         String newState = transition.getNewState();
 
-        if (oldState != null && newState != null) {
-            if (oldState.equals(Ticket.STATE_REQUESTED)) {
-                if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
-                    return R.string.unable_schedule_commute;
-                } else if (newState.equals(Ticket.STATE_SCHEDULED)
-                        || newState.equals(Ticket.STATE_IN_PROGRESS)
-                        || newState.equals(Ticket.STATE_STARTED)) {
-                    return R.string.trip_fulfilled;
+        if (newState != null) {
+            if (oldState != null) {
+                if (oldState.equals(Ticket.STATE_REQUESTED)) {
+                    if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
+                        return R.string.unable_schedule_commute;
+                    } else if (newState.equals(Ticket.STATE_SCHEDULED)
+                            || newState.equals(Ticket.STATE_IN_PROGRESS)
+                            || newState.equals(Ticket.STATE_STARTED)) {
+                        return R.string.trip_fulfilled;
+                    }
+                } else if (oldState.equals(Ticket.STATE_SCHEDULED) || oldState.equals(Ticket.STATE_IN_PROGRESS)) {
+                    if (newState.equals(Ticket.STATE_ABORTED) || newState.equals(Ticket.STATE_CANCELLED)
+                            || newState.equals(Ticket.STATE_DRIVER_CANCELLED)) {
+                        return R.string.ticket_cancelled;
+                    }
                 }
-            } else if (oldState.equals(Ticket.STATE_SCHEDULED) || oldState.equals(Ticket.STATE_IN_PROGRESS)) {
-                if (newState.equals(Ticket.STATE_ABORTED) || newState.equals(Ticket.STATE_CANCELLED)
-                        || newState.equals(Ticket.STATE_DRIVER_CANCELLED)) {
-                    return R.string.ticket_cancelled;
+            } else {
+                switch (newState) {
+                    case Ticket.STATE_REQUESTED:
+                        return R.string.trip_requested;
+                    case Ticket.STATE_SCHEDULED:
+                    case Ticket.STATE_IN_PROGRESS:
+                    case Ticket.STATE_STARTED:
+                        return R.string.trip_fulfilled;
+                    case Ticket.STATE_ABORTED:
+                    case Ticket.STATE_CANCELLED:
+                    case Ticket.STATE_DRIVER_CANCELLED:
+                        return R.string.ticket_cancelled;
                 }
             }
         }

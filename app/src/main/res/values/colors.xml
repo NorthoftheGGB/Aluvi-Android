@@ -36,8 +36,8 @@
     <color name="aluvi_gradient_end_darker">#266A72</color>
 
     <color name="aluvi_activity_background_color">#149B70</color>
-
     <color name="light_white_background">#CEDFE0</color>
+    <color name="zone_radius_background_color">#4400A894</color>
 
     <color name="onboarding_button_background">#CFECE0</color>
     <color name="onboarding_button_background_clicked">#ADCAB0</color>

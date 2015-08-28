@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.aluvi.android.fragments.LocationSelectDialogFragment">
+    tools:context="com.aluvi.android.fragments.gis.LocationSelectDialogFragment">
 
     <com.mapbox.mapboxsdk.views.MapView
         android:id="@+id/location_select_map_view"

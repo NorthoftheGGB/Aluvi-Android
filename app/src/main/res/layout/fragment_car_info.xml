@@ -4,22 +4,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/car_profile_image_view"
-        android:layout_width="@dimen/large_profile_picture_width"
-        android:layout_height="@dimen/large_profile_picture_height"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:clickable="true"
-        android:src="@mipmap/test_profile_pic"
-        app:border_color="@color/profilePictureOutline"
-        app:border_width="2dp"/>
-
     <include
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         layout="@layout/layout_register_driver"
-        android:layout_below="@+id/car_profile_image_view"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"/>
 

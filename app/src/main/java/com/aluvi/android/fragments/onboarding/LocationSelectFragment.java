@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.aluvi.android.R;
-import com.aluvi.android.fragments.LocationSelectDialogFragment;
+import com.aluvi.android.fragments.gis.LocationSelectDialogFragment;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.model.local.TicketLocation;
 

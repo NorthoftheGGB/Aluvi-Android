@@ -1,4 +1,4 @@
-package com.aluvi.android.fragments;
+package com.aluvi.android.fragments.gis;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -19,8 +19,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.helpers.GeoLocationUtils;
 import com.aluvi.android.helpers.views.GeocodingAutoCompleteBinder;
-import com.aluvi.android.helpers.views.MapBoxStateSaver;
 import com.aluvi.android.helpers.views.ViewUtils;
+import com.aluvi.android.helpers.views.mapbox.MapBoxStateSaver;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.managers.location.GeocodingManager;
 import com.aluvi.android.model.local.TicketLocation;
@@ -48,7 +48,7 @@ public class LocationSelectDialogFragment extends DialogFragment {
     @Bind(R.id.location_select_auto_complete_search) AutoCompleteTextView mLocationSearchAutoCompleteTextView;
     @Bind(R.id.location_select_map_view) MapView mMapView;
 
-    private final static String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map",
+    protected final static String TAG = "LocationSelectFragment", MAP_STATE_KEY = "location_select_map",
             TICKET_KEY = "ticket_location", DEFAULT_USER_LOCATION_KEY = "default_user_location";
 
     private OnLocationSelectedListener mLocationSelectedListener;
@@ -205,17 +205,20 @@ public class LocationSelectDialogFragment extends DialogFragment {
         MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
     }
 
-    private void addMarkerForAddress(TicketLocation address) {
+    private boolean addMarkerForAddress(TicketLocation address) {
         if (mMapView != null) {
             Marker marker = getDefaultMarker(address.getPlaceName(), "",
                     new LatLng(address.getLatitude(), address.getLongitude()));
 
             mMapView.clear();
             mMapView.addMarker(marker);
+            return false;
         }
+
+        return true;
     }
 
-    private void addMarker(final ILatLng latLng) {
+    protected boolean addMarker(final ILatLng latLng) {
         if (mMapView != null) {
             mMapView.clear();
             mMapView.addMarker(getDefaultMarker(null, null, new LatLng(latLng.getLatitude(), latLng.getLongitude())));
@@ -234,7 +237,11 @@ public class LocationSelectDialogFragment extends DialogFragment {
                             Log.e(TAG, message);
                         }
                     });
+
+            return true;
         }
+
+        return false;
     }
 
     private void onAddressesFoundForLocation(double lat, double lng, List<Address> data) {
@@ -283,5 +290,9 @@ public class LocationSelectDialogFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    public MapView getMapView() {
+        return mMapView;
     }
 }

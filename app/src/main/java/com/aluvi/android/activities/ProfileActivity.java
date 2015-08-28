@@ -33,11 +33,7 @@ public class ProfileActivity extends AluviAuthActivity implements ProfileFragmen
                 finish();
                 break;
         }
-        return super.onOptionsItemSelected(item);
-    }
 
-    @Override
-    public void onLogOut() {
-        super.logOut();
+        return super.onOptionsItemSelected(item);
     }
 }

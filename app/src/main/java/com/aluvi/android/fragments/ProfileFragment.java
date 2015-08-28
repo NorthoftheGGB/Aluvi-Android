@@ -40,8 +40,6 @@ import io.realm.Realm;
 public class ProfileFragment extends BaseButterFragment {
     public interface ProfileListener {
         void onProfileSavedListener();
-
-        void onLogOut();
     }
 
     @Bind(R.id.profile_image_view) CircleImageView mProfileImageView;
@@ -131,9 +129,6 @@ public class ProfileFragment extends BaseButterFragment {
         switch (item.getItemId()) {
             case R.id.action_save:
                 saveButtonClicked();
-                break;
-            case R.id.action_log_out:
-                mListener.onLogOut();
                 break;
         }
 

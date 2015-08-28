@@ -18,7 +18,7 @@
     <string name="return_home">Return home at:</string>
     <string name="at">At:</string>
     <string name="to">To:</string>
-    <string name="from">From:</string>
+    <string name="from">From</string>
     <string name="cancelled_trips">Cancelled Trips</string>
 
     <string name="schedule_ready">Your schedule will be ready at 9:30 PM. You might want to brush up on your puns.</string>
@@ -29,6 +29,7 @@
     <string name="work">Work</string>
     <string name="home">Home</string>
 
+    <string name="trip_requested">Trip Requested</string>
     <string name="trip_fulfilled">Trip request successful</string>
     <string name="trip_unfulfilled">Trip request unsuccessful</string>
     <string name="fare_cancelled_by_rider">Trip cancelled by rider</string>

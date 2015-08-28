@@ -18,7 +18,8 @@ import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
 import com.aluvi.android.fragments.CreditCardInfoDialogFragment;
-import com.aluvi.android.fragments.LocationSelectDialogFragment;
+import com.aluvi.android.fragments.gis.LocationSelectDialogFragment;
+import com.aluvi.android.fragments.gis.LocationZoneSelectDialogFragment;
 import com.aluvi.android.fragments.onboarding.DriverRegistrationDialogFragment;
 import com.aluvi.android.helpers.views.BaseSpinnerArrayAdapter;
 import com.aluvi.android.helpers.views.ViewHolder;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -50,10 +52,10 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Bind(R.id.schedule_ride_root_view) View mRootView;
     @Bind(R.id.schedule_ride_text_view_home) TextView mFromButton;
     @Bind(R.id.schedule_ride_text_view_work) TextView mToButton;
+    @Bind(R.id.schedule_textview_from_title) TextView mFromTitle;
     @Bind(R.id.schedule_ride_spinner_start_time) Spinner mStartTimeSpinner;
     @Bind(R.id.schedule_ride_spinner_end_time) Spinner mEndTimeSpinner;
     @Bind(R.id.schedule_ride_checkbox_drive_there) CheckBox mDriveThereCheckbox;
-
     @Bind({R.id.schedule_ride_home_button_container, R.id.schedule_ride_work_button_container, R.id.schedule_ride_start_time_container,
             R.id.schedule_ride_end_time_container, R.id.schedule_ride_checkbox_drive_there, R.id.schedule_ride_commute_tomorrow_button})
     List<View> mScheduleEditViews;
@@ -66,6 +68,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
     private final int MIN_HOME_LEAVE_HOUR = 7, MAX_HOME_LEAVE_HOUR = 9,
             MIN_WORK_LEAVE_HOUR = 16, MAX_WORK_LEAVE_HOUR = 19;
+    private final double DRIVER_PICKUP_ZONE_RADIUS_MILES = 2;
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
     private TicketLocation mStartLocation, mEndLocation;
@@ -220,8 +223,12 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @SuppressWarnings("unused")
     @OnClick(R.id.schedule_ride_home_button_container)
     public void onFromButtonClicked() {
-        LocationSelectDialogFragment.newInstance(mStartLocation)
-                .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
+        if (mDriveThereCheckbox.isChecked())
+            LocationZoneSelectDialogFragment.newInstance(mStartLocation, DRIVER_PICKUP_ZONE_RADIUS_MILES)
+                    .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
+        else
+            LocationSelectDialogFragment.newInstance(mStartLocation)
+                    .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
     }
 
     @SuppressWarnings("unused")
@@ -229,6 +236,15 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     public void onToButtonClicked() {
         LocationSelectDialogFragment.newInstance(mEndLocation)
                 .show(getSupportFragmentManager(), TO_LOCATION_TAG);
+    }
+
+    @SuppressWarnings("unused")
+    @OnCheckedChanged(R.id.schedule_ride_checkbox_drive_there)
+    public void onScheduleRideCheckboxCheckChanged(CheckBox checkedButton, boolean isChecked) {
+        if (isChecked)
+            mFromTitle.setText("Within " + DRIVER_PICKUP_ZONE_RADIUS_MILES + " Miles of");
+        else
+            mFromButton.setText(R.string.from);
     }
 
     @SuppressWarnings("unused")

@@ -10,7 +10,7 @@
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="@dimen/sliding_panel_header_height"
     sothree:umanoShadowHeight="0dp"
-    tools:context="com.aluvi.android.fragments.CommuteMapFragment">
+    tools:context="com.aluvi.android.fragments.gis.CommuteMapFragment">
 
     <RelativeLayout
         xmlns:mapbox="http://schemas.android.com/apk/res-auto"

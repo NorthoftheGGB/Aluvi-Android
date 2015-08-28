@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
@@ -35,7 +34,6 @@ public class CarInfoFragment extends BaseButterFragment {
     }
 
     @Bind(R.id.onboarding_register_driver_edit_text_license_number) EditText mLicenseNumberEditText;
-    @Bind(R.id.car_profile_image_view) ImageView mCarProfileImageView;
 
     private DriverInfoUIHelper mInfoUIHelper;
     private CarInfoListener mListener;

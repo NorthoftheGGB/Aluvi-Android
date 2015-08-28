@@ -6,9 +6,4 @@
         android:id="@+id/action_save"
         android:title="@string/save"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_log_out"
-        android:orderInCategory="100"
-        android:title="@string/action_log_out"
-        app:showAsAction="never"/>
 </menu>
