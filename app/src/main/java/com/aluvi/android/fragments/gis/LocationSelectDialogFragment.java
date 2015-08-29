@@ -205,17 +205,17 @@ public class LocationSelectDialogFragment extends DialogFragment {
         MapBoxStateSaver.saveMapState(mMapView, MAP_STATE_KEY);
     }
 
-    private boolean addMarkerForAddress(TicketLocation address) {
+    protected boolean addMarkerForAddress(TicketLocation address) {
         if (mMapView != null) {
             Marker marker = getDefaultMarker(address.getPlaceName(), "",
                     new LatLng(address.getLatitude(), address.getLongitude()));
 
             mMapView.clear();
             mMapView.addMarker(marker);
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     protected boolean addMarker(final ILatLng latLng) {

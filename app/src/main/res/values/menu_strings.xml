@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_schedule_ride">Schedule Ride</string>
+    <string name="action_back_home">Back Home</string>
     <string name="action_settings">Settings</string>
     <string name="action_commute_pending">Commute Pending</string>
     <string name="action_commute_tomorrow">Commute Tomorrow</string>

@@ -49,6 +49,7 @@ import java.util.List;
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 /**
  * Created by usama on 7/13/15.
@@ -140,7 +141,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
-        boolean isTicketScheduled = isTicketScheduled(mCurrentTicket);
+        boolean isTicketScheduled = Ticket.isTicketActive(mCurrentTicket);
         boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
 
         menu.findItem(R.id.action_cancel).setVisible(isTicketRequestedOrScheduled);
@@ -151,6 +152,10 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
             if (isTicketRequested)
                 scheduleRideItem.setTitle(R.string.action_view_commute);
         }
+
+        if (mCurrentTicket != null) {
+            menu.findItem(R.id.action_back_home).setVisible(isDriveHomeEnabled(mCurrentTicket.getTrip()));
+        }
     }
 
     @Override
@@ -159,6 +164,9 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         switch (item.getItemId()) {
             case R.id.action_schedule_ride:
                 mEventListener.onCommuteSchedulerRequested(activeTrip);
+                break;
+            case R.id.action_back_home:
+                onTicketScheduled(mCurrentTicket, true);
                 break;
             case R.id.action_cancel:
                 if (mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_SCHEDULED))
@@ -213,12 +221,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
                     case Ticket.STATE_IN_PROGRESS:
                     case Ticket.STATE_STARTED:
                     case Ticket.STATE_SCHEDULED:
-                        if (mCurrentTicket.isDriving())
-                            enableDriverOverlay(mCurrentTicket);
-                        else
-                            enableRiderOverlay(mCurrentTicket);
-
-                        mEventListener.startLocationTracking(mCurrentTicket);
+                        onTicketScheduled(mCurrentTicket, false);
                         break;
                 }
             } else {
@@ -227,6 +230,16 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
 
             getActivity().supportInvalidateOptionsMenu();
         }
+    }
+
+    private void onTicketScheduled(Ticket ticket, boolean overrideBackHome) {
+        if (!isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome)
+            if (ticket.isDriving())
+                enableDriverOverlay(ticket);
+            else
+                enableRiderOverlay(ticket);
+
+        mEventListener.startLocationTracking(ticket);
     }
 
     private void resetUI() {
@@ -400,12 +413,13 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         }
     };
 
-    private boolean isTicketScheduled(Ticket ticket) {
-        if (ticket != null) {
-            String state = ticket.getState();
-            return state.equals(Ticket.STATE_SCHEDULED) ||
-                    state.equals(Ticket.STATE_STARTED) ||
-                    state.equals(Ticket.STATE_IN_PROGRESS);
+    private boolean isDriveHomeEnabled(Trip trip) {
+        RealmResults<Ticket> tickets = trip.getTickets()
+                .where().findAllSorted("pickupTime");
+        if (tickets.size() == 2) {
+            Ticket aSide = tickets.get(0);
+            Ticket bSide = tickets.get(1);
+            return !Ticket.isTicketActive(aSide) && Ticket.isTicketActive(bSide);
         }
 
         return false;
@@ -455,36 +469,36 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         String oldState = transition.getOldState();
         String newState = transition.getNewState();
 
-        if (newState != null) {
-            if (oldState != null) {
-                if (oldState.equals(Ticket.STATE_REQUESTED)) {
-                    if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
-                        return R.string.unable_schedule_commute;
-                    } else if (newState.equals(Ticket.STATE_SCHEDULED)
-                            || newState.equals(Ticket.STATE_IN_PROGRESS)
-                            || newState.equals(Ticket.STATE_STARTED)) {
-                        return R.string.trip_fulfilled;
-                    }
-                } else if (oldState.equals(Ticket.STATE_SCHEDULED) || oldState.equals(Ticket.STATE_IN_PROGRESS)) {
-                    if (newState.equals(Ticket.STATE_ABORTED) || newState.equals(Ticket.STATE_CANCELLED)
-                            || newState.equals(Ticket.STATE_DRIVER_CANCELLED)) {
-                        return R.string.ticket_cancelled;
-                    }
-                }
-            } else {
-                switch (newState) {
-                    case Ticket.STATE_REQUESTED:
-                        return R.string.trip_requested;
-                    case Ticket.STATE_SCHEDULED:
-                    case Ticket.STATE_IN_PROGRESS:
-                    case Ticket.STATE_STARTED:
-                        return R.string.trip_fulfilled;
-                    case Ticket.STATE_ABORTED:
-                    case Ticket.STATE_CANCELLED:
-                    case Ticket.STATE_DRIVER_CANCELLED:
-                        return R.string.ticket_cancelled;
-                }
+        if (newState == null || oldState == null) {
+            return getIllDefinedTransitionMessage(newState);
+        } else if (oldState.equals(Ticket.STATE_REQUESTED)) {
+            if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
+                return R.string.unable_schedule_commute;
+            } else if (Ticket.isTicketActive(newState)) {
+                return R.string.trip_fulfilled;
             }
+        } else if (Ticket.isTicketCancelled(newState)) {
+            return R.string.ticket_cancelled;
+        } else {
+            return getIllDefinedTransitionMessage(newState);
+        }
+
+        return -1;
+    }
+
+    private int getIllDefinedTransitionMessage(String newState) {
+        switch (newState) {
+            case Ticket.STATE_REQUESTED:
+                return R.string.trip_requested;
+            case Ticket.STATE_SCHEDULED:
+            case Ticket.STATE_IN_PROGRESS:
+            case Ticket.STATE_STARTED:
+                return R.string.trip_fulfilled;
+            case Ticket.STATE_ABORTED:
+            case Ticket.STATE_CANCELLED:
+            case Ticket.STATE_RIDER_CANCELLED:
+            case Ticket.STATE_DRIVER_CANCELLED:
+                return R.string.ticket_cancelled;
         }
 
         return -1;

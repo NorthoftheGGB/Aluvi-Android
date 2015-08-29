@@ -111,24 +111,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
 
     @Override
     public void startLocationTracking(Ticket ticket) {
-//        if (ticket.isDriving()) {
-//            DriverLocationManager.getInstance().startLocationTracking();
-//        } else {
-//            RiderLocationManager.getInstance().startLocationTracking();
-//            RiderLocationManager.getInstance().queueDriverLocationUpdates(5000,
-//                    new DataCallback<LatLng>() {
-//                        @Override
-//                        public void success(LatLng result) {
-//                            if (result != null)
-//                                Log.d(TAG, "Driver location updated to: " + result);
-//                        }
-//
-//                        @Override
-//                        public void failure(String message) {
-//                            Log.e(TAG, message);
-//                        }
-//                    });
-//        }
     }
 
     public void onHomeClicked() {

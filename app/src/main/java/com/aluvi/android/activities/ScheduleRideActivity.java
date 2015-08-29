@@ -244,7 +244,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         if (isChecked)
             mFromTitle.setText("Within " + DRIVER_PICKUP_ZONE_RADIUS_MILES + " Miles of");
         else
-            mFromButton.setText(R.string.from);
+            mFromTitle.setText(R.string.from);
     }
 
     @SuppressWarnings("unused")

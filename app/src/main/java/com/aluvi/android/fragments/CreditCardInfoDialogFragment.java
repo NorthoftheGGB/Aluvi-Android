@@ -58,6 +58,7 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View rootView = View.inflate(getActivity(), R.layout.fragment_credit_card_info, null);
         ButterKnife.bind(this, rootView);
+        setCancelable(false);
 
         initCreditCardFormatter();
         initExpirationDateFormat();

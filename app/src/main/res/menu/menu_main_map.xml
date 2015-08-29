@@ -7,6 +7,12 @@
         android:title="@string/action_schedule_ride"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/action_back_home"
+        android:orderInCategory="100"
+        android:title="@string/action_back_home"
+        android:visible="false"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/action_cancel"
         android:orderInCategory="100"
         android:title="@string/action_cancel_schedule_ride"

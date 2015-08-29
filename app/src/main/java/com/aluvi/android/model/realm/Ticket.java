@@ -21,11 +21,12 @@ public class Ticket extends RealmObject {
     public static final String STATE_REQUESTED = "requested";
     public static final String STATE_CANCELLED = "cancelled"; // cancelled before scheduled
     public static final String STATE_DRIVER_CANCELLED = "driver_cancelled";
+    public static final String STATE_RIDER_CANCELLED = "rider_cancelled";
     public static final String STATE_SCHEDULED = "scheduled";
     public static final String STATE_STARTED = "started";
     public static final String STATE_COMMUTE_SCHEDULER_FAILED = "commute_scheduler_failed";
     public static final String STATE_IN_PROGRESS = "in_progress";
-    public static final String STATE_COMPLETE = "complete";
+    public static final String STATE_COMPLETE = "completed";
     public static final String STATE_ABORTED = "aborted";  // cancelled after scheduled
     public static final String STATE_IRRELEVANT = "irrelevant";
 
@@ -139,6 +140,25 @@ public class Ticket extends RealmObject {
 
     public static String routeDescription(Ticket ticket) {
         return ticket.getMeetingPointPlaceName() + ' ' + ticket.getDropOffPointPlaceName();
+    }
+
+    public static boolean isTicketCancelled(Ticket ticket) {
+        return isTicketCancelled(ticket.getState());
+    }
+
+    public static boolean isTicketActive(Ticket ticket) {
+        return isTicketActive(ticket.getState());
+    }
+
+    public static boolean isTicketCancelled(String state) {
+        return state.equals(STATE_CANCELLED) || state.equals(STATE_RIDER_CANCELLED)
+                || state.equals(STATE_DRIVER_CANCELLED) || state.equals(STATE_ABORTED)
+                || state.equals(STATE_COMMUTE_SCHEDULER_FAILED);
+    }
+
+    public static boolean isTicketActive(String state) {
+        return state.equals(STATE_SCHEDULED) || state.equals(STATE_IN_PROGRESS)
+                || state.equals(STATE_STARTED);
     }
 
     public int getId() {

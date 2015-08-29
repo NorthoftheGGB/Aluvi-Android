@@ -115,7 +115,7 @@ public class LoginActivity extends BaseToolBarActivity {
         View resetPasswordView = View.inflate(this, R.layout.dialog_reset_password, null);
         final EditText passwordResetEmailEditText = (EditText) resetPasswordView.findViewById(R.id.reset_password_edit_text_email);
         new MaterialDialog.Builder(this)
-                .title(R.string.reset_password)
+                .title(R.string.forgot_password)
                 .customView(resetPasswordView, false)
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.no)

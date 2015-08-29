@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.aluvi.android.R;
 import com.aluvi.android.helpers.views.mapbox.CircleOverlay;
 import com.aluvi.android.model.local.TicketLocation;
-import com.mapbox.mapboxsdk.api.ILatLng;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Overlay;
 
 /**
@@ -43,15 +43,16 @@ public class LocationZoneSelectDialogFragment extends LocationSelectDialogFragme
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mZoneRadiusMiles = getArguments().getInt(ZONE_RADIUS_KEY);
+            mZoneRadiusMiles = getArguments().getDouble(ZONE_RADIUS_KEY);
         }
     }
 
     @Override
-    protected boolean addMarker(ILatLng latLng) {
-        if (super.addMarker(latLng)) {
+    protected boolean addMarkerForAddress(TicketLocation address) {
+        if (super.addMarkerForAddress(address)) {
             getMapView().removeOverlay(mCircleOverlay);
-            mCircleOverlay = new CircleOverlay(latLng, milesToKm(mZoneRadiusMiles),
+            mCircleOverlay = new CircleOverlay(new LatLng(address.getLatitude(), address.getLongitude()),
+                    milesToKm(mZoneRadiusMiles),
                     getResources().getColor(R.color.zone_radius_background_color));
             getMapView().addOverlay(mCircleOverlay);
             return true;
