@@ -1,7 +1,5 @@
 package com.aluvi.android.api.tickets;
 
-import android.util.Log;
-
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
@@ -41,8 +39,7 @@ public class TicketsApi {
                 new AluviAuthRequestListener<CommuterTicketsResponse>() {
                     @Override
                     public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED
-                                || statusCode == HttpURLConnection.HTTP_OK) {
+                        if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK) {
                             callback.success(response);
                         } else {
                             callback.failure(statusCode);
@@ -61,28 +58,14 @@ public class TicketsApi {
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 
-    public static void cancelTicket(Ticket ticket, final ApiCallback callback) {
-        Map<String, String> params = new HashMap<String, String>();
+    public static void cancelTicket(Ticket ticket, final RefreshTicketsCallback callback) {
+        Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest request = new AluviAuthenticatedRequest<Void>(
+        AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.CANCEL_TICKET,
                 params,
-                new AluviAuthRequestListener<Void>() {
-                    @Override
-                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success();
-                        } else {
-                            callback.failure(statusCode);
-                        }
-                    }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return SimpleType.construct(Void.class);
-                    }
-                }
+                new RefreshTicketAuthRequestListener(callback)
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
@@ -119,24 +102,7 @@ public class TicketsApi {
         AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.GET,
                 AluviApi.API_GET_ACTIVE_TICKETS,
-                new AluviAuthRequestListener<List<TicketData>>() {
-                    @Override
-                    public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK && response != null) {
-                            callback.success(response);
-                        } else {
-                            if (error != null) {
-                                Log.d("JSON", "Did not work " + error.getMessage());
-                            }
-                            callback.failure(statusCode);
-                        }
-                    }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
-                    }
-                }
+                new RefreshTicketAuthRequestListener(callback)
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
@@ -150,21 +116,7 @@ public class TicketsApi {
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_PICKUP,
                 params,
-                new AluviAuthRequestListener<List<TicketData>>() {
-                    @Override
-                    public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success(response);
-                        } else {
-                            callback.failure(statusCode);
-                        }
-                    }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
-                    }
-                }
+                new RefreshTicketAuthRequestListener(callback)
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
@@ -174,29 +126,37 @@ public class TicketsApi {
     public static void ridersDroppedOff(Ticket ticket, final RefreshTicketsCallback callback) {
         Map<String, String> params = new HashMap<>();
         params.put(AluviApiKeys.RIDE_ID_KEY, String.valueOf(ticket.getId()));
-        AluviAuthenticatedRequest<List<TicketData>>  request = new AluviAuthenticatedRequest<>(
+        AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.API_POST_RIDER_DROPOFF,
                 params,
-                new AluviAuthRequestListener<List<TicketData>>() {
-                    @Override
-                    public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK) {
-                            callback.success(response);
-                        } else {
-                            callback.failure(statusCode);
-                        }
-                    }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
-                    }
-                }
+                new RefreshTicketAuthRequestListener(callback)
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
         AluviApi.getInstance().getRequestQueue().add(request);
+    }
+
+    private static class RefreshTicketAuthRequestListener extends AluviAuthRequestListener<List<TicketData>> {
+        private RefreshTicketsCallback callback;
+
+        public RefreshTicketAuthRequestListener(RefreshTicketsCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void onAuthenticatedResponse(List<TicketData> response, int statusCode, VolleyError error) {
+            if (statusCode == HttpURLConnection.HTTP_OK) {
+                callback.success(response);
+            } else {
+                callback.failure(statusCode);
+            }
+        }
+
+        @Override
+        public JavaType getReturnType() {
+            return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
+        }
     }
 
 }

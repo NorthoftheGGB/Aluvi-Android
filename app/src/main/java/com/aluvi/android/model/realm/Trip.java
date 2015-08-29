@@ -12,6 +12,9 @@ import io.realm.RealmObject;
  */
 public class Trip extends RealmObject {
     private int tripId;
+    private String tripState;
+
+    public static final String STATE_REQUESTED = "requested";
 
     private RealmList<Ticket> tickets = new RealmList<>();
 
@@ -42,5 +45,13 @@ public class Trip extends RealmObject {
 
     public void setTickets(RealmList<Ticket> tickets) {
         this.tickets = tickets;
+    }
+
+    public String getTripState() {
+        return tripState;
+    }
+
+    public void setTripState(String tripState) {
+        this.tripState = tripState;
     }
 }

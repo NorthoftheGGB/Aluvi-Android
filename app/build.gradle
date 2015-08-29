@@ -27,8 +27,8 @@ android {
         applicationId "com.aluvi.android"
         minSdkVersion 11
         targetSdkVersion 22
-        versionCode 4
-        versionName "1.6"
+        versionCode 5
+        versionName "1.7"
         multiDexEnabled true
     }
     buildTypes {
@@ -47,17 +47,6 @@ android {
                     "william.obrien@aluviapp.com, mateo.porter@aluviapp.com, matthew.xi@aluviapp.com"
             minSdkVersion 10
             applicationId 'com.aluvi.android.nightly'
-
-            def Properties versionProps = new Properties()
-            def versionPropsFile = file('version.properties')
-            if(versionPropsFile.exists())
-                versionProps.load(new FileInputStream(versionPropsFile))
-            def code = (versionProps['VERSION_CODE'] ?: "0").toInteger() + 1
-            versionProps['VERSION_CODE'] = code.toString()
-            versionProps.store(versionPropsFile.newWriter(), null)
-
-            versionCode code
-            versionName "1.6." + code
         }
         apiDebug {
             minSdkVersion 10

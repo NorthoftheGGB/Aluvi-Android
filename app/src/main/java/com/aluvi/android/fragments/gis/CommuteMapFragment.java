@@ -141,7 +141,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
-        boolean isTicketScheduled = Ticket.isTicketActive(mCurrentTicket);
+        boolean isTicketScheduled = mCurrentTicket != null ? Ticket.isTicketActive(mCurrentTicket) : false;
         boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
 
         menu.findItem(R.id.action_cancel).setVisible(isTicketRequestedOrScheduled);
@@ -169,10 +169,10 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
                 onTicketScheduled(mCurrentTicket, true);
                 break;
             case R.id.action_cancel:
-                if (mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_SCHEDULED))
-                    cancelTicket(mCurrentTicket);
-                else
+                if (activeTrip.getTripState().equals(Trip.STATE_REQUESTED))
                     cancelTrip(activeTrip);
+                else if (mCurrentTicket != null)
+                    cancelTicket(mCurrentTicket);
                 break;
         }
 
@@ -257,38 +257,37 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
 
     private void plotTicketRoute(final Ticket ticket) {
         String markerText = "";
-        if (ticket.getState().equals(Ticket.STATE_SCHEDULED)) {
-            SimpleDateFormat pickupTime = new SimpleDateFormat("h:mm a");
-            markerText = "Be here at " + pickupTime.format(ticket.getPickupTime());
-        } else {
+        if (ticket.getState().equals(Ticket.STATE_SCHEDULED))
+            markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
+        else
             markerText = getString(R.string.home);
-        }
 
-        Marker homeMarker = new Marker(markerText, ticket.getOriginPlaceName(),
+        Marker originMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
-        setMarkerIcon(homeMarker);
+        setMarkerIcon(originMarker);
+        originMarker.showBubble(originMarker.getToolTip(mMapView), mMapView, true);
 
-        Marker workMarker = new Marker(getString(R.string.work), ticket.getDestinationPlaceName(),
+        Marker destinationMarker = new Marker(ticket.getDestinationShortName(), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
-        setMarkerIcon(workMarker);
+        setMarkerIcon(destinationMarker);
 
-        plotRoute(homeMarker, workMarker);
-        mCurrentlyFocusedMarker = homeMarker;
+        plotRoute(originMarker, destinationMarker);
+        mCurrentlyFocusedMarker = originMarker;
     }
 
     private void plotRoute(Route savedRoute) {
         RealmLatLng origin = savedRoute.getOrigin();
         RealmLatLng destination = savedRoute.getDestination();
         if (origin != null && destination != null) {
-            Marker homeMarker = new Marker(getString(R.string.home), savedRoute.getOriginPlaceName(),
+            Marker originMarker = new Marker(getString(R.string.home), savedRoute.getOriginPlaceName(),
                     new LatLng(origin.getLatitude(), origin.getLongitude()));
-            setMarkerIcon(homeMarker);
+            setMarkerIcon(originMarker);
 
-            Marker workMarker = new Marker(getString(R.string.work), savedRoute.getDestinationPlaceName(),
+            Marker destinationMarker = new Marker(getString(R.string.work), savedRoute.getDestinationPlaceName(),
                     new LatLng(destination.getLatitude(), destination.getLongitude()));
-            setMarkerIcon(workMarker);
+            setMarkerIcon(destinationMarker);
 
-            plotRoute(homeMarker, workMarker);
+            plotRoute(originMarker, destinationMarker);
         }
     }
 
@@ -297,7 +296,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         mMapView.addMarker(startMarker);
         mMapView.addMarker(endMarker);
         mMapView.setCenter(startMarker.getPoint());
-        mMapView.setZoom(15);
+        mMapView.setZoom(19);
 
         RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
                 new RouteMappingManager.RouteMappingListener() {
@@ -400,7 +399,7 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
 
             if (getActivity() != null) {
                 Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
-                refreshTickets();
+                onTicketsRefreshed();
             }
         }
 
@@ -419,28 +418,10 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         if (tickets.size() == 2) {
             Ticket aSide = tickets.get(0);
             Ticket bSide = tickets.get(1);
-            return !Ticket.isTicketActive(aSide) && Ticket.isTicketActive(bSide);
+            return !Ticket.isTicketActive(aSide) && bSide.getState().equals(Ticket.STATE_SCHEDULED);
         }
 
         return false;
-    }
-
-    private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
-        @Override
-        public void onPanelCollapsed(View view) {
-        }
-
-        @Override
-        public void onPanelExpanded(View view) {
-        }
-
-        @Override
-        public void onPanelAnchored(View view) {
-        }
-
-        @Override
-        public void onPanelHidden(View view) {
-        }
     }
 
     private MaterialDialog showTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {
@@ -502,5 +483,23 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         }
 
         return -1;
+    }
+
+    private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {
+        @Override
+        public void onPanelCollapsed(View view) {
+        }
+
+        @Override
+        public void onPanelExpanded(View view) {
+        }
+
+        @Override
+        public void onPanelAnchored(View view) {
+        }
+
+        @Override
+        public void onPanelHidden(View view) {
+        }
     }
 }

@@ -18,6 +18,9 @@ public class TicketData {
     @JsonProperty("trip_id")
     private int tripId;
 
+    @JsonProperty("trip_state")
+    private String tripState;
+
     @JsonProperty("origin_place_name")
     private String originPlaceName;
 
@@ -288,5 +291,13 @@ public class TicketData {
 
     public void setRiders(ArrayList<RiderData> riders) {
         this.riders = riders;
+    }
+
+    public String getTripState() {
+        return tripState;
+    }
+
+    public void setTripState(String tripState) {
+        this.tripState = tripState;
     }
 }

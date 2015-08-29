@@ -253,22 +253,16 @@ public class CommuteManager {
 
     public void cancelTicket(final Ticket ticket, final Callback callback) {
         if (ticket.getId() != 0) {
-            TicketsApi.cancelTicket(ticket, new ApiCallback() {
+            TicketsApi.cancelTicket(ticket, new TicketsApi.RefreshTicketsCallback() {
                 @Override
-                public void success() {
-                    AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            ticket.setState(Ticket.STATE_CANCELLED);
-                        }
-                    });
-
+                public void success(List<TicketData> tickets) {
+                    onTicketsRefreshed(tickets);
                     callback.success();
                 }
 
                 @Override
                 public void failure(int statusCode) {
-                    callback.failure("We had a problem deleting your ticket.  Please try again.");
+                    callback.failure("Error - unable to delete your ticket. Please try again.");
                 }
             });
         } else {
@@ -365,6 +359,7 @@ public class CommuteManager {
             }
         }
 
+        savedTicket.getTrip().setTripState(ticket.getTripState());
         Ticket.updateTicketWithTicketData(savedTicket, ticket, realm);
         savedTicket.setLastUpdated(new Date());
     }
