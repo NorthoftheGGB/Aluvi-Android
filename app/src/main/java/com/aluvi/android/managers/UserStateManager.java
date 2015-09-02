@@ -272,6 +272,20 @@ public class UserStateManager {
         });
     }
 
+    public void sendSupportMessage(String message, final Callback callback) {
+        UsersApi.sendSupportRequest(message, new ApiCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to send support request");
+            }
+        });
+    }
+
     public void clear() {
         AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
             @Override

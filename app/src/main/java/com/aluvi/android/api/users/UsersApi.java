@@ -257,4 +257,33 @@ public class UsersApi {
                 HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(carRequest);
     }
+
+    public static void sendSupportRequest(String message, final ApiCallback callback) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("message", message);
+
+        AluviAuthenticatedRequest carRequest = new AluviAuthenticatedRequest<>(
+                Request.Method.POST,
+                AluviApi.API_CREATE_SUPPORT_REQUEST,
+                params,
+                new AluviAuthRequestListener<Void>() {
+                    @Override
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED)
+                            callback.success();
+                        else
+                            callback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Void.class);
+                    }
+                }
+        );
+
+        carRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
+                HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
+        AluviApi.getInstance().getRequestQueue().add(carRequest);
+    }
 }
