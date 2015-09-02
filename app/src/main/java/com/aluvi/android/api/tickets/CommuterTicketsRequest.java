@@ -29,9 +29,11 @@ public class CommuterTicketsRequest extends AluviPayload {
     @JsonProperty("destination_place_name")
     String workPlaceName;
 
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS")
     @JsonProperty("departure_pickup_time")
     Date toWorkPickupTime;
 
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS")
     @JsonProperty("return_pickup_time")
     Date fromWorkPickupTime;
 
