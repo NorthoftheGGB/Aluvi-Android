@@ -240,8 +240,7 @@ public class UsersApi {
                 new AluviAuthRequestListener<Void>() {
                     @Override
                     public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK
-                                || statusCode == HttpURLConnection.HTTP_CREATED)
+                        if (statusCode == HttpURLConnection.HTTP_OK || statusCode == HttpURLConnection.HTTP_CREATED)
                             callback.success();
                         else
                             callback.failure(statusCode);

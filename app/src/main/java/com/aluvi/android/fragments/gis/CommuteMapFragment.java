@@ -39,6 +39,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.overlay.PathOverlay;
+import com.mapbox.mapboxsdk.views.InfoWindow;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -68,12 +69,14 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
 
     private final String TAG = "AluviMapFragment", MAP_STATE_KEY = "map_fragment_main";
 
+    private Dialog mDefaultProgressDialog;
+
     private Ticket mCurrentTicket;
-    private Marker mCurrentlyFocusedMarker;
-    private PathOverlay mCurrentPathOverlay;
     private OnMapEventListener mEventListener;
 
-    private Dialog mDefaultProgressDialog;
+    private Marker mCurrentlyFocusedMarker;
+    private InfoWindow mCurrentlyOpenedInfoWindow;
+    private PathOverlay mCurrentPathOverlay;
 
     public static CommuteMapFragment newInstance() {
         return new CommuteMapFragment();
@@ -247,6 +250,9 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
         mSlidingPanelContainer.setVisibility(View.INVISIBLE);
         mMapView.clear();
 
+        if (mCurrentlyOpenedInfoWindow != null)
+            mCurrentlyOpenedInfoWindow.close();
+
         if (mCurrentPathOverlay != null)
             mMapView.removeOverlay(mCurrentPathOverlay);
 
@@ -256,16 +262,13 @@ public class CommuteMapFragment extends BaseButterFragment implements TicketInfo
     }
 
     private void plotTicketRoute(final Ticket ticket) {
-        String markerText = "";
-        if (ticket.getState().equals(Ticket.STATE_SCHEDULED))
-            markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
-        else
-            markerText = getString(R.string.home);
+        String markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
 
         Marker originMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
         setMarkerIcon(originMarker);
-        originMarker.showBubble(originMarker.getToolTip(mMapView), mMapView, true);
+        mCurrentlyOpenedInfoWindow = originMarker.getToolTip(mMapView);
+        originMarker.showBubble(mCurrentlyOpenedInfoWindow, mMapView, true);
 
         Marker destinationMarker = new Marker(ticket.getDestinationShortName(), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));

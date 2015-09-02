@@ -25,11 +25,11 @@ public class Driver extends RealmObject {
         driver.setFirstName(data.getFirstName());
         driver.setLastName(data.getLastName());
 
-        if (data.getDriversLicenseNumber() != null)
-            driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
+//        if (data.getDriversLicenseNumber() != null)
+        driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
 
-        if (data.getPhone() != null)
-            driver.setPhone(data.getPhone());
+//        if (data.getPhone() != null)
+        driver.setPhone(data.getPhone());
 
         driver.setSmallImageUrl(data.getSmallImage());
         driver.setLargeImageUrl(data.getLargeImage());

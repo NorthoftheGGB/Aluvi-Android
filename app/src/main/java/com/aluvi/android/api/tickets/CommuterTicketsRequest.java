@@ -10,7 +10,6 @@ import java.util.Date;
  * Created by matthewxi on 7/16/15.
  */
 public class CommuterTicketsRequest extends AluviPayload {
-
     @JsonProperty("departure_latitude")
     double homeLatitude;
 
@@ -29,11 +28,9 @@ public class CommuterTicketsRequest extends AluviPayload {
     @JsonProperty("destination_place_name")
     String workPlaceName;
 
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS")
     @JsonProperty("departure_pickup_time")
     Date toWorkPickupTime;
 
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'kk:mm:ss.SSS")
     @JsonProperty("return_pickup_time")
     Date fromWorkPickupTime;
 
