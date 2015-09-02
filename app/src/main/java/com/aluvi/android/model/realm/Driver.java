@@ -22,17 +22,24 @@ public class Driver extends RealmObject {
 
     public static void updateWithDriverData(Driver driver, DriverData data) {
         driver.setId(data.getId());
-        driver.setFirstName(data.getFirstName());
-        driver.setLastName(data.getLastName());
 
-//        if (data.getDriversLicenseNumber() != null)
-        driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
+        if (data.getFirstName() != null)
+            driver.setFirstName(data.getFirstName());
 
-//        if (data.getPhone() != null)
-        driver.setPhone(data.getPhone());
+        if (data.getLastName() != null)
+            driver.setLastName(data.getLastName());
 
-        driver.setSmallImageUrl(data.getSmallImage());
-        driver.setLargeImageUrl(data.getLargeImage());
+        if (data.getDriversLicenseNumber() != null)
+            driver.setDriversLicenseNumber(data.getDriversLicenseNumber());
+
+        if (data.getPhone() != null)
+            driver.setPhone(data.getPhone());
+
+        if (data.getSmallImage() != null)
+            driver.setSmallImageUrl(data.getSmallImage());
+
+        if (data.getLargeImage() != null)
+            driver.setLargeImageUrl(data.getLargeImage());
     }
 
     public static String fullname(Driver driver) {

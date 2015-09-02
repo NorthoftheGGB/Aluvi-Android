@@ -58,6 +58,7 @@ public class AluviApi implements AluviApiConstants {
 
     public AluviApi(Context context) {
         this.mRequestQueue = JacksonNetwork.newRequestQueue(context.getApplicationContext());
+
         JacksonRequest.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
