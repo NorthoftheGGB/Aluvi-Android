@@ -22,6 +22,7 @@ import com.aluvi.android.model.realm.Trip;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,10 +36,14 @@ import io.realm.RealmResults;
  */
 public class CommuteManager {
     public final static int INVALID_TIME = -1;
+
     private final String TAG = "CommuteManager";
     private static CommuteManager mInstance;
-
     private Route userRoute;
+
+    public interface RequestRidesCallback extends Callback {
+        void onPaymentDetailsRequired();
+    }
 
     public static synchronized void initialize() {
         if (mInstance == null)
@@ -175,7 +180,7 @@ public class CommuteManager {
         aluviRealm.commitTransaction();
     }
 
-    public void requestRidesForTomorrow(final Callback callback) throws UserRecoverableSystemError {
+    public void requestRidesForTomorrow(final RequestRidesCallback callback) throws UserRecoverableSystemError {
         if (!isMinViableRouteAvailable()) {
             callback.failure("You do not have a commute set up yet");
             return;
@@ -198,7 +203,10 @@ public class CommuteManager {
 
                     @Override
                     public void failure(int statusCode) {
-                        callback.failure("Scheduling failure message");
+                        if (statusCode == HttpURLConnection.HTTP_PAYMENT_REQUIRED)
+                            callback.onPaymentDetailsRequired();
+                        else
+                            callback.failure("Scheduling failure message");
                     }
                 });
     }

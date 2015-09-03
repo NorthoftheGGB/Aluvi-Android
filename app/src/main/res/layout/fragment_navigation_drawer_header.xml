@@ -34,7 +34,7 @@
         android:layout_alignRight="@+id/navigation_drawer_header_profile_picture_view"
         android:layout_below="@+id/navigation_drawer_header_profile_picture_view"
         android:layout_marginTop="5dp"
-        android:fontFamily="sans-serif-light"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white"/>

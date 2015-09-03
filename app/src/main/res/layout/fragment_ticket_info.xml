@@ -22,7 +22,7 @@
         android:paddingTop="5dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/white"
-        android:fontFamily="sans-serif-light"/>
+        fontPath="fonts/Bryant-Regular.ttf"/>
 
     <RelativeLayout
         android:id="@+id/ticket_info_relative_layout_driver_info"

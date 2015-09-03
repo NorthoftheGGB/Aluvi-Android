@@ -136,7 +136,7 @@
             android:layout_below="@+id/schedule_ride_checkbox_drive_there"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="16dp"
-            android:fontFamily="sans-serif-light"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:gravity="center_vertical"
             android:text="@string/forget_pickup_point"
             android:textAppearance="?android:attr/textAppearanceLarge"/>

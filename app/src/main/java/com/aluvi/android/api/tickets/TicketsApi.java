@@ -54,7 +54,8 @@ public class TicketsApi {
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
-                HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
+                HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN,
+                HttpURLConnection.HTTP_PAYMENT_REQUIRED});
         AluviApi.getInstance().getRequestQueue().add(request);
     }
 

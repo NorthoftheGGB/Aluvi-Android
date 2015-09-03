@@ -36,7 +36,7 @@
                     android:layout_below="@+id/imageView"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:fontFamily="sans-serif-light"
+                    fontPath="fonts/Bryant-Regular.ttf"
                     android:text="@string/everyone_work"
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 

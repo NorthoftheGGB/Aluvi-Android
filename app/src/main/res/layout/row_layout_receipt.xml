@@ -13,7 +13,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginTop="8dp"
-        android:fontFamily="sans-serif-light"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:text="Fare"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
@@ -26,7 +26,7 @@
         android:layout_alignTop="@+id/receipt_text_view_type"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:fontFamily="sans-serif-light"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:layout_toEndOf="@+id/receipt_text_view_type"
         android:layout_toRightOf="@+id/receipt_text_view_type"
         android:gravity="right"

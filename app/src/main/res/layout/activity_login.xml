@@ -5,7 +5,8 @@
               android:background="@color/aluvi_activity_background_color"
               android:orientation="vertical"
               android:id="@+id/log_in_root_view"
-              tools:context="com.aluvi.android.activities.LoginActivity">
+              tools:context="com.aluvi.android.activities.LoginActivity"
+              tools:ignore="MissingPrefix">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -85,7 +86,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="32dp"
             android:clickable="true"
-            android:fontFamily="sans-serif-light"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:text="@string/sign_up_aluvi"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"/>
@@ -98,7 +99,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
             android:clickable="true"
-            android:fontFamily="sans-serif-light"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:text="@string/forgot_password"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"/>
@@ -112,7 +113,8 @@
             android:layout_marginTop="16dp"
             android:text="@string/everyone_work"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            fontPath="fonts/Bryant-Regular.ttf"/>
     </RelativeLayout>
 </LinearLayout>
 

@@ -43,7 +43,10 @@ public class RouteMappingManager {
             MapQuestApi.findRoute(start, end, new MapQuestApi.MapQuestCallback() {
                 @Override
                 public void onRouteFound(RouteData route) {
-                    callback.onRouteFound(cacheRoute(start, end, route.getCoordinates()));
+                    if (route != null)
+                        callback.onRouteFound(cacheRoute(start, end, route.getCoordinates()));
+                    else
+                        callback.onFailure("Could not fetch route");
                 }
 
                 @Override

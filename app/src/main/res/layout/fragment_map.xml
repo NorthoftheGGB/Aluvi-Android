@@ -38,7 +38,7 @@
             android:paddingTop="16dp"
             android:text="@string/schedule_ready"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:fontFamily="sans-serif-light"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:visibility="gone"/>
     </RelativeLayout>
 

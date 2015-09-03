@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,7 +101,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         normalizeStartEndTimes();
         updateStartTimeButton();
         updateEndTimeButton();
-        checkCreditCardDetails();
     }
 
     private boolean initUISavedTrip() {
@@ -168,12 +166,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
             mDriveThereCheckbox.setChecked(route.isDriving());
         }
-    }
-
-    private void checkCreditCardDetails() {
-        String lastFourCreditCard = UserStateManager.getInstance().getProfile().getCardLastFour();
-        if (lastFourCreditCard == null || lastFourCreditCard.equals(""))
-            CreditCardInfoDialogFragment.newInstance().show(getSupportFragmentManager(), "credit_card_fragment");
     }
 
     @Override
@@ -256,19 +248,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             } else {
                 updateSavedRoute();
                 try {
-                    CommuteManager.getInstance()
-                            .requestRidesForTomorrow(new Callback() {
-                                @Override
-                                public void success() {
-                                    onCommuteRequestSuccess();
-                                }
-
-                                @Override
-                                public void failure(String message) {
-                                    Log.e(TAG, message);
-                                    onCommuteRequestFail();
-                                }
-                            });
+                    onCommuteRequestAllowed();
                 } catch (UserRecoverableSystemError error) {
                     error.printStackTrace();
                     onCommuteRequestFail();
@@ -277,6 +257,26 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         } else {
             Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    private void onCommuteRequestAllowed() throws UserRecoverableSystemError {
+        CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.RequestRidesCallback() {
+            @Override
+            public void onPaymentDetailsRequired() {
+                if (getSupportFragmentManager() != null)
+                    CreditCardInfoDialogFragment.newInstance().show(getSupportFragmentManager(), "credit_card_fragment");
+            }
+
+            @Override
+            public void success() {
+                onCommuteRequestSuccess();
+            }
+
+            @Override
+            public void failure(String message) {
+                onCommuteRequestFail();
+            }
+        });
     }
 
     private void updateEndTimeButton() {

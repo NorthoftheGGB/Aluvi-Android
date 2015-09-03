@@ -33,7 +33,7 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/welcome_text"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:fontFamily="sans-serif-light"/>
+            fontPath="fonts/Bryant-Regular.ttf"/>
     </RelativeLayout>
 
     <Button

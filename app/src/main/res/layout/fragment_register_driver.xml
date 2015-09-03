@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-light"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:text="@string/car_details"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
 

@@ -16,6 +16,7 @@ import com.aluvi.android.managers.location.RiderLocationManager;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by matthewxi on 7/14/15.
@@ -36,6 +37,12 @@ public class AluviApplication extends Application {
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
         PaymentManager.initialize(getString(R.string.stripe_key));
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/Bryant-Medium.ttf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build()
+        );
     }
 
     @Override
