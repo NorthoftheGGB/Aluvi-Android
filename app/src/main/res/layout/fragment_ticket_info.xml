@@ -140,7 +140,7 @@
         android:layout_alignRight="@+id/ticket_info_parent_container_rider_info"
         android:layout_alignStart="@+id/ticket_info_parent_container_rider_info"
         android:layout_below="@+id/ticket_info_parent_container_rider_info"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="16dp"
         android:minHeight="60dp"
         android:text="@string/riders_picked_up"
         android:theme="@style/AluviButton"/>

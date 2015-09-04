@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -137,10 +136,6 @@ public class CommuteMapFragment extends BaseButterFragment {
 
         if (mCurrentPathOverlay != null)
             mMapView.removeOverlay(mCurrentPathOverlay);
-
-        Fragment ticketInfoFragment = getChildFragmentManager().findFragmentById(R.id.map_sliding_panel_container);
-        if (ticketInfoFragment != null)
-            getChildFragmentManager().beginTransaction().remove(ticketInfoFragment).commit();
     }
 
     private void plotTicketRoute(final Ticket ticket) {
@@ -148,13 +143,13 @@ public class CommuteMapFragment extends BaseButterFragment {
 
         Marker originMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
-        setMarkerIcon(originMarker);
         mCurrentlyOpenedInfoWindow = originMarker.getToolTip(mMapView);
         originMarker.showBubble(mCurrentlyOpenedInfoWindow, mMapView, true);
+        originMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.pickup_marker)));
 
         Marker destinationMarker = new Marker(ticket.getDestinationShortName(), ticket.getDestinationPlaceName(),
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
-        setMarkerIcon(destinationMarker);
+        destinationMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.dropoff_marker)));
 
         plotRoute(originMarker, destinationMarker);
         mCurrentlyFocusedMarker = originMarker;

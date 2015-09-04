@@ -1,56 +1,33 @@
-<com.sothree.slidinguppanel.SlidingUpPanelLayout
-    android:id="@+id/sliding_layout"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
-    sothree:umanoFadeColor="@android:color/transparent"
-    sothree:umanoOverlay="true"
-    sothree:umanoPanelHeight="@dimen/sliding_panel_header_height"
-    sothree:umanoShadowHeight="0dp"
-    tools:context="com.aluvi.android.fragments.gis.CommuteMapFragment">
+    tools:context="com.aluvi.android.fragments.gis.CommuteMapFragment"
+    tools:ignore="MissingPrefix">
 
-    <RelativeLayout
-        xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    <com.mapbox.mapboxsdk.views.MapView
+        android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        mapbox:accessToken="@string/mapbox_access_token"
+        mapbox:mapid="@string/map_id"/>
+
+    <TextView
+        android:id="@+id/map_text_view_commute_pending"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.mapbox.mapboxsdk.views.MapView
-            android:id="@+id/mapview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            mapbox:accessToken="@string/mapbox_access_token"
-            mapbox:mapid="@string/map_id"/>
-
-        <TextView
-            android:id="@+id/map_text_view_commute_pending"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:background="@color/actionBarBackground"
-            android:gravity="center"
-            android:paddingBottom="16dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp"
-            android:text="@string/schedule_ready"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            fontPath="fonts/Bryant-Regular.ttf"
-            android:visibility="gone"/>
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:id="@+id/map_sliding_panel_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"/>
-    </LinearLayout>
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/actionBarBackground"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:text="@string/schedule_ready"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone"/>
+</RelativeLayout>

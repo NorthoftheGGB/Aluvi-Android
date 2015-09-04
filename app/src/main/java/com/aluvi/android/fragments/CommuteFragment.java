@@ -46,7 +46,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
-    @Bind(R.id.commute_fragment_ticket_info_container) View mSlidingLayoutContainer;
 
     private Ticket mCurrentTicket;
     private Dialog mDefaultProgressDialog;
@@ -77,7 +76,9 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             }
         });
 
-        mSlidingLayoutContainer.setVisibility(View.GONE);
+        getChildFragmentManager().beginTransaction()
+                .hide(getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info))
+                .commit();
     }
 
     @Override
@@ -102,7 +103,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         float anchor = panelHeight / rootHeight;
         mSlidingLayout.setAnchorPoint(anchor);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-
         EventBus.getDefault().post(new SlidingPanelEvent(panelHeight));
     }
 
@@ -183,15 +183,17 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm().where(Ticket.class).findAll();
             EventBus.getDefault().post(new RefreshTicketsEvent(tickets, transitions, mCurrentTicket));
 
-            if (Ticket.isTicketActive(mCurrentTicket)) {
+            if (Ticket.isTicketActive(mCurrentTicket))
                 onTicketScheduled(mCurrentTicket, false);
-            }
         }
     }
 
     private void onTicketScheduled(Ticket ticket, boolean overrideBackHome) {
         if (!isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome) {
-            mSlidingLayoutContainer.setVisibility(View.VISIBLE);
+            mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            getChildFragmentManager().beginTransaction()
+                    .show(getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info))
+                    .commit();
         }
 
         mEventListener.startLocationTracking(ticket);

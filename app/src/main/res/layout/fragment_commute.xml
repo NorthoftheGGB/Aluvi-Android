@@ -19,15 +19,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <LinearLayout
-        android:id="@+id/commute_fragment_ticket_info_container"
+    <fragment
+        android:id="@+id/commute_fragment_ticket_info"
+        android:name="com.aluvi.android.fragments.TicketInfoFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <fragment
-            android:id="@+id/commute_fragment_ticket_info"
-            android:name="com.aluvi.android.fragments.TicketInfoFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+        android:layout_height="match_parent"/>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
