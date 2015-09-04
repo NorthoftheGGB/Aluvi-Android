@@ -1,16 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/aluvi_activity_background_color"
-              android:orientation="vertical"
-              android:id="@+id/log_in_root_view"
-              tools:context="com.aluvi.android.activities.LoginActivity"
-              tools:ignore="MissingPrefix">
+<RelativeLayout
+    android:id="@+id/log_in_root_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/aluvi_activity_background_color"
+    android:orientation="vertical"
+    tools:context="com.aluvi.android.activities.LoginActivity"
+    tools:ignore="MissingPrefix">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/log_in_register_button"
         android:gravity="center_vertical"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -64,48 +66,22 @@
                 android:inputType="textPassword"/>
         </android.support.design.widget.TextInputLayout>
 
-        <Button
-            android:id="@+id/log_in_button"
-            style="@style/TransparentButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/log_in_edit_text_password_container"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/log_in_edit_text_password_container"
-            android:layout_below="@+id/log_in_edit_text_password_container"
-            android:layout_marginTop="8dp"
-            android:text="@string/login"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/login_button_register"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/log_in_text_view_forgot_password"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="32dp"
-            android:clickable="true"
-            fontPath="fonts/Bryant-Regular.ttf"
-            android:text="@string/sign_up_aluvi"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"/>
-
         <TextView
             android:id="@+id/log_in_text_view_forgot_password"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/log_in_button"
+            android:layout_below="@+id/log_in_edit_text_password_container"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
             android:clickable="true"
-            fontPath="fonts/Bryant-Regular.ttf"
             android:text="@string/forgot_password"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/white"/>
 
         <TextView
             android:id="@+id/textView11"
+            fontPath="fonts/Bryant-Regular.ttf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/view2"
@@ -113,8 +89,19 @@
             android:layout_marginTop="16dp"
             android:text="@string/everyone_work"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/white"
-            fontPath="fonts/Bryant-Regular.ttf"/>
+            android:textColor="@color/white"/>
     </RelativeLayout>
-</LinearLayout>
+
+    <Button
+        android:id="@+id/log_in_register_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/login_in_sign_up"
+        style="@style/OnboardingButton"/>
+</RelativeLayout>
 

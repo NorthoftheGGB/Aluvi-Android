@@ -12,7 +12,7 @@
         android:layout_width="@dimen/small_profile_picture_width"
         android:layout_height="@dimen/small_profile_picture_height"
         android:layout_alignParentTop="true"
-        android:src="@mipmap/test_profile_pic"
+        android:src="@mipmap/profile_picture_placeholder"
         app:border_color="@color/black"
         app:border_width="2dp"/>
 

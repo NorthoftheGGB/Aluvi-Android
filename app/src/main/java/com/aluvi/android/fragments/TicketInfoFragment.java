@@ -21,6 +21,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseTicketConsumerFragment;
 import com.aluvi.android.helpers.CurrencyUtils;
+import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -35,6 +36,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 import io.realm.RealmList;
 
 public class TicketInfoFragment extends BaseTicketConsumerFragment {
@@ -83,48 +85,66 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
 
     @Override
     public void initUI() {
-        int price = getTicket().isDriving() ? getTicket().getEstimatedEarnings() : getTicket().getFixedPrice();
-        mTicketPriceTextView.setText(CurrencyUtils.getFormattedDollars(price));
+        if (getTicket() != null) {
+            int price = getTicket().isDriving() ? getTicket().getEstimatedEarnings() : getTicket().getFixedPrice();
+            mTicketPriceTextView.setText(CurrencyUtils.getFormattedDollars(price));
 
-        if (getTicket().getCar() != null) {
-            mCarNameTextView.setText(getTicket().getCar().getMake());
-            mCarLicenseNumberTextView.setText(getTicket().getCar().getLicensePlate());
-        }
-
-        if (getTicket().getDriver() != null)
-            mDriverNameTextView.setText(getTicket().getDriver().getFirstName());
-
-        if (getTicket().isDriving()) {
-            ButterKnife.apply(mRiderViews, INVISIBILITY_ACTION);
-            updateRidersPickedUpButton();
-        } else {
-            ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);
-            loadProfilePicture(getTicket().getDriver().getSmallImageUrl(), mDriverProfileImageView);
-        }
-
-        initRidersUI();
-        getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (getView() != null) {
-                    getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    if (mListener != null)
-                        mListener.onTicketInfoUIMeasured(mTicketPriceTextView.getHeight(), getView().getHeight());
-                }
+            if (getTicket().getCar() != null) {
+                mCarNameTextView.setText(getTicket().getCar().getMake());
+                mCarLicenseNumberTextView.setText(getTicket().getCar().getLicensePlate());
             }
-        });
+
+            if (getTicket().getDriver() != null)
+                mDriverNameTextView.setText(getTicket().getDriver().getFirstName());
+
+            if (getTicket().isDriving()) {
+                ButterKnife.apply(mRiderViews, INVISIBILITY_ACTION);
+                updateRidersPickedUpButton();
+            } else {
+                ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);
+                loadProfilePicture(getTicket().getDriver().getSmallImageUrl(), mDriverProfileImageView);
+            }
+
+            initRidersUI();
+            getView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (getView() != null) {
+                        getView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        if (mListener != null)
+                            mListener.onTicketInfoUIMeasured(mTicketPriceTextView.getHeight(), getView().getHeight());
+                    }
+                }
+            });
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        EventBus.getDefault().unregister(this);
+
         if (mDefaultProgressDialog != null) {
             mDefaultProgressDialog.cancel();
             mDefaultProgressDialog = null;
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(CommuteScheduledEvent event) {
+        updateTicket(event.getActiveTicket());
+        initUI();
+    }
+
     private void initRidersUI() {
+        mRiderProfilePictureContainer.removeAllViews();
+
         RealmList<Rider> riders = getTicket().getRiders();
         if (riders != null)
             for (Rider rider : riders)
@@ -165,8 +185,8 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
 
     private void loadProfilePicture(String url, ImageView imageView) {
         Picasso.with(getActivity()).load(url)
-                .placeholder(R.mipmap.test_profile_pic)
-                .error(R.mipmap.test_profile_pic)
+                .placeholder(R.mipmap.profile_picture_placeholder)
+                .error(R.mipmap.profile_picture_placeholder)
                 .fit()
                 .centerCrop()
                 .into(imageView);

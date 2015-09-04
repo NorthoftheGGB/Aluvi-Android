@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
+    tools:ignore="MissingPrefix"
     tools:context="com.aluvi.android.fragments.TicketInfoFragment">
 
     <TextView
@@ -63,7 +64,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignRight="@+id/driver_divider"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:src="@mipmap/test_profile_pic"
+            android:src="@mipmap/profile_picture_placeholder"
             app:border_color="@color/profilePictureOutline"
             app:border_width="2dp"/>
 

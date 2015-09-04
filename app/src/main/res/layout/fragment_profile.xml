@@ -12,7 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:clickable="true"
-        android:src="@mipmap/test_profile_pic"
+        android:src="@mipmap/profile_picture_placeholder"
         app:border_color="@color/profilePictureOutline"
         app:border_width="1dp"/>
 

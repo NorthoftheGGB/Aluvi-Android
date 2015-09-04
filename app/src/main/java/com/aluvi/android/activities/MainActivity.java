@@ -12,11 +12,11 @@ import android.view.MenuItem;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.fragments.CarInfoFragment;
+import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.fragments.ReceiptsFragment;
 import com.aluvi.android.fragments.SupportFragment;
-import com.aluvi.android.fragments.gis.CommuteMapFragment;
-import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
+import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -24,7 +24,7 @@ import com.aluvi.android.model.realm.Trip;
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
-public class MainActivity extends AluviAuthActivity implements CommuteMapFragment.OnMapEventListener,
+public class MainActivity extends AluviAuthActivity implements CommuteFragment.OnMapEventListener,
         NavigationDrawerHeaderFragment.ProfileRequestedListener,
         CarInfoFragment.CarInfoListener {
 
@@ -102,6 +102,11 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
     }
 
     @Override
+    public void startLocationTracking(Ticket ticket) {
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SCHEDULE_RIDE_REQUEST_CODE)
@@ -109,14 +114,10 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
                 onCommuteScheduled();
     }
 
-    @Override
-    public void startLocationTracking(Ticket ticket) {
-    }
-
     public void onHomeClicked() {
         if (getSupportFragmentManager().findFragmentById(R.id.container) == null)
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, CommuteMapFragment.newInstance())
+                    .replace(R.id.container, CommuteFragment.newInstance())
                     .commit();
     }
 
@@ -143,7 +144,7 @@ public class MainActivity extends AluviAuthActivity implements CommuteMapFragmen
 
     public void onCommuteScheduled() {
         supportInvalidateOptionsMenu();
-        EventBus.getDefault().post(new CommuteScheduledEvent());
+        EventBus.getDefault().post(new CommuteRequestedEvent());
     }
 
     @Override

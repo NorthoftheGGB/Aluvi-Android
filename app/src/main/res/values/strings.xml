@@ -110,7 +110,11 @@
     <string name="submit">Submit</string>
     <string name="emergency">Emergency</string>
     <string name="aluvi_default">Aluvi Update</string>
-    <string name="forgot_password">Forgot Password?</string>
+    <string name="forgot_password">Forget Your Password?</string>
     <string name="sign_up_aluvi">Sign Up for Aluvi</string>
     <string name="successfully_sent_request">Sent request</string>
+    <string name="login_in_sign_up">Log In / Sign Up</string>
+    <string name="new_user">New User</string>
+    <string name="email_not_found">The email you provided was not found. Click \'Register\' to join Aluvi.</string>
+    <string name="first_last_name">Full Name</string>
 </resources>

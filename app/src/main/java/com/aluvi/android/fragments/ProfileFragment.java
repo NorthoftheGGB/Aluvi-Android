@@ -103,8 +103,8 @@ public class ProfileFragment extends BaseButterFragment {
     private void loadProfilePhoto(Profile profile) {
         Picasso.with(getActivity()).load(profile.getSmallImageUrl())
                 .fit().centerCrop()
-                .placeholder(R.mipmap.test_profile_pic)
-                .error(R.mipmap.test_profile_pic)
+                .placeholder(R.mipmap.profile_picture_placeholder)
+                .error(R.mipmap.profile_picture_placeholder)
                 .into(mProfileImageView);
     }
 

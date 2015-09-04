@@ -35,6 +35,10 @@ public class UserStateManager {
     public final static String DRIVER_STATE_ACTIVE = "active",
             DRIVER_STATE_INACTIVE = "uninterested";
 
+    public interface LoginCallback extends Callback {
+        void onUserNotFound();
+    }
+
     public static synchronized void initialize(Context context) {
         if (mInstance == null)
             mInstance = new UserStateManager(context);
@@ -130,7 +134,7 @@ public class UserStateManager {
         preferences.edit().putString(AluviPreferences.RIDER_STATE_KEY, riderState).commit();
     }
 
-    public void login(String email, String password, final Callback callback) {
+    public void login(String email, String password, final LoginCallback callback) {
         UsersApi.login(email, password, new UsersApi.LoginCallback() {
             @Override
             public void success(LoginResponse response) {
@@ -139,10 +143,14 @@ public class UserStateManager {
 
             @Override
             public void failure(int statusCode) {
-                if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
-                    callback.failure("Invalid username or password");
-                else
-                    callback.failure("Unable to log in");
+                switch (statusCode) {
+                    case HttpURLConnection.HTTP_UNAUTHORIZED:
+                        callback.failure("Invalid username or password");
+                        break;
+                    default:
+                        callback.onUserNotFound();
+                        break;
+                }
             }
         });
     }

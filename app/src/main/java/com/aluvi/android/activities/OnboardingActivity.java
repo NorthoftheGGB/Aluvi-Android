@@ -45,11 +45,14 @@ public class OnboardingActivity extends BaseButterActivity implements
     @Bind(R.id.onboarding_root_container) View mRootView;
     private Dialog mDefaultProgressDialog;
 
+    public final static String EMAIL_KEY = "email", PASSWORD_KEY = "password";
+
     private final String REGISTRATION_DATA_KEY = "registration_data",
             DRIVER_REGISTRATION_DATA_KEY = "driver_registration_data",
             HOME_LOC_KEY = "home_loc",
             WORK_LOC_KEY = "work_loc";
 
+    private String mEmail, mPassword;
     private ProfileData mRegistrationData;
     private String mProfileImagePath;
     private DriverProfileData mDriverProfileData;
@@ -66,10 +69,18 @@ public class OnboardingActivity extends BaseButterActivity implements
             mWorkLoc = savedInstanceState.getParcelable(WORK_LOC_KEY);
         }
 
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.onboarding_root_container);
-        if (fragment == null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.onboarding_root_container,
-                    RegisterFragment.newInstance()).commit();
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            mEmail = getIntent().getExtras().getString(EMAIL_KEY);
+            mPassword = getIntent().getExtras().getString(PASSWORD_KEY);
+
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.onboarding_root_container);
+            if (fragment == null)
+                getSupportFragmentManager().beginTransaction().replace(R.id.onboarding_root_container,
+                        RegisterFragment.newInstance()).commit();
+        } else {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        }
     }
 
     @Override
@@ -112,29 +123,10 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     @Override
     public void onRegistered(final ProfileData data) {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
-        UserStateManager.getInstance().isUserRegistered(data.getEmail(), new Callback() {
-            @Override
-            public void success() {
-                onError("Username already taken");
-
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
-            }
-
-            @Override
-            public void failure(String message) {
-                if (getSupportFragmentManager() != null)
-                    onUnregisteredUserConfirmed(data);
-
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
-            }
-        });
-    }
-
-    public void onUnregisteredUserConfirmed(ProfileData data) {
         mRegistrationData = data;
+        mRegistrationData.setEmail(mEmail);
+        mRegistrationData.setPassword(mPassword);
+
         Fragment nextFragment = mRegistrationData.isInterestedDriver() ? DriverRegistrationFragment.newInstance()
                 : LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc);
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())

@@ -3,15 +3,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/aluvi_background_gradient_sign_up"
-                tools:context="com.aluvi.android.fragments.onboarding.RegisterFragment">
+                tools:context="com.aluvi.android.fragments.onboarding.RegisterFragment"
+                tools:ignore="MissingPrefix">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/register_button_sign_up"
-        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginBottom="@dimen/activity_vertical_margin">
+        android:gravity="center_vertical">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -31,131 +32,43 @@
 
                 <TextView
                     android:id="@+id/textView3"
+                    fontPath="fonts/Bryant-Regular.ttf"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/imageView"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/activity_vertical_margin"
-                    fontPath="fonts/Bryant-Regular.ttf"
                     android:text="@string/everyone_work"
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/register_edit_text_first_name_container"
+                    android:id="@+id/register_edit_text_first_last_name_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/textView3"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_toLeftOf="@+id/register_edit_text_last_name_container">
-
-                    <EditText
-                        android:id="@+id/register_edit_text_first_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/first_name"
-                        android:imeOptions="actionNext"
-                        android:inputType="textPersonName"/>
-                </android.support.design.widget.TextInputLayout>
-
-                <View
-                    android:id="@+id/center_divider"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_centerHorizontal="true"/>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/register_edit_text_last_name_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/register_edit_text_first_name_container"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:layout_toRightOf="@+id/center_divider">
+                    android:layout_marginTop="20dp">
 
                     <EditText
-                        android:id="@+id/register_edit_text_last_name"
+                        android:id="@+id/register_edit_text_first_last_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/last_name"
+                        android:ems="10"
+                        android:hint="@string/first_last_name"
                         android:imeOptions="actionNext"
                         android:inputType="textPersonName"/>
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/register_edit_text_email_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/register_edit_text_last_name_container"
-                    android:layout_alignLeft="@+id/register_edit_text_first_name_container"
-                    android:layout_alignRight="@+id/register_edit_text_last_name_container"
-                    android:layout_alignStart="@+id/register_edit_text_first_name_container"
-                    android:layout_below="@+id/register_edit_text_first_name_container">
-
-                    <EditText
-                        android:id="@+id/register_edit_text_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:ems="10"
-                        android:hint="@string/email"
-                        android:inputType="textEmailAddress"/>
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/register_edit_text_password_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/register_edit_text_email_container"
-                    android:layout_alignLeft="@+id/register_edit_text_email_container"
-                    android:layout_alignRight="@+id/register_edit_text_email_container"
-                    android:layout_alignStart="@+id/register_edit_text_email_container"
-                    android:layout_below="@+id/register_edit_text_phone_number_container"
-                    android:layout_marginTop="10dp">
-
-                    <EditText
-                        android:id="@+id/register_edit_text_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"/>
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/register_edit_text_confirm_password_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/register_edit_text_email_container"
-                    android:layout_alignLeft="@+id/register_edit_text_email_container"
-                    android:layout_alignRight="@+id/register_edit_text_email_container"
-                    android:layout_alignStart="@+id/register_edit_text_email_container"
-                    android:layout_below="@+id/register_edit_text_password_container"
-                    android:layout_marginTop="10dp">
-
-                    <EditText
-                        android:id="@+id/register_edit_text_confirm_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/confirm_password"
-                        android:inputType="textPassword"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <CheckBox
                     android:id="@+id/register_check_box_interested_driver"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/register_edit_text_confirm_password_container"
-                    android:layout_alignLeft="@+id/register_edit_text_confirm_password_container"
-                    android:layout_alignRight="@+id/register_edit_text_confirm_password_container"
-                    android:layout_alignStart="@+id/register_edit_text_confirm_password_container"
-                    android:layout_below="@+id/register_edit_text_confirm_password_container"
+                    android:layout_alignLeft="@+id/register_edit_text_first_last_name_container"
+                    android:layout_alignStart="@+id/register_edit_text_first_last_name_container"
+                    android:layout_below="@+id/register_edit_text_phone_number_container"
                     android:layout_marginTop="10dp"
                     android:checked="false"
                     android:text="@string/want_rider"
@@ -165,11 +78,11 @@
                     android:id="@+id/register_edit_text_phone_number_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@+id/register_edit_text_email_container"
-                    android:layout_alignLeft="@+id/register_edit_text_email_container"
-                    android:layout_alignRight="@+id/register_edit_text_email_container"
-                    android:layout_alignStart="@+id/register_edit_text_email_container"
-                    android:layout_below="@+id/register_edit_text_email_container"
+                    android:layout_alignEnd="@+id/register_edit_text_first_last_name_container"
+                    android:layout_alignLeft="@+id/register_edit_text_first_last_name_container"
+                    android:layout_alignRight="@+id/register_edit_text_first_last_name_container"
+                    android:layout_alignStart="@+id/register_edit_text_first_last_name_container"
+                    android:layout_below="@+id/register_edit_text_first_last_name_container"
                     android:layout_marginTop="10dp">
 
                     <EditText

@@ -23,7 +23,6 @@ import java.util.Map;
  * Created by matthewxi on 7/16/15.
  */
 public class TicketsApi {
-
     public interface RefreshTicketsCallback {
         void success(List<TicketData> tickets);
 
@@ -39,7 +38,8 @@ public class TicketsApi {
                 new AluviAuthRequestListener<CommuterTicketsResponse>() {
                     @Override
                     public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK) {
+                        if (response != null
+                                && (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK)) {
                             callback.success(response);
                         } else {
                             callback.failure(statusCode);

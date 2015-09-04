@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
@@ -28,14 +27,9 @@ public class RegisterFragment extends BaseButterFragment {
         void onRegistered(ProfileData profileData);
     }
 
-    @Bind(R.id.register_edit_text_first_name) EditText mFirstNameEditText;
-    @Bind(R.id.register_edit_text_last_name) EditText mLastNameEditText;
-    @Bind(R.id.register_edit_text_email) EditText mEmailEditText;
-    @Bind(R.id.register_edit_text_password) EditText mPasswordEditText;
+    @Bind(R.id.register_edit_text_first_last_name) EditText mFullNameEditText;
     @Bind(R.id.register_edit_text_phone_number) EditText mPhoneNumberEditText;
-    @Bind(R.id.register_edit_text_confirm_password) EditText mConfirmPasswordEditText;
     @Bind(R.id.register_check_box_interested_driver) CheckBox mInterestedDriverCheckBox;
-    @Bind(R.id.register_button_sign_up) Button mSignUpButton;
 
     private RegistrationListener mRegistrationListener;
 
@@ -60,9 +54,9 @@ public class RegisterFragment extends BaseButterFragment {
     @Override
     public void initUI() {
         mPhoneNumberEditText.setText(ProfileUtils.getUserPhoneNumber(getActivity()));
-        mEmailEditText.setText(ProfileUtils.getUserEmailNumber(getActivity()));
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.register_button_sign_up)
     public void onSignUpButtonClicked() {
         if (validateForm())
@@ -71,34 +65,26 @@ public class RegisterFragment extends BaseButterFragment {
 
     private boolean validateForm() {
         return new FormValidator(getString(R.string.field_required_error))
-                .addField(mFirstNameEditText)
-                .addField(mLastNameEditText)
-                .addField(mEmailEditText, getString(R.string.error_invalid_email),
+                .addField(mFullNameEditText, getString(R.string.full_name),
                         new FormValidator.Validator() {
                             @Override
                             public boolean isValid(String input) {
-                                return !"".equals(input) && FormUtils.isValidEmail(input);
+                                return input.split(" ").length > 1;
                             }
                         })
                 .addField(mPhoneNumberEditText, getString(R.string.error_invalid_phone), FormUtils.getPhoneValidator())
-                .addField(mPasswordEditText)
-                .addField(mConfirmPasswordEditText, getString(R.string.confirm_password_error),
-                        new FormValidator.Validator() {
-                            @Override
-                            public boolean isValid(String input) {
-                                return input.equals(mPasswordEditText.getText().toString());
-                            }
-                        })
                 .validate();
     }
 
     private ProfileData initRegistrationData() {
+        String fullName = mFullNameEditText.getText().toString();
+        String firstName = fullName.split(" ")[0];
+        String lastName = fullName.split(" ")[1];
+
         ProfileData data = new ProfileData();
-        data.setFirstName(mFirstNameEditText.getText().toString());
-        data.setLastName(mLastNameEditText.getText().toString());
-        data.setEmail(mEmailEditText.getText().toString());
+        data.setFirstName(firstName);
+        data.setLastName(lastName);
         data.setPhoneNumber(mPhoneNumberEditText.getText().toString());
-        data.setPassword(mPasswordEditText.getText().toString());
         data.setIsInterestedDriver(mInterestedDriverCheckBox.isChecked());
         return data;
     }

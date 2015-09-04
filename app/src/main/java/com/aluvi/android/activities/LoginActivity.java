@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -14,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseToolBarActivity;
 import com.aluvi.android.application.push.PushManager;
+import com.aluvi.android.helpers.ProfileUtils;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.managers.UserStateManager;
@@ -21,7 +21,6 @@ import com.aluvi.android.managers.callbacks.Callback;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import butterknife.OnTextChanged;
 
 /**
  * Created by usama on 7/24/15.
@@ -30,7 +29,6 @@ public class LoginActivity extends BaseToolBarActivity {
     @Bind(R.id.log_in_root_view) View mRootView;
     @Bind(R.id.log_in_edit_text_username) EditText mUsernameEditText;
     @Bind(R.id.log_in_edit_text_password) EditText mPasswordEditText;
-    @Bind(R.id.log_in_button) Button mLoginButton;
 
     private final int REGISTER_REQ_CODE = 4223;
     private Dialog mDefaultProgressDialog;
@@ -44,7 +42,7 @@ public class LoginActivity extends BaseToolBarActivity {
         }
 
         super.onCreate(savedInstanceState);
-        mLoginButton.setEnabled(false);
+        mUsernameEditText.setText(ProfileUtils.getUserEmailNumber(this));
     }
 
     @Override
@@ -62,26 +60,22 @@ public class LoginActivity extends BaseToolBarActivity {
     }
 
     @SuppressWarnings("unused")
-    @OnTextChanged(R.id.log_in_edit_text_password)
-    public void onPasswordTextChanged(CharSequence newText) {
-        mLoginButton.setEnabled(newText.length() > 0 && mUsernameEditText.getText().length() > 0);
-    }
-
-    @SuppressWarnings("unused")
-    @OnTextChanged(R.id.log_in_edit_text_username)
-    public void onEmailTextChanged(CharSequence newText) {
-        mLoginButton.setEnabled(newText.length() > 0 && mPasswordEditText.getText().length() > 0);
-    }
-
-    @SuppressWarnings("unused")
-    @OnClick(R.id.log_in_button)
+    @OnClick(R.id.log_in_register_button)
     public void onLogInButtonClicked() {
         String username = mUsernameEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
 
         if (!"".equals(username) && !"".equals(password)) {
             mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
-            UserStateManager.getInstance().login(username, password, new Callback() {
+            UserStateManager.getInstance().login(username, password, new UserStateManager.LoginCallback() {
+                @Override
+                public void onUserNotFound() {
+                    if (mDefaultProgressDialog != null)
+                        mDefaultProgressDialog.cancel();
+
+                    showNewUserDialog();
+                }
+
                 @Override
                 public void success() {
                     if (mDefaultProgressDialog != null)
@@ -101,12 +95,6 @@ public class LoginActivity extends BaseToolBarActivity {
         } else {
             Toast.makeText(this, R.string.all_fields_required, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @SuppressWarnings("unused")
-    @OnClick(R.id.login_button_register)
-    public void onRegisterButtonClicked() {
-        startActivityForResult(new Intent(this, OnboardingActivity.class), REGISTER_REQ_CODE);
     }
 
     @SuppressWarnings("unused")
@@ -169,12 +157,33 @@ public class LoginActivity extends BaseToolBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REGISTER_REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 onLoggedIn();
             }
         }
+    }
+
+    private void showNewUserDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.new_user)
+                .content(R.string.email_not_found)
+                .negativeText(android.R.string.cancel)
+                .positiveText(R.string.register)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        onRegisterClicked();
+                    }
+                })
+                .show();
+    }
+
+    private void onRegisterClicked() {
+        Intent onboardingIntent = new Intent(this, OnboardingActivity.class);
+        onboardingIntent.putExtra(OnboardingActivity.EMAIL_KEY, mUsernameEditText.getText().toString());
+        onboardingIntent.putExtra(OnboardingActivity.PASSWORD_KEY, mPasswordEditText.getText().toString());
+        startActivityForResult(onboardingIntent, REGISTER_REQ_CODE);
     }
 
     private void onLoggedIn() {

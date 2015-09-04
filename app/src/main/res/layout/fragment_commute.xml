@@ -1,0 +1,33 @@
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    android:id="@+id/sliding_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoFadeColor="@android:color/transparent"
+    sothree:umanoOverlay="true"
+    sothree:umanoPanelHeight="@dimen/sliding_panel_header_height"
+    sothree:umanoShadowHeight="0dp"
+    tools:context="com.aluvi.android.fragments.gis.CommuteMapFragment"
+    tools:ignore="MissingPrefix">
+
+    <fragment
+        android:id="@+id/commute_fragment_map"
+        android:name="com.aluvi.android.fragments.gis.CommuteMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/commute_fragment_ticket_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <fragment
+            android:id="@+id/commute_fragment_ticket_info"
+            android:name="com.aluvi.android.fragments.TicketInfoFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
