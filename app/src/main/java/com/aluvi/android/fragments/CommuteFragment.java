@@ -46,6 +46,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
+    @Bind(R.id.commute_fragment_ticket_info_container) View mTicketInfoContainer;
 
     private Ticket mCurrentTicket;
     private Dialog mDefaultProgressDialog;
@@ -76,9 +77,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             }
         });
 
-        getChildFragmentManager().beginTransaction()
-                .hide(getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info))
-                .commit();
+        mTicketInfoContainer.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -99,10 +98,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
     @Override
     public void onTicketInfoUIMeasured(int headerHeight, int panelHeight) {
-        float rootHeight = getView().getHeight();
-        float anchor = panelHeight / rootHeight;
-        mSlidingLayout.setAnchorPoint(anchor);
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         EventBus.getDefault().post(new SlidingPanelEvent(panelHeight));
     }
 
@@ -189,15 +185,12 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     private void onTicketScheduled(Ticket ticket, boolean overrideBackHome) {
-        if (!isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome) {
-            mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-            getChildFragmentManager().beginTransaction()
-                    .show(getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info))
-                    .commit();
-        }
-
         mEventListener.startLocationTracking(ticket);
         EventBus.getDefault().post(new CommuteScheduledEvent(mCurrentTicket.getTrip(), mCurrentTicket));
+
+        if (!isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome) {
+            mTicketInfoContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     private void onLocalTicketsRefreshed() {
