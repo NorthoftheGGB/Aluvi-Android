@@ -13,19 +13,18 @@
     tools:context="com.aluvi.android.fragments.gis.CommuteMapFragment"
     tools:ignore="MissingPrefix">
 
-    <fragment
-        android:id="@+id/commute_fragment_map"
-        android:name="com.aluvi.android.fragments.gis.CommuteMapFragment"
+    <FrameLayout
+        android:id="@+id/commute_fragment_map_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <FrameLayout
+        android:id="@+id/commute_fragment_ticket_info_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/commute_fragment_ticket_info_container">
-        <fragment
+        android:layout_height="wrap_content">
+
+        <FrameLayout
             android:id="@+id/commute_fragment_ticket_info"
-            android:name="com.aluvi.android.fragments.TicketInfoFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </FrameLayout>

@@ -84,16 +84,19 @@ public class LocationSelectFragment extends BaseButterFragment
         outState.putParcelable(WORK_LOC, mWorkLocation);
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.onboarding_button_home_location)
     public void onHomeLocationButtonClicked() {
-        LocationSelectDialogFragment.newInstance(null).show(getChildFragmentManager(), HOME_LOC);
+        LocationSelectDialogFragment.newInstance(false).show(getChildFragmentManager(), HOME_LOC);
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.onboarding_button_work_location)
     public void onWorkLocationButtonClicked() {
         LocationSelectDialogFragment.newInstance(false).show(getChildFragmentManager(), WORK_LOC);
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.onboarding_location_next_button)
     public void nextButtonClicked() {
         if (mHomeLocation != null && mWorkLocation != null)

@@ -9,7 +9,7 @@ import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
-import com.aluvi.android.managers.RequestQueue;
+import com.aluvi.android.helpers.RequestQueue;
 import com.aluvi.android.managers.UserStateManager;
 
 import java.util.Arrays;

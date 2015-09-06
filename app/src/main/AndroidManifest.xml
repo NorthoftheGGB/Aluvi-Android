@@ -64,7 +64,8 @@
         <activity
             android:name=".activities.ScheduleRideActivity"
             android:label="@string/title_activity_schedule_ride"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark">
         </activity>
 
         <receiver
@@ -113,7 +114,8 @@
         <activity
             android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark">
         </activity>
         <activity
             android:name=".activities.CarInfoActivity"

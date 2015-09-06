@@ -3,7 +3,8 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.aluvi.android.fragments.ProfileFragment">
+                tools:context="com.aluvi.android.fragments.ProfileFragment"
+                tools:ignore="MissingPrefix">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image_view"
@@ -13,18 +14,18 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:clickable="true"
         android:src="@mipmap/profile_picture_placeholder"
-        app:border_color="@color/profilePictureOutline"
+        app:border_color="@color/black"
         app:border_width="1dp"/>
 
     <TextView
         android:id="@+id/profile_text_view_name"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/profile_image_view"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginTop="5dp"
-        fontPath="fonts/Bryant-Regular.ttf"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <android.support.design.widget.TextInputLayout
@@ -68,6 +69,7 @@
 
     <TextView
         android:id="@+id/textView2"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/profile_edit_text_phone_number_container"
@@ -76,7 +78,6 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="10dp"
-        fontPath="fonts/Bryant-Regular.ttf"
         android:gravity="center_horizontal"
         android:text="@string/terms_services"
         android:textAppearance="?android:attr/textAppearanceMedium"/>

@@ -15,7 +15,7 @@ import com.aluvi.android.fragments.CarInfoFragment;
 import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.fragments.ReceiptsFragment;
-import com.aluvi.android.fragments.SupportFragment;
+import com.aluvi.android.fragments.AluviSupportFragment;
 import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Ticket;
@@ -103,7 +103,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
 
     @Override
     public void startLocationTracking(Ticket ticket) {
-
     }
 
     @Override
@@ -137,7 +136,7 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
 
     public void onSupportClicked() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, SupportFragment.newInstance())
+                .replace(R.id.container, AluviSupportFragment.newInstance())
                 .addToBackStack("support")
                 .commit();
     }

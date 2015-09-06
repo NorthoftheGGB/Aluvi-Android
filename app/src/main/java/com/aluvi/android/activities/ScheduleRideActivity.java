@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,6 +71,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     private final double DRIVER_PICKUP_ZONE_RADIUS_MILES = 2;
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;
+    private Ticket mActiveTicket;
     private TicketLocation mStartLocation, mEndLocation;
 
     @Override
@@ -104,7 +106,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     private boolean initUISavedTrip() {
-        boolean successfulInit = false, isInViewMode = false;
+        boolean successfulInit = false;
         if (getIntent() != null && getIntent().getExtras() != null) {
             int tripId = getIntent().getExtras().getInt(COMMUTE_TO_VIEW_ID_KEY);
             RealmResults<Ticket> tickets = getTicketsForTripId(tripId);
@@ -134,13 +136,13 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                     }
                 });
 
-                isInViewMode = true;
+                mActiveTicket = homeTicket;
                 supportInvalidateOptionsMenu();
                 successfulInit = true;
             }
         }
 
-        getToolbar().setTitle(isInViewMode ? R.string.action_commute_pending : R.string.my_commute);
+        getToolbar().setTitle(mActiveTicket != null ? R.string.action_commute_pending : R.string.my_commute);
         return successfulInit;
     }
 
@@ -215,19 +217,28 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @SuppressWarnings("unused")
     @OnClick(R.id.schedule_ride_home_button_container)
     public void onFromButtonClicked() {
+        DialogFragment locationFragment;
         if (mDriveThereCheckbox.isChecked())
-            LocationZoneSelectDialogFragment.newInstance(mStartLocation, DRIVER_PICKUP_ZONE_RADIUS_MILES)
-                    .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
+            if (mStartLocation != null)
+                locationFragment = LocationZoneSelectDialogFragment.newInstance(mStartLocation, DRIVER_PICKUP_ZONE_RADIUS_MILES);
+            else
+                locationFragment = LocationZoneSelectDialogFragment.newInstance(false, DRIVER_PICKUP_ZONE_RADIUS_MILES);
+        else if (mStartLocation != null)
+            locationFragment = LocationSelectDialogFragment.newInstance(mStartLocation);
         else
-            LocationSelectDialogFragment.newInstance(mStartLocation)
-                    .show(getSupportFragmentManager(), FROM_LOCATION_TAG);
+            locationFragment = LocationSelectDialogFragment.newInstance(false);
+        locationFragment.show(getSupportFragmentManager(), FROM_LOCATION_TAG);
     }
 
     @SuppressWarnings("unused")
     @OnClick(R.id.schedule_ride_work_button_container)
     public void onToButtonClicked() {
-        LocationSelectDialogFragment.newInstance(mEndLocation)
-                .show(getSupportFragmentManager(), TO_LOCATION_TAG);
+        if (mEndLocation != null)
+            LocationSelectDialogFragment.newInstance(mEndLocation)
+                    .show(getSupportFragmentManager(), TO_LOCATION_TAG);
+        else
+            LocationSelectDialogFragment.newInstance(false)
+                    .show(getSupportFragmentManager(), TO_LOCATION_TAG);
     }
 
     @SuppressWarnings("unused")
@@ -393,6 +404,9 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_schedule_ride, menu);
+        boolean isTicketActive = mActiveTicket != null &&
+                (Ticket.isTicketActive(mActiveTicket) || mActiveTicket.getState().equals(Ticket.STATE_REQUESTED));
+        menu.findItem(R.id.action_cancel).setVisible(isTicketActive);
         return true;
     }
 
@@ -403,10 +417,43 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 setResult(RESULT_CANCEL);
                 finish();
                 break;
+            case R.id.action_cancel:
+                if (mActiveTicket != null) {
+                    Trip activeTrip = mActiveTicket.getTrip();
+                    if (activeTrip != null && activeTrip.getTripState().equals(Trip.STATE_REQUESTED))
+                        cancelTrip(mActiveTicket.getTrip());
+                    else
+                        cancelTicket(mActiveTicket);
+                }
+
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void cancelTicket(Ticket ticket) {
+        CommuteManager.getInstance().cancelTicket(ticket, cancelCallback);
+    }
+
+    private void cancelTrip(Trip trip) {
+        CommuteManager.getInstance().cancelTrip(trip, cancelCallback);
+    }
+
+    private Callback cancelCallback = new Callback() {
+        @Override
+        public void success() {
+            if (mRootView != null)
+                Snackbar.make(mRootView, R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void failure(String message) {
+            if (mRootView != null)
+                Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+        }
+    };
+
 
     private static class TimeHolder {
         private int hour, minute;

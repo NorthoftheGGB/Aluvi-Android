@@ -1,4 +1,4 @@
-package com.aluvi.android.managers;
+package com.aluvi.android.helpers;
 
 import java.util.ArrayList;
 import java.util.List;

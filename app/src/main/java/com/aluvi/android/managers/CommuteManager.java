@@ -11,6 +11,7 @@ import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.api.users.RoutesApi;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.exceptions.UserRecoverableSystemError;
+import com.aluvi.android.helpers.RequestQueue;
 import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.RealmHelper;

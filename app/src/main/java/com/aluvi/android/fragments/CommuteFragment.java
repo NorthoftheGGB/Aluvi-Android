@@ -15,13 +15,13 @@ import android.view.ViewGroup;
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
+import com.aluvi.android.fragments.gis.CommuteMapFragment;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.eventBus.LocalRefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.SlidingPanelEvent;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
-import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
@@ -78,6 +78,15 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         });
 
         mTicketInfoContainer.setVisibility(View.INVISIBLE);
+
+        // Can't add nested fragments via XML, so add them dynamically
+        if (getChildFragmentManager().findFragmentById(R.id.commute_fragment_map_container) == null)
+            getChildFragmentManager().beginTransaction().replace(R.id.commute_fragment_map_container,
+                    CommuteMapFragment.newInstance()).commit();
+
+        if (getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info_container) == null)
+            getChildFragmentManager().beginTransaction().replace(R.id.commute_fragment_ticket_info,
+                    TicketInfoFragment.newInstance()).commit();
     }
 
     @Override
@@ -114,7 +123,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         boolean isTicketScheduled = mCurrentTicket != null ? Ticket.isTicketActive(mCurrentTicket) : false;
         boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
 
-        menu.findItem(R.id.action_cancel).setVisible(isTicketRequestedOrScheduled);
         if (isTicketRequestedOrScheduled) {
             MenuItem scheduleRideItem = menu.findItem(R.id.action_schedule_ride);
             scheduleRideItem.setVisible(isTicketRequested); // If the ride has been requested, show "View Commute"
@@ -137,12 +145,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                 break;
             case R.id.action_back_home:
                 onTicketScheduled(mCurrentTicket, true);
-                break;
-            case R.id.action_cancel:
-                if (activeTrip.getTripState().equals(Trip.STATE_REQUESTED))
-                    cancelTrip(activeTrip);
-                else if (mCurrentTicket != null)
-                    cancelTicket(mCurrentTicket);
                 break;
         }
 
@@ -206,30 +208,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     public void onEvent(AluviPushNotificationListenerService.PushNotificationEvent event) {
         refreshTickets();
     }
-
-    private void cancelTicket(Ticket ticket) {
-        CommuteManager.getInstance().cancelTicket(ticket, cancelCallback);
-    }
-
-    private void cancelTrip(Trip trip) {
-        CommuteManager.getInstance().cancelTrip(trip, cancelCallback);
-    }
-
-    private Callback cancelCallback = new Callback() {
-        @Override
-        public void success() {
-            if (getActivity() != null) {
-                Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
-                onLocalTicketsRefreshed();
-            }
-        }
-
-        @Override
-        public void failure(String message) {
-            if (getActivity() != null)
-                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-        }
-    };
 
     private boolean isDriveHomeEnabled(Trip trip) {
         RealmResults<Ticket> tickets = trip.getTickets()

@@ -23,14 +23,14 @@ import butterknife.OnTextChanged;
 /**
  * Created by usama on 8/22/15.
  */
-public class SupportFragment extends BaseButterFragment {
+public class AluviSupportFragment extends BaseButterFragment {
     @Bind(R.id.support_edit_text_message) EditText mSupportEditText;
     @Bind(R.id.support_button_submit) Button mSubmitButton;
 
     private Dialog mDefaultProgressDialog;
 
-    public static SupportFragment newInstance() {
-        return new SupportFragment();
+    public static AluviSupportFragment newInstance() {
+        return new AluviSupportFragment();
     }
 
     @Override

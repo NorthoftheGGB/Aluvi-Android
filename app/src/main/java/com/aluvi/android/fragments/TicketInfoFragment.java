@@ -65,6 +65,10 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
         return infoFragment;
     }
 
+    public static TicketInfoFragment newInstance() {
+        return new TicketInfoFragment();
+    }
+
     public TicketInfoFragment() {
     }
 

@@ -29,7 +29,7 @@ public class LocationZoneSelectDialogFragment extends LocationSelectDialogFragme
     }
 
     public static LocationZoneSelectDialogFragment newInstance(boolean defaultToUserLocation,
-                                                               int zoneRadius) {
+                                                               double zoneRadius) {
         Bundle args = new Bundle();
         args.putBoolean(DEFAULT_USER_LOCATION_KEY, defaultToUserLocation);
         args.getDouble(ZONE_RADIUS_KEY, zoneRadius);
