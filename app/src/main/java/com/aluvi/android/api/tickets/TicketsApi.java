@@ -5,6 +5,7 @@ import com.aluvi.android.api.AluviApiKeys;
 import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.request.AluviAuthRequestListener;
 import com.aluvi.android.api.request.AluviAuthenticatedRequest;
+import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
@@ -27,6 +28,12 @@ public class TicketsApi {
         void success(List<TicketData> tickets);
 
         void failure(int statusCode);
+    }
+
+    public interface PickupPointsCallback {
+        void success(List<PickupPointData> points);
+
+        void failure(int statueCode);
     }
 
     public static void requestCommuterTickets(Ticket ticketToWork, Ticket ticketFromWork, final RequestCommuterTicketsCallback callback) {
@@ -132,6 +139,30 @@ public class TicketsApi {
                 AluviApi.API_POST_RIDER_DROPOFF,
                 params,
                 new RefreshTicketAuthRequestListener(callback)
+        );
+
+        request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});
+        AluviApi.getInstance().getRequestQueue().add(request);
+    }
+
+    public static void getPickupPoints(final PickupPointsCallback pointsCallback) {
+        AluviAuthenticatedRequest<List<PickupPointData>> request = new AluviAuthenticatedRequest<>(
+                Request.Method.GET,
+                AluviApi.API_PICKUP_POINTS,
+                new AluviAuthRequestListener<List<PickupPointData>>() {
+                    @Override
+                    public void onAuthenticatedResponse(List<PickupPointData> response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK)
+                            pointsCallback.success(response);
+                        else
+                            pointsCallback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return CollectionType.construct(List.class, SimpleType.construct(PickupPointData.class));
+                    }
+                }
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_FORBIDDEN});

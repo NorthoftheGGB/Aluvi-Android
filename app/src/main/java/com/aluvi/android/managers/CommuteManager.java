@@ -7,6 +7,7 @@ import com.aluvi.android.api.ApiCallback;
 import com.aluvi.android.api.tickets.CommuterTicketsResponse;
 import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
+import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.api.tickets.model.TicketData;
 import com.aluvi.android.api.users.RoutesApi;
 import com.aluvi.android.application.AluviRealm;
@@ -433,6 +434,20 @@ public class CommuteManager {
             @Override
             public void failure(String message) {
                 callback.failure(message);
+            }
+        });
+    }
+
+    public void getPickupPoints(final DataCallback<List<PickupPointData>> callback) {
+        TicketsApi.getPickupPoints(new TicketsApi.PickupPointsCallback() {
+            @Override
+            public void success(List<PickupPointData> points) {
+                callback.success(points);
+            }
+
+            @Override
+            public void failure(int statueCode) {
+                callback.failure("Unable to fetch pickup points");
             }
         });
     }

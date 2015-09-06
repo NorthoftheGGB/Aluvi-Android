@@ -20,6 +20,7 @@ public class AluviApi implements AluviApiConstants {
     public final static String API_GET_ACTIVE_TICKETS = "v2/rides/tickets"; // this path uses v2 API
     public final static String API_RECEIPTS = "v2/rides/receipts";
     public final static String API_ROUTE = "v2/rides/route";
+    public final static String API_PICKUP_POINTS = "v2/rides/pickup_points";
 
     // geo API
     public final static String API_GET_DRIVER_LOCATION = "geo/driver/";

@@ -13,12 +13,14 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
+import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.eventBus.LocalRefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.SlidingPanelEvent;
 import com.aluvi.android.helpers.views.mapbox.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.managers.location.RouteMappingManager;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.RealmLatLng;
@@ -82,6 +84,7 @@ public class CommuteMapFragment extends BaseButterFragment {
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        fetchPickupPoints();
     }
 
     @Override
@@ -200,6 +203,35 @@ public class CommuteMapFragment extends BaseButterFragment {
                             Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void fetchPickupPoints() {
+        CommuteManager.getInstance().getPickupPoints(new DataCallback<List<PickupPointData>>() {
+            @Override
+            public void success(List<PickupPointData> result) {
+                if (mMapView != null)
+                    plotPickupPoints(result);
+            }
+
+            @Override
+            public void failure(String message) {
+                if (getView() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void plotPickupPoints(List<PickupPointData> data) {
+        if (data != null)
+            for (PickupPointData point : data)
+                plotPickupPoint(point);
+    }
+
+    private void plotPickupPoint(PickupPointData data) {
+        Marker pickupPoint = new Marker(Integer.toString(data.getNumRiders()), "",
+                new LatLng(data.getLocation().getLatitude(), data.getLocation().getLongitude()));
+        setMarkerIcon(pickupPoint);
+        mMapView.addMarker(pickupPoint);
     }
 
     private void setMarkerIcon(Marker marker) {
