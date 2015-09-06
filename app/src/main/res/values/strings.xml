@@ -94,6 +94,7 @@
     <string name="make">Make</string>
     <string name="model">Model</string>
     <string name="year">Year</string>
+    <string name="color">Color</string>
     <string name="license_number">Your License Number</string>
     <string name="profile_saved">Updated your profile</string>
     <string name="invalid_credit_card">Invalid credit card</string>
@@ -117,4 +118,6 @@
     <string name="new_user">New User</string>
     <string name="email_not_found">The email you provided was not found. Click \'Register\' to join Aluvi.</string>
     <string name="first_last_name">Full Name</string>
+    <string name="driver_interested">Want to be the driver?</string>
+    <string name="pickup_place">Choose place to get picked up and a work location:</string>
 </resources>

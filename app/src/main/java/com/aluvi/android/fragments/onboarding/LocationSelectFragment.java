@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import com.aluvi.android.R;
-import com.aluvi.android.fragments.gis.LocationSelectDialogFragment;
+import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
+import com.aluvi.android.fragments.gis.LocationSelectDialogFragment;
 import com.aluvi.android.model.local.TicketLocation;
 
 import butterknife.Bind;
@@ -24,9 +26,10 @@ public class LocationSelectFragment extends BaseButterFragment
         implements LocationSelectDialogFragment.OnLocationSelectedListener {
 
     public interface LocationSelectedListener {
-        void onLocationSelected(TicketLocation start, TicketLocation end);
+        void onLocationSelected(TicketLocation start, TicketLocation end, ProfileData data);
     }
 
+    @Bind(R.id.onboarding_checkbox_interested_driver) CheckBox mInterestedInDrivingCheckbox;
     @Bind(R.id.onboarding_button_home_location) Button mHomeButton;
     @Bind(R.id.onboarding_button_work_location) Button mWorkButton;
 
@@ -99,10 +102,13 @@ public class LocationSelectFragment extends BaseButterFragment
     @SuppressWarnings("unused")
     @OnClick(R.id.onboarding_location_next_button)
     public void nextButtonClicked() {
-        if (mHomeLocation != null && mWorkLocation != null)
-            mListener.onLocationSelected(mHomeLocation, mWorkLocation);
-        else
+        if (mHomeLocation != null && mWorkLocation != null) {
+            ProfileData data = new ProfileData();
+            data.setIsInterestedDriver(mInterestedInDrivingCheckbox.isChecked());
+            mListener.onLocationSelected(mHomeLocation, mWorkLocation, data);
+        } else {
             Snackbar.make(getView(), R.string.location_select_error, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override

@@ -18,12 +18,12 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/home_location"
-            android:theme="@style/AluviButton"/>
+            android:theme="@style/AluviButton"
+            android:layout_below="@+id/textView12"
+            android:layout_marginTop="10dp"/>
 
         <Button
             android:id="@+id/onboarding_button_work_location"
@@ -36,6 +36,28 @@
             android:layout_below="@+id/onboarding_button_home_location"
             android:text="@string/work_location"
             android:theme="@style/AluviButton"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/driver_interested"
+            android:id="@+id/onboarding_checkbox_interested_driver"
+            android:layout_below="@+id/onboarding_button_work_location"
+            android:layout_centerHorizontal="true"
+            android:checked="false"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/pickup_place"
+            android:id="@+id/textView12"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:gravity="center_horizontal"/>
     </RelativeLayout>
 
     <Button

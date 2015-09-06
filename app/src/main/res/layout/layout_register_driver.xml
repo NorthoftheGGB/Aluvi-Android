@@ -4,25 +4,6 @@
                 android:layout_height="match_parent">
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/onboarding_register_driver_edit_text_license_number_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
-        android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
-        android:layout_alignRight="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
-        android:layout_alignStart="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
-        android:layout_marginTop="20dp">
-
-        <EditText
-            android:id="@+id/onboarding_register_driver_edit_text_license_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/license_number"
-            android:imeOptions="actionNext"
-            android:inputType="textNoSuggestions"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
         android:id="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,7 +11,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/onboarding_register_driver_edit_text_license_number_container"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="5dp">
@@ -68,12 +48,12 @@
         android:id="@+id/onboarding_register_driver_edit_text_car_model_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_car_make_container"
-        android:layout_alignStart="@+id/onboarding_register_driver_edit_text_car_make_container"
+        android:layout_alignEnd="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_alignRight="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_alignStart="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
         android:layout_below="@+id/onboarding_register_driver_edit_text_car_make_container"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@+id/onboarding_register_driver_edit_text_car_year_container"
-        android:layout_toStartOf="@+id/onboarding_register_driver_edit_text_car_year_container">
+        android:layout_marginTop="10dp">
 
         <EditText
             android:id="@+id/onboarding_register_driver_edit_text_car_model"
@@ -85,21 +65,23 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/onboarding_register_driver_edit_text_car_year_container"
-        android:layout_width="100dp"
+        android:id="@+id/onboarding_register_driver_edit_text_car_color_container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/onboarding_register_driver_edit_text_car_model_container"
-        android:layout_alignEnd="@+id/onboarding_register_driver_edit_text_car_make_container"
-        android:layout_alignRight="@+id/onboarding_register_driver_edit_text_car_make_container">
+        android:layout_alignEnd="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_alignLeft="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_alignRight="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_alignStart="@+id/onboarding_register_driver_edit_text_license_plate_number_container"
+        android:layout_below="@+id/onboarding_register_driver_edit_text_car_model_container"
+        android:layout_marginTop="10dp">
 
         <EditText
-            android:id="@+id/onboarding_register_driver_edit_text_car_year"
+            android:id="@+id/onboarding_register_driver_edit_text_car_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/year"
+            android:hint="@string/color"
             android:imeOptions="actionDone"
-            android:inputType="number"
-            />
+            android:inputType="textAutoComplete"/>
     </android.support.design.widget.TextInputLayout>
 
 </RelativeLayout>

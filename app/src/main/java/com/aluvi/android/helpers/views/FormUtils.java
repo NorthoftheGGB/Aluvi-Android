@@ -20,6 +20,15 @@ public class FormUtils {
         };
     }
 
+    public static FormValidator.Validator getEmailValidator() {
+        return new FormValidator.Validator() {
+            @Override
+            public boolean isValid(String input) {
+                return isValidEmail(input);
+            }
+        };
+    }
+
     public static boolean isValidPhoneNumber(String number) {
         return PhoneNumberUtils.isGlobalPhoneNumber(number);
     }

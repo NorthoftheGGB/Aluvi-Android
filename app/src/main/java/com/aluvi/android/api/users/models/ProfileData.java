@@ -34,6 +34,9 @@ public class ProfileData extends AluviPayload implements Parcelable {
     @JsonProperty("default_recipient_debit_card_token")
     private String defaultRecipientDebitCardToken;
 
+    @JsonProperty("work_email")
+    private String workEmail;
+
     private boolean isInterestedDriver;
 
     public ProfileData() {
@@ -140,5 +143,13 @@ public class ProfileData extends AluviPayload implements Parcelable {
 
     public void setIsInterestedDriver(boolean isInterestedDriver) {
         this.isInterestedDriver = isInterestedDriver;
+    }
+
+    public String getWorkEmail() {
+        return workEmail;
+    }
+
+    public void setWorkEmail(String workEmail) {
+        this.workEmail = workEmail;
     }
 }

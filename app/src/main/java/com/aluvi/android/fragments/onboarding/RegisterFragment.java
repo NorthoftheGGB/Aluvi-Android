@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.aluvi.android.R;
@@ -29,12 +28,23 @@ public class RegisterFragment extends BaseButterFragment {
 
     @Bind(R.id.register_edit_text_first_last_name) EditText mFullNameEditText;
     @Bind(R.id.register_edit_text_phone_number) EditText mPhoneNumberEditText;
-    @Bind(R.id.register_check_box_interested_driver) CheckBox mInterestedDriverCheckBox;
+    @Bind(R.id.register_edit_text_work_email) EditText mWorkEmailEditText;
 
+    private final static String DATA_KEY = "profile_data";
+    private ProfileData mProfileData;
     private RegistrationListener mRegistrationListener;
 
     public static RegisterFragment newInstance() {
         return new RegisterFragment();
+    }
+
+    public static RegisterFragment newInstance(ProfileData data) {
+        Bundle args = new Bundle();
+        args.putParcelable(DATA_KEY, data);
+
+        RegisterFragment fragment = new RegisterFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     public RegisterFragment() {
@@ -44,6 +54,14 @@ public class RegisterFragment extends BaseButterFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mRegistrationListener = (RegistrationListener) activity;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null)
+            mProfileData = getArguments().getParcelable(DATA_KEY);
     }
 
     @Override
@@ -73,6 +91,7 @@ public class RegisterFragment extends BaseButterFragment {
                             }
                         })
                 .addField(mPhoneNumberEditText, getString(R.string.error_invalid_phone), FormUtils.getPhoneValidator())
+                .addField(mWorkEmailEditText, FormUtils.getEmailValidator())
                 .validate();
     }
 
@@ -81,11 +100,11 @@ public class RegisterFragment extends BaseButterFragment {
         String firstName = fullName.split(" ")[0];
         String lastName = fullName.split(" ")[1];
 
-        ProfileData data = new ProfileData();
+        ProfileData data = mProfileData == null ? new ProfileData() : mProfileData;
         data.setFirstName(firstName);
         data.setLastName(lastName);
         data.setPhoneNumber(mPhoneNumberEditText.getText().toString());
-        data.setIsInterestedDriver(mInterestedDriverCheckBox.isChecked());
+        data.setWorkEmail(mWorkEmailEditText.getText().toString());
         return data;
     }
 }

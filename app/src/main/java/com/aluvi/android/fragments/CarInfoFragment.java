@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
@@ -23,8 +22,6 @@ import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 
-import butterknife.Bind;
-
 /**
  * Created by usama on 8/18/15.
  */
@@ -32,8 +29,6 @@ public class CarInfoFragment extends BaseButterFragment {
     public interface CarInfoListener {
         void onInfoSaved();
     }
-
-    @Bind(R.id.onboarding_register_driver_edit_text_license_number) EditText mLicenseNumberEditText;
 
     private DriverInfoUIHelper mInfoUIHelper;
     private CarInfoListener mListener;
@@ -57,8 +52,6 @@ public class CarInfoFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
-        mLicenseNumberEditText.setVisibility(View.GONE);
-
         Profile userProfile = AluviRealm.getDefaultRealm().where(Profile.class).findFirst();
         mInfoUIHelper = new DriverInfoUIHelper(getView());
         mInfoUIHelper.updateData(userProfile);

@@ -76,7 +76,7 @@ public class OnboardingActivity extends BaseButterActivity implements
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.onboarding_root_container);
             if (fragment == null)
                 getSupportFragmentManager().beginTransaction().replace(R.id.onboarding_root_container,
-                        RegisterFragment.newInstance()).commit();
+                        LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc)).commit();
         } else {
             setResult(Activity.RESULT_CANCELED);
             finish();
@@ -122,13 +122,34 @@ public class OnboardingActivity extends BaseButterActivity implements
     }
 
     @Override
-    public void onRegistered(final ProfileData data) {
+    public void onLocationSelected(TicketLocation start, TicketLocation end, ProfileData data) {
+        mHomeLoc = start;
+        mWorkLoc = end;
         mRegistrationData = data;
+
+        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
+                .replace(R.id.onboarding_root_container, ProfilePhotoFragment.newInstance(mProfileImagePath))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onPhotoReady(String profileImagePath) {
+        mProfileImagePath = profileImagePath;
+
+        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
+                .replace(R.id.onboarding_root_container, RegisterFragment.newInstance(mRegistrationData))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onRegistered(final ProfileData data) {
         mRegistrationData.setEmail(mEmail);
         mRegistrationData.setPassword(mPassword);
 
         Fragment nextFragment = mRegistrationData.isInterestedDriver() ? DriverRegistrationFragment.newInstance()
-                : LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc);
+                : TutorialFragment.newInstance();
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, nextFragment)
                 .addToBackStack(null)
@@ -138,37 +159,16 @@ public class OnboardingActivity extends BaseButterActivity implements
     @Override
     public void onDriverRegistrationComplete(DriverProfileData data) {
         mDriverProfileData = data;
-
-        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, LocationSelectFragment.newInstance(mHomeLoc, mWorkLoc))
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
-    public void onLocationSelected(TicketLocation start, TicketLocation end) {
-        mHomeLoc = start;
-        mWorkLoc = end;
-
-        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, ProfilePhotoFragment.newInstance(mProfileImagePath))
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
-    public void onUserDetailsPopulated(String profileImagePath) {
-        mProfileImagePath = profileImagePath;
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, TutorialFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
 
+
     @Override
     public void onTutorialRequested() {
         mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
-
         UserStateManager.getInstance()
                 .registerUser(mRegistrationData, new Callback() {
                     @Override

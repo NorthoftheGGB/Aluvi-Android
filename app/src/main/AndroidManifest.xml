@@ -124,7 +124,6 @@
         <activity
             android:name=".activities.OnboardingActivity"
             android:label="@string/title_activity_onboarding"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark">
         </activity>
     </application>

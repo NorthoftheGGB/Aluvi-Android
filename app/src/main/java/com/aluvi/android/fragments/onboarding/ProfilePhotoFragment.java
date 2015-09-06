@@ -24,7 +24,7 @@ import butterknife.OnClick;
  */
 public class ProfilePhotoFragment extends BaseButterFragment {
     public interface AboutUserListener {
-        void onUserDetailsPopulated(String userProfilePicture);
+        void onPhotoReady(String userProfilePicture);
     }
 
     @Bind(R.id.onboarding_image_view_profile_picture) ImageView mProfilePictureView;
@@ -80,7 +80,7 @@ public class ProfilePhotoFragment extends BaseButterFragment {
     @OnClick(R.id.onboarding_about_button_next)
     public void onNextClicked() {
         if (mCurrentProfilePhoto != null)
-            mListener.onUserDetailsPopulated(mCameraHelper.getCurrentPhotoPath());
+            mListener.onPhotoReady(mCameraHelper.getCurrentPhotoPath());
         else
             Snackbar.make(getView(), R.string.photo_required, Snackbar.LENGTH_SHORT).show();
     }
