@@ -97,7 +97,6 @@ public class CommuteMapFragment extends BaseButterFragment {
     @SuppressWarnings("unused")
     public void onEvent(RefreshTicketsEvent event) {
         onEvent(new LocalRefreshTicketsEvent(event.getActiveTicket()));
-        handleTicketStateTransitions(event.getTicketStateTransitions());
     }
 
     @SuppressWarnings("unused")
@@ -238,22 +237,6 @@ public class CommuteMapFragment extends BaseButterFragment {
         marker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.ic_marker)));
     }
 
-    private void handleTicketStateTransitions(List<TicketStateTransition> transitions) {
-        if (transitions != null) {
-            Dialog currTransitionDialog = null;
-            HashMap<String, String> shownTransitions = new HashMap<>();
-            for (TicketStateTransition transition : transitions) {
-                if (shownTransitions.get(transition.getOldState()) == null) {
-                    currTransitionDialog = showTransitionDialog(transition, currTransitionDialog);
-                    shownTransitions.put(transition.getOldState(), transition.getNewState());
-                }
-            }
-
-            if (currTransitionDialog != null)
-                currTransitionDialog.show();
-        }
-    }
-
     private void centerMapOnCurrentPin(float panelHeight) {
         if (mCurrentlyFocusedMarker != null) {
             float rootHeight = getView().getHeight();
@@ -266,66 +249,5 @@ public class CommuteMapFragment extends BaseButterFragment {
             double newLat = currentCenterLoc.getLatitude() + dy;
             mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
         }
-    }
-
-    private MaterialDialog showTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {
-        return new MaterialDialog.Builder(getActivity())
-                .title(R.string.ticket_updated)
-                .content(getMessageForTransition(transition))
-                .positiveText(android.R.string.ok)
-                .negativeText(android.R.string.no)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onAny(MaterialDialog dialog) {
-                        super.onAny(dialog);
-                        if (nextDialog != null)
-                            nextDialog.show();
-                    }
-                })
-                .build();
-    }
-
-    private String getMessageForTransition(TicketStateTransition transition) {
-        int res = getMessageResouceForTransition(transition);
-        return res != -1 ? getString(res) : null;
-    }
-
-    private int getMessageResouceForTransition(TicketStateTransition transition) {
-        String oldState = transition.getOldState();
-        String newState = transition.getNewState();
-
-        if (newState == null || oldState == null) {
-            return getIllDefinedTransitionMessage(newState);
-        } else if (oldState.equals(Ticket.STATE_REQUESTED)) {
-            if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
-                return R.string.unable_schedule_commute;
-            } else if (Ticket.isTicketActive(newState)) {
-                return R.string.trip_fulfilled;
-            }
-        } else if (Ticket.isTicketCancelled(newState)) {
-            return R.string.ticket_cancelled;
-        } else {
-            return getIllDefinedTransitionMessage(newState);
-        }
-
-        return -1;
-    }
-
-    private int getIllDefinedTransitionMessage(String newState) {
-        switch (newState) {
-            case Ticket.STATE_REQUESTED:
-                return R.string.trip_requested;
-            case Ticket.STATE_SCHEDULED:
-            case Ticket.STATE_IN_PROGRESS:
-            case Ticket.STATE_STARTED:
-                return R.string.trip_fulfilled;
-            case Ticket.STATE_ABORTED:
-            case Ticket.STATE_CANCELLED:
-            case Ticket.STATE_RIDER_CANCELLED:
-            case Ticket.STATE_DRIVER_CANCELLED:
-                return R.string.ticket_cancelled;
-        }
-
-        return -1;
     }
 }

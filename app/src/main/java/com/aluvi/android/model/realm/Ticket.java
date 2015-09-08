@@ -147,7 +147,7 @@ public class Ticket extends RealmObject {
     }
 
     public static boolean isTicketActive(Ticket ticket) {
-        return isTicketActive(ticket.getState());
+        return ticket != null && isTicketActive(ticket.getState());
     }
 
     public static boolean isTicketCancelled(String state) {

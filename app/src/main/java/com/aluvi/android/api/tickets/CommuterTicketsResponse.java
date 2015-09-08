@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class CommuterTicketsResponse {
     @JsonProperty("outgoing_ride_id")
-    public Integer ticketToWorkRideId;
+    public int ticketToWorkRideId;
 
     @JsonProperty("return_ride_id")
-    public Integer ticketFromWorkRideId;
+    public int ticketFromWorkRideId;
 
     @JsonProperty("trip_id")
-    public Integer tripId;
+    public int tripId;
 }
