@@ -1,7 +1,6 @@
 package com.aluvi.android.activities;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -14,7 +13,6 @@ import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseToolBarActivity;
 import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.helpers.ProfileUtils;
-import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
@@ -31,7 +29,6 @@ public class LoginActivity extends BaseToolBarActivity {
     @Bind(R.id.log_in_edit_text_password) EditText mPasswordEditText;
 
     private final int REGISTER_REQ_CODE = 4223;
-    private Dialog mDefaultProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +47,6 @@ public class LoginActivity extends BaseToolBarActivity {
         return R.layout.activity_login;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mDefaultProgressDialog != null) {
-            mDefaultProgressDialog.cancel();
-            mDefaultProgressDialog = null;
-        }
-    }
-
     @SuppressWarnings("unused")
     @OnClick(R.id.log_in_register_button)
     public void onLogInButtonClicked() {
@@ -66,29 +54,23 @@ public class LoginActivity extends BaseToolBarActivity {
         String password = mPasswordEditText.getText().toString();
 
         if (!"".equals(username) && !"".equals(password)) {
-            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+            showDefaultProgressDialog();
             UserStateManager.getInstance().login(username, password, new UserStateManager.LoginCallback() {
                 @Override
                 public void onUserNotFound() {
-                    if (mDefaultProgressDialog != null)
-                        mDefaultProgressDialog.cancel();
-
+                    cancelProgressDialogs();
                     showNewUserDialog();
                 }
 
                 @Override
                 public void success() {
-                    if (mDefaultProgressDialog != null)
-                        mDefaultProgressDialog.cancel();
-
+                    cancelProgressDialogs();
                     onLoggedIn();
                 }
 
                 @Override
                 public void failure(String message) {
-                    if (mDefaultProgressDialog != null)
-                        mDefaultProgressDialog.cancel();
-
+                    cancelProgressDialogs();
                     Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             });
@@ -132,24 +114,20 @@ public class LoginActivity extends BaseToolBarActivity {
     }
 
     public void sendPasswordResetEmail(final String email) {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+        showDefaultProgressDialog();
         UserStateManager.getInstance().sendPasswordResetEmail(email, new Callback() {
             @Override
             public void success() {
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
-
                 if (mRootView != null)
                     Snackbar.make(mRootView, "Sent password reset link to " + email, Snackbar.LENGTH_SHORT).show();
+                cancelProgressDialogs();
             }
 
             @Override
             public void failure(String message) {
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
-
                 if (mRootView != null)
                     Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+                cancelProgressDialogs();
             }
         });
     }

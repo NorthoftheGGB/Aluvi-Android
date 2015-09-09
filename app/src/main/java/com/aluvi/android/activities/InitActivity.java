@@ -7,9 +7,8 @@ import android.os.Bundle;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
-import com.aluvi.android.helpers.views.DialogUtils;
-import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.helpers.RequestQueue;
+import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 
 import java.util.Arrays;
@@ -30,17 +29,8 @@ public class InitActivity extends AluviAuthActivity {
         initAluvi();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mDefaultProgressDialog != null) {
-            mDefaultProgressDialog.dismiss();
-            mDefaultProgressDialog = null;
-        }
-    }
-
     private void initAluvi() {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+        showDefaultProgressDialog();
 
         RequestQueue q1 = UserStateManager.getInstance().buildSyncQueue(null);
         RequestQueue q2 = CommuteManager.getInstance().buildSyncQueue(null);
@@ -48,17 +38,13 @@ public class InitActivity extends AluviAuthActivity {
                 new RequestQueue.RequestQueueListener() {
                     @Override
                     public void onRequestsFinished() {
-                        if (mDefaultProgressDialog != null)
-                            mDefaultProgressDialog.cancel();
-
+                        cancelProgressDialogs();
                         onInitializationFinished();
                     }
 
                     @Override
                     public void onError(String message) {
-                        if (mDefaultProgressDialog != null)
-                            mDefaultProgressDialog.cancel();
-
+                        cancelProgressDialogs();
                         showInitErrorMessage();
                     }
                 }).execute();

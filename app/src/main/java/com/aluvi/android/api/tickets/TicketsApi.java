@@ -36,28 +36,13 @@ public class TicketsApi {
         void failure(int statueCode);
     }
 
-    public static void requestCommuterTickets(Ticket ticketToWork, Ticket ticketFromWork, final RequestCommuterTicketsCallback callback) {
+    public static void requestCommuterTickets(Ticket ticketToWork, Ticket ticketFromWork, final RefreshTicketsCallback callback) {
         CommuterTicketsRequest requestParams = new CommuterTicketsRequest(ticketToWork, ticketFromWork);
-        AluviAuthenticatedRequest<CommuterTicketsResponse> request = new AluviAuthenticatedRequest<>(
+        AluviAuthenticatedRequest<List<TicketData>> request = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
                 AluviApi.API_POST_REQUEST_COMMUTER_TICKETS,
                 requestParams,
-                new AluviAuthRequestListener<CommuterTicketsResponse>() {
-                    @Override
-                    public void onAuthenticatedResponse(CommuterTicketsResponse response, int statusCode, VolleyError error) {
-                        if (response != null
-                                && (statusCode == HttpURLConnection.HTTP_CREATED || statusCode == HttpURLConnection.HTTP_OK)) {
-                            callback.success(response);
-                        } else {
-                            callback.failure(statusCode);
-                        }
-                    }
-
-                    @Override
-                    public JavaType getReturnType() {
-                        return SimpleType.construct(CommuterTicketsResponse.class);
-                    }
-                }
+                new RefreshTicketAuthRequestListener(callback)
         );
 
         request.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_CREATED,
@@ -190,5 +175,4 @@ public class TicketsApi {
             return CollectionType.construct(List.class, SimpleType.construct(TicketData.class));
         }
     }
-
 }

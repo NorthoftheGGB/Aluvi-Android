@@ -11,15 +11,14 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
+import com.aluvi.android.fragments.AluviSupportFragment;
 import com.aluvi.android.fragments.CarInfoFragment;
 import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.fragments.ReceiptsFragment;
-import com.aluvi.android.fragments.AluviSupportFragment;
 import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Ticket;
-import com.aluvi.android.model.realm.Trip;
 
 import butterknife.Bind;
 import de.greenrobot.event.EventBus;
@@ -61,31 +60,32 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
                 getToolbar(), R.string.drawer_open, R.string.drawer_close);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                mDrawerLayout.closeDrawers();
-                switch (menuItem.getItemId()) {
-                    case R.id.action_my_commute:
-                        onHomeClicked();
-                        break;
-                    case R.id.action_car_info:
-                        onCarInfoClicked();
-                        break;
-                    case R.id.action_payments:
-                        onPaymentInfoClicked();
-                        break;
-                    case R.id.action_support:
-                        onSupportClicked();
-                        break;
-                    case R.id.action_log_out:
-                        MainActivity.super.logOut();
-                        break;
-                }
+        mNavigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        mDrawerLayout.closeDrawers();
+                        switch (menuItem.getItemId()) {
+                            case R.id.action_my_commute:
+                                onHomeClicked();
+                                break;
+                            case R.id.action_car_info:
+                                onCarInfoClicked();
+                                break;
+                            case R.id.action_payments:
+                                onPaymentInfoClicked();
+                                break;
+                            case R.id.action_support:
+                                onSupportClicked();
+                                break;
+                            case R.id.action_log_out:
+                                MainActivity.super.logOut();
+                                break;
+                        }
 
-                return false;
-            }
-        });
+                        return false;
+                    }
+                });
     }
 
     @Override
@@ -94,11 +94,8 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     }
 
     @Override
-    public void onCommuteSchedulerRequested(Trip commuteToView) {
-        Intent scheduleRideIntent = new Intent(this, ScheduleRideActivity.class);
-        if (commuteToView != null)
-            scheduleRideIntent.putExtra(ScheduleRideActivity.COMMUTE_TO_VIEW_ID_KEY, commuteToView.getTripId());
-        startActivityForResult(scheduleRideIntent, SCHEDULE_RIDE_REQUEST_CODE);
+    public void onCommuteSchedulerRequested() {
+        startActivityForResult(new Intent(this, ScheduleRideActivity.class), SCHEDULE_RIDE_REQUEST_CODE);
     }
 
     @Override

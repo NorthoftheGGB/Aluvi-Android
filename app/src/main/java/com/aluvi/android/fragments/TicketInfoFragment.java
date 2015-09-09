@@ -226,7 +226,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @SuppressWarnings("unused")
     @OnClick(R.id.ticket_info_riders_picked_up)
     public void onRidersPickedUpButtonClicked() {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
 
         if (!isRideInProgress())
             CommuteManager.getInstance().ridersPickedUp(getTicket(), ridersStatusUpdatedCallback);

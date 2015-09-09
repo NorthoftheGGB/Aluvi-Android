@@ -40,7 +40,7 @@ public class TicketData {
     private double destinationLongitude;
 
     @JsonProperty("meeting_point_place_name")
-    private double meetingPointPlaceName;
+    private String meetingPointPlaceName;
 
     @JsonProperty("meeting_point_latitude")
     private double meetingPointLatitude;
@@ -205,11 +205,11 @@ public class TicketData {
     }
 
 
-    public double getMeetingPointPlaceName() {
+    public String getMeetingPointPlaceName() {
         return meetingPointPlaceName;
     }
 
-    public void setMeetingPointPlaceName(double meetingPointPlaceName) {
+    public void setMeetingPointPlaceName(String meetingPointPlaceName) {
         this.meetingPointPlaceName = meetingPointPlaceName;
     }
 

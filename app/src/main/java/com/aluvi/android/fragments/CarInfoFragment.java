@@ -90,7 +90,7 @@ public class CarInfoFragment extends BaseButterFragment {
     }
 
     private void saveCarInfo() {
-        mProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), true);
+        mProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), true);
 
         Car car = mInfoUIHelper.initCarData();
         UserStateManager.getInstance().saveCarInfo(car, new Callback() {

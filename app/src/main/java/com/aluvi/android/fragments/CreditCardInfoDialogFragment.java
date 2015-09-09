@@ -201,7 +201,7 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                 .validate();
 
         if (isValid) {
-            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+            mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
 
             CreditCard card = new CreditCard(cardNumber, extractMonth(cardExpiration), extractYear(cardExpiration), cvv);
             PaymentManager.getInstance().requestToken(card, new DataCallback<String>() {

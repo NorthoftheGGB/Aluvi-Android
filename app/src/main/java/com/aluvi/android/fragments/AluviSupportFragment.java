@@ -60,7 +60,7 @@ public class AluviSupportFragment extends BaseButterFragment {
     @SuppressWarnings("unused")
     @OnClick(R.id.support_button_submit)
     public void onSubmitButtonClicked() {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
 
         String supportMessage = mSupportEditText.getText().toString();
         UserStateManager.getInstance().sendSupportMessage(supportMessage, new Callback() {

@@ -42,7 +42,7 @@ import io.realm.RealmResults;
  */
 public class CommuteFragment extends BaseButterFragment implements TicketInfoFragment.TicketInfoListener {
     public interface OnMapEventListener {
-        void onCommuteSchedulerRequested(Trip trip);
+        void onCommuteSchedulerRequested();
 
         void startLocationTracking(Ticket ticket);
     }
@@ -95,11 +95,13 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     public void onResume() {
         super.onResume();
         refreshTickets();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        EventBus.getDefault().unregister(this);
 
         if (mDefaultProgressDialog != null) {
             mDefaultProgressDialog.cancel();
@@ -126,24 +128,20 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
 
         if (isTicketRequestedOrScheduled) {
-            MenuItem scheduleRideItem = menu.findItem(R.id.action_schedule_ride);
-            scheduleRideItem.setVisible(isTicketRequested); // If the ride has been requested, show "View Commute"
-
-            if (isTicketRequested)
-                scheduleRideItem.setTitle(R.string.action_view_commute);
+            menu.findItem(R.id.action_schedule_ride)
+                    .setVisible(true)
+                    .setTitle(R.string.action_view_commute);
         }
 
-        if (mCurrentTicket != null) {
-            menu.findItem(R.id.action_back_home).setVisible(isDriveHomeEnabled(mCurrentTicket.getTrip()));
-        }
+        menu.findItem(R.id.action_back_home)
+                .setVisible(mCurrentTicket != null && isDriveHomeEnabled(mCurrentTicket.getTrip()));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Trip activeTrip = CommuteManager.getInstance().getActiveTrip();
         switch (item.getItemId()) {
             case R.id.action_schedule_ride:
-                mEventListener.onCommuteSchedulerRequested(activeTrip);
+                mEventListener.onCommuteSchedulerRequested();
                 break;
             case R.id.action_back_home:
                 onTicketScheduled(mCurrentTicket, true);
@@ -154,7 +152,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     public void refreshTickets() {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
         CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {

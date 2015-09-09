@@ -44,7 +44,7 @@ public class DriverRegistrationDialogFragment extends DialogFragment {
                     @Override
                     public void onPositive(final MaterialDialog dialog) {
                         if (helper.validateForm()) {
-                            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), false);
+                            mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
                             UserStateManager.getInstance().registerDriver(helper.initData(), new Callback() {
                                 @Override
                                 public void success() {

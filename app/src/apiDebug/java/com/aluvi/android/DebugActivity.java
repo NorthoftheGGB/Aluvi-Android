@@ -81,7 +81,7 @@ public class DebugActivity extends AppCompatActivity {
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
-                final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
+                final Dialog progressDialog = DialogUtils.showDefaultProgressDialog(DebugActivity.this, false);
                 CommuteManager.getInstance().sync(new Callback() {
                     @Override
                     public void success() {
@@ -115,7 +115,7 @@ public class DebugActivity extends AppCompatActivity {
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
 
-                final Dialog progressDialog = DialogUtils.getDefaultProgressDialog(DebugActivity.this, false);
+                final Dialog progressDialog = DialogUtils.showDefaultProgressDialog(DebugActivity.this, false);
                 CommuteManager.getInstance().sync(new Callback() {
                     @Override
                     public void success() {

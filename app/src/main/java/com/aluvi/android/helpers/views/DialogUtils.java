@@ -9,16 +9,25 @@ import com.aluvi.android.R;
  * Created by usama on 7/21/15.
  */
 public class DialogUtils {
-    public static MaterialDialog getDefaultProgressDialog(Context context) {
-        return getDefaultProgressDialog(context, true);
+    public static MaterialDialog showDefaultProgressDialog(Context context) {
+        return showDefaultProgressDialog(context, true);
     }
 
-    public static MaterialDialog getDefaultProgressDialog(Context context, boolean canceleable) {
+    public static MaterialDialog showDefaultProgressDialog(Context context, boolean canceleable) {
         return new MaterialDialog.Builder(context)
                 .progress(true, 0)
                 .title(R.string.loading)
                 .content(R.string.please_wait)
                 .cancelable(canceleable)
+                .show();
+    }
+
+    public static MaterialDialog showCustomProgressDialog(Context context, String title, String message, boolean cancelable) {
+        return new MaterialDialog.Builder(context)
+                .title(title)
+                .content(message)
+                .progress(true, 0)
+                .cancelable(cancelable)
                 .show();
     }
 }

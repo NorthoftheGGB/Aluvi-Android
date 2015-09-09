@@ -2,7 +2,6 @@ package com.aluvi.android.activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.view.Menu;
@@ -12,7 +11,6 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
@@ -33,8 +31,6 @@ import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 
-import org.joda.time.LocalDateTime;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +39,6 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class ScheduleRideActivity extends AluviAuthActivity implements
         LocationSelectDialogFragment.OnLocationSelectedListener,
@@ -60,7 +55,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             R.id.schedule_ride_end_time_container, R.id.schedule_ride_checkbox_drive_there, R.id.schedule_ride_commute_tomorrow_button})
     List<View> mScheduleEditViews;
 
-    public final static String COMMUTE_TO_VIEW_ID_KEY = "commute_view__id_key";
     private final String TAG = "ScheduleRideActivity",
             FROM_LOCATION_TAG = "from_location",
             TO_LOCATION_TAG = "to_location";
@@ -87,8 +81,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     public void initUI() {
-        if (!initUISavedTrip())
-            initUICommuteManager();
+        initUISavedTicket();
+        initUICommuteManager();
 
         if (mStartLocation != null && mEndLocation != null) {
             String homeAddress = mStartLocation.getPlaceName();
@@ -105,53 +99,20 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         updateEndTimeButton();
     }
 
-    private boolean initUISavedTrip() {
-        boolean successfulInit = false;
-        if (getIntent() != null && getIntent().getExtras() != null) {
-            int tripId = getIntent().getExtras().getInt(COMMUTE_TO_VIEW_ID_KEY);
-            RealmResults<Ticket> tickets = getTicketsForTripId(tripId);
-            if (tickets.size() == 2) {
-                Ticket homeTicket = tickets.get(0);
-                Ticket workTicket = tickets.get(1);
+    private void initUISavedTicket() {
+        mActiveTicket = CommuteManager.getInstance().getActiveTicket();
+        if (mActiveTicket != null) {
+            mDriveThereCheckbox.setChecked(mActiveTicket.isDriving());
+            ButterKnife.apply(mScheduleEditViews, new ButterKnife.Action<View>() {
+                @Override
+                public void apply(View view, int index) {
+                    view.setEnabled(false);
+                }
+            });
 
-                mStartLocation = new TicketLocation(homeTicket.getOriginLatitude(),
-                        homeTicket.getOriginLatitude(), homeTicket.getOriginPlaceName());
-
-                mEndLocation = new TicketLocation(homeTicket.getDestinationLatitude(),
-                        homeTicket.getDestinationLongitude(), homeTicket.getDestinationPlaceName());
-
-                LocalDateTime pickupTime = LocalDateTime.fromDateFields(homeTicket.getPickupTime());
-                mStartHour = pickupTime.getHourOfDay();
-                mStartMin = pickupTime.getMinuteOfHour();
-
-                LocalDateTime pickupTimeWork = LocalDateTime.fromDateFields(workTicket.getPickupTime());
-                mEndHour = pickupTimeWork.getHourOfDay();
-                mEndMin = pickupTimeWork.getMinuteOfHour();
-
-                mDriveThereCheckbox.setChecked(homeTicket.isDriving());
-                ButterKnife.apply(mScheduleEditViews, new ButterKnife.Action<View>() {
-                    @Override
-                    public void apply(View view, int index) {
-                        view.setEnabled(false);
-                    }
-                });
-
-                mActiveTicket = homeTicket;
-                supportInvalidateOptionsMenu();
-                successfulInit = true;
-            }
+            supportInvalidateOptionsMenu();
+            getToolbar().setTitle(R.string.action_commute_pending);
         }
-
-        getToolbar().setTitle(mActiveTicket != null ? R.string.action_commute_pending : R.string.my_commute);
-        return successfulInit;
-    }
-
-    @Nullable
-    private RealmResults<Ticket> getTicketsForTripId(int tripId) {
-        Trip trip = AluviRealm.getDefaultRealm().where(Trip.class)
-                .equalTo("tripId", tripId)
-                .findFirst();
-        return trip != null ? trip.getTickets().where().findAllSorted("pickupTime") : null;
     }
 
     private void initUICommuteManager() {
@@ -168,50 +129,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
             mDriveThereCheckbox.setChecked(route.isDriving());
         }
-    }
-
-    @Override
-    public void onStripeTokenReceived(String token) {
-        updateUserPaymentToken(token);
-    }
-
-    @Override
-    public void onCreditCardProcessingError(String message) {
-        Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-    }
-
-    private void updateUserPaymentToken(final String token) {
-        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Profile profile = UserStateManager.getInstance().getProfile();
-                profile.setDefaultCardToken(token);
-            }
-        });
-
-        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
-                .title(R.string.loading)
-                .content(R.string.updating_payment_info)
-                .progress(true, 0)
-                .cancelable(false)
-                .show();
-
-        UserStateManager.getInstance().saveProfile(new Callback() {
-            @Override
-            public void success() {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-            }
-
-            @Override
-            public void failure(String message) {
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                if (mRootView != null)
-                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @SuppressWarnings("unused")
@@ -257,35 +174,85 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             if (mDriveThereCheckbox.isChecked() && !UserStateManager.getInstance().isUserDriver()) {
                 DriverRegistrationDialogFragment.newInstance().show(getSupportFragmentManager(), "driver_registration");
             } else {
-                updateSavedRoute();
-                try {
-                    onCommuteRequestAllowed();
-                } catch (UserRecoverableSystemError error) {
-                    error.printStackTrace();
-                    onCommuteRequestFail();
-                }
+                showDefaultProgressDialog();
+                saveRoute(new Callback() {
+                    @Override
+                    public void success() {
+                        cancelProgressDialogs();
+                        onCommuteRequestAllowed();
+                    }
+
+                    @Override
+                    public void failure(String message) {
+                        if (mRootView != null)
+                            Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+
+                        cancelProgressDialogs();
+                    }
+                });
             }
         } else {
             Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
         }
     }
 
-    private void onCommuteRequestAllowed() throws UserRecoverableSystemError {
-        CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.RequestRidesCallback() {
-            @Override
-            public void onPaymentDetailsRequired() {
-                if (getSupportFragmentManager() != null)
-                    CreditCardInfoDialogFragment.newInstance().show(getSupportFragmentManager(), "credit_card_fragment");
-            }
+    private void onCommuteRequestAllowed() {
+        try {
+            CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.RequestRidesCallback() {
+                @Override
+                public void onPaymentDetailsRequired() {
+                    if (getSupportFragmentManager() != null)
+                        CreditCardInfoDialogFragment.newInstance().show(getSupportFragmentManager(), "credit_card_fragment");
+                }
 
+                @Override
+                public void success() {
+                    onCommuteRequestSuccess();
+                }
+
+                @Override
+                public void failure(String message) {
+                    onCommuteRequestFail();
+                }
+            });
+        } catch (UserRecoverableSystemError error) {
+            error.printStackTrace();
+            onCommuteRequestFail();
+        }
+    }
+
+    @Override
+    public void onStripeTokenReceived(String token) {
+        updateUserPaymentToken(token);
+    }
+
+    @Override
+    public void onCreditCardProcessingError(String message) {
+        Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void updateUserPaymentToken(final String token) {
+        AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Profile profile = UserStateManager.getInstance().getProfile();
+                profile.setDefaultCardToken(token);
+            }
+        });
+
+        showCustomProgressDialog(R.string.loading, R.string.updating_payment_info, false);
+        UserStateManager.getInstance().saveProfile(new Callback() {
             @Override
             public void success() {
-                onCommuteRequestSuccess();
+                cancelProgressDialogs();
+                onCommuteRequestAllowed();
             }
 
             @Override
             public void failure(String message) {
-                onCommuteRequestFail();
+                cancelProgressDialogs();
+                if (mRootView != null)
+                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -337,7 +304,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         mEndMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mEndMin;
     }
 
-    private void updateSavedRoute() {
+    private void saveRoute(final Callback callback) {
         final CommuteManager manager = CommuteManager.getInstance();
 
         Realm realm = AluviRealm.getDefaultRealm();
@@ -364,7 +331,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         route.setReturnTime(Route.getTime(mEndHour, mEndMin));
 
         realm.commitTransaction();
-        manager.saveRoute(null);
+        manager.saveRoute(callback);
     }
 
     private boolean isCommuteReady() {
@@ -443,8 +410,10 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     private Callback cancelCallback = new Callback() {
         @Override
         public void success() {
-            if (mRootView != null)
+            if (mRootView != null) {
                 Snackbar.make(mRootView, R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+                finish();
+            }
         }
 
         @Override
@@ -453,7 +422,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
         }
     };
-
 
     private static class TimeHolder {
         private int hour, minute;

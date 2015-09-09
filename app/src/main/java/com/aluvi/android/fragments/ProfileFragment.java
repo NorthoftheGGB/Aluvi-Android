@@ -146,7 +146,7 @@ public class ProfileFragment extends BaseButterFragment {
                 }
             });
 
-            mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(getActivity(), true);
+            mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), true);
             UserStateManager.getInstance().saveProfile(new Callback() {
                 @Override
                 public void success() {

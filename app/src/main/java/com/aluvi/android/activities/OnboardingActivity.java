@@ -168,7 +168,7 @@ public class OnboardingActivity extends BaseButterActivity implements
 
     @Override
     public void onTutorialRequested() {
-        mDefaultProgressDialog = DialogUtils.getDefaultProgressDialog(this, false);
+        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(this, false);
         UserStateManager.getInstance()
                 .registerUser(mRegistrationData, new Callback() {
                     @Override

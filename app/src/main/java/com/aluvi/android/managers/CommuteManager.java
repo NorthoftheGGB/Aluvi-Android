@@ -4,8 +4,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.aluvi.android.api.ApiCallback;
-import com.aluvi.android.api.tickets.CommuterTicketsResponse;
-import com.aluvi.android.api.tickets.RequestCommuterTicketsCallback;
 import com.aluvi.android.api.tickets.TicketsApi;
 import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.api.tickets.model.TicketData;
@@ -191,15 +189,15 @@ public class CommuteManager {
         Date rideDate = new LocalDate().plus(Period.days(1)).toDateTimeAtStartOfDay().toDate();
         if (!checkExistingTickets(rideDate))
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
-                    "This is a system error but can be recovered by canceling your commuter rides and requesting again");
+                    "This is a system error but can be recovered by canceling your commuter rides and requesting again.");
 
         final Ticket toWorkTicket = Ticket.buildNewTicket(rideDate, userRoute);
         final Ticket fromWorkTicket = Ticket.buildNewTicket(rideDate, userRoute, true);
         TicketsApi.requestCommuterTickets(toWorkTicket, fromWorkTicket,
-                new RequestCommuterTicketsCallback(toWorkTicket, fromWorkTicket) {
+                new TicketsApi.RefreshTicketsCallback() {
                     @Override
-                    public void success(CommuterTicketsResponse response) {
-                        updateTickets(toWorkTicket, fromWorkTicket, response);
+                    public void success(List<TicketData> tickets) {
+                        onTicketsRefreshed(tickets);
                         callback.success();
                     }
 
@@ -208,30 +206,9 @@ public class CommuteManager {
                         if (statusCode == HttpURLConnection.HTTP_PAYMENT_REQUIRED)
                             callback.onPaymentDetailsRequired();
                         else
-                            callback.failure("Scheduling failure message");
+                            callback.failure("Unable to request rides");
                     }
                 });
-    }
-
-    private void updateTickets(Ticket toWorkTicket, Ticket fromWorkTicket, CommuterTicketsResponse response) {
-        toWorkTicket.setId(response.ticketToWorkRideId);
-        toWorkTicket.setState(Ticket.STATE_REQUESTED);
-
-        fromWorkTicket.setId(response.ticketFromWorkRideId);
-        fromWorkTicket.setState(Ticket.STATE_REQUESTED);
-
-        Trip trip = new Trip();
-        trip.setTripId(response.tripId);
-        trip.getTickets().add(toWorkTicket);
-        trip.getTickets().add(fromWorkTicket);
-
-        toWorkTicket.setTrip(trip);
-        fromWorkTicket.setTrip(trip);
-
-        Realm realm = AluviRealm.getDefaultRealm();
-        realm.beginTransaction();
-        realm.copyToRealm(trip);
-        realm.commitTransaction();
     }
 
     private boolean checkExistingTickets(Date startDate) {
@@ -307,11 +284,11 @@ public class CommuteManager {
         Realm realm = AluviRealm.getDefaultRealm();
         realm.beginTransaction();
         List<TicketStateTransition> ticketStateTransitions = new ArrayList<>();
-        if (tickets != null)
+        if (tickets != null) {
             for (TicketData ticket : tickets)
                 updateTicketForData(ticket, ticketStateTransitions);
-
-        removeNonRelevantTickets(tickets, ticketStateTransitions);
+            removeNonRelevantTickets(tickets, ticketStateTransitions);
+        }
         realm.commitTransaction();
         return ticketStateTransitions;
     }
