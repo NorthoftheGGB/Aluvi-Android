@@ -15,5 +15,6 @@
     <string name="action_commute">My Commute</string>
     <string name="action_car_info">Car Info</string>
     <string name="action_payments">Payments</string>
+    <string name="action_receipts">Receipts</string>
     <string name="action_support">Support</string>
 </resources>

@@ -14,6 +14,10 @@
             android:icon="@mipmap/ic_action_money_box"
             android:title="@string/action_payments"/>
         <item
+            android:id="@+id/action_receipts"
+            android:icon="@mipmap/ic_action_receipts"
+            android:title="@string/action_receipts"/>
+        <item
             android:id="@+id/action_support"
             android:icon="@mipmap/ic_action_umbrella"
             android:title="@string/action_support"/>

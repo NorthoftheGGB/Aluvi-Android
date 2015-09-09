@@ -15,7 +15,6 @@ import com.aluvi.android.fragments.AluviSupportFragment;
 import com.aluvi.android.fragments.CarInfoFragment;
 import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
-import com.aluvi.android.fragments.ReceiptsFragment;
 import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Ticket;
@@ -75,6 +74,9 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
                             case R.id.action_payments:
                                 onPaymentInfoClicked();
                                 break;
+                            case R.id.action_receipts:
+                                onReceiptsClicked();
+                                break;
                             case R.id.action_support:
                                 onSupportClicked();
                                 break;
@@ -125,10 +127,11 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     }
 
     public void onPaymentInfoClicked() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, ReceiptsFragment.newInstance())
-                .addToBackStack("receipts_info")
-                .commit();
+
+    }
+
+    public void onReceiptsClicked() {
+        startActivity(new Intent(this, ReceiptsActivity.class));
     }
 
     public void onSupportClicked() {

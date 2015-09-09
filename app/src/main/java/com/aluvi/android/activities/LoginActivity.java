@@ -32,11 +32,9 @@ public class LoginActivity extends BaseToolBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (PushManager.updateGooglePlayServicesIfNeeded(this)) {
-            if (UserStateManager.getInstance().getApiToken() != null) {
+        if (PushManager.updateGooglePlayServicesIfNeeded(this))
+            if (UserStateManager.getInstance().getApiToken() != null)
                 onLoggedIn();
-            }
-        }
 
         super.onCreate(savedInstanceState);
         mUsernameEditText.setText(ProfileUtils.getUserEmailNumber(this));

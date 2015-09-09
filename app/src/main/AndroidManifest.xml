@@ -58,7 +58,9 @@
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.InitActivity">
+        <activity
+            android:name=".activities.InitActivity"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity
@@ -124,6 +126,13 @@
         <activity
             android:name=".activities.OnboardingActivity"
             android:label="@string/title_activity_onboarding"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark">
+        </activity>
+        <activity
+            android:name=".activities.ReceiptsActivity"
+            android:label="@string/title_activity_receipts"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark">
         </activity>
     </application>
