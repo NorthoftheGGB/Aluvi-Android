@@ -6,9 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created by matthewxi on 7/18/15.
  */
 public class CarData {
-
     @JsonProperty("id")
-    private Integer id;
+    private int id;
 
     @JsonProperty("state")
     private String state;
@@ -28,14 +27,17 @@ public class CarData {
     @JsonProperty("car_photo")
     private String carPhoto;
 
+    @JsonProperty("color")
+    private String color;
+
     public CarData() {
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -85,5 +87,13 @@ public class CarData {
 
     public void setCarPhoto(String carPhoto) {
         this.carPhoto = carPhoto;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

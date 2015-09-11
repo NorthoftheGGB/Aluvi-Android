@@ -19,65 +19,76 @@
         android:layout_above="@+id/schedule_ride_commute_tomorrow_button"
         android:layout_below="@+id/toolbar">
 
-        <LinearLayout
-            android:id="@+id/schedule_ride_home_button_container"
-            style="@style/BorderlessPreferenceContainer"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/schedule_ride_container_times"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:orientation="horizontal">
+            android:layout_marginTop="@dimen/activity_vertical_margin">
 
-            <TextView
-                android:id="@+id/schedule_textview_from_title"
-                style="@style/PreferenceTitle"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_above="@+id/textView8"
-                android:layout_below="@+id/toolbar"
-                android:text="@string/from"/>
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/schedule_ride_text_view_home"
-                style="@style/PreferenceContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/schedule_ride_home_button_container"
+                    style="@style/BorderlessPreferenceContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/schedule_ride_work_button_container"
-            style="@style/BorderlessPreferenceContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/schedule_ride_home_button_container"
-            android:layout_alignRight="@+id/schedule_ride_home_button_container"
-            android:layout_below="@+id/schedule_ride_home_button_container"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/schedule_textview_from_title"
+                        style="@style/PreferenceTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_above="@+id/textView8"
+                        android:layout_below="@+id/toolbar"
+                        android:text="@string/from"/>
 
-            <TextView
-                android:id="@+id/textView8"
-                style="@style/PreferenceTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/to"/>
+                    <TextView
+                        android:id="@+id/schedule_ride_text_view_home"
+                        style="@style/PreferenceContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/schedule_ride_text_view_work"
-                style="@style/PreferenceContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/schedule_ride_work_button_container"
+                    style="@style/BorderlessPreferenceContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/schedule_ride_home_button_container"
+                    android:layout_alignRight="@+id/schedule_ride_home_button_container"
+                    android:layout_below="@+id/schedule_ride_home_button_container"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        style="@style/PreferenceTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/to"/>
+
+                    <TextView
+                        android:id="@+id/schedule_ride_text_view_work"
+                        style="@style/PreferenceContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </HorizontalScrollView>
 
         <LinearLayout
             android:id="@+id/schedule_ride_start_time_container"
             style="@style/BorderlessPreferenceContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/schedule_ride_work_button_container"
-            android:layout_alignRight="@+id/schedule_ride_work_button_container"
-            android:layout_below="@+id/schedule_ride_work_button_container"
+            android:layout_alignLeft="@+id/schedule_ride_container_times"
+            android:layout_alignRight="@+id/schedule_ride_container_times"
+            android:layout_below="@+id/schedule_ride_container_times"
             android:layout_marginTop="8dp"
             android:orientation="horizontal">
 

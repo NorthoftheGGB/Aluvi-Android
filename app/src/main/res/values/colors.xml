@@ -42,4 +42,5 @@
     <color name="onboarding_button_background">#CFECE0</color>
     <color name="onboarding_button_background_clicked">#ADCAB0</color>
     <color name="onboarding_button_text_color">#1B9F72</color>
+    <color name="onboarding_button_text_color_disabled">#EEEEEE</color>
 </resources>

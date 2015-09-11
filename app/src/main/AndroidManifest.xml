@@ -122,7 +122,8 @@
         <activity
             android:name=".activities.CarInfoActivity"
             android:label="@string/action_car_info"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark"/>
         <activity
             android:name=".activities.OnboardingActivity"
             android:label="@string/title_activity_onboarding"

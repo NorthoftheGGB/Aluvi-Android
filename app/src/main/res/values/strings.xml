@@ -122,4 +122,7 @@
     <string name="driver_interested">Want to be the driver?</string>
     <string name="pickup_place">Choose place to get picked up and a work location:</string>
     <string name="action_print_receipts_email">Print to Email</string>
+    <string name="cancel_trip_title">Cancel Trip?</string>
+    <string name="cancel_trip_contents">Are you sure you want to cancel this trip?</string>
+    <string name="receipts_emailed">Emailed receipts</string>
 </resources>

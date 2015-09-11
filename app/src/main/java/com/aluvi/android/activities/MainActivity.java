@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.fragments.AluviSupportFragment;
-import com.aluvi.android.fragments.CarInfoFragment;
 import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
@@ -23,8 +22,7 @@ import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AluviAuthActivity implements CommuteFragment.OnMapEventListener,
-        NavigationDrawerHeaderFragment.ProfileRequestedListener,
-        CarInfoFragment.CarInfoListener {
+        NavigationDrawerHeaderFragment.ProfileRequestedListener{
 
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
@@ -120,14 +118,10 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     }
 
     public void onCarInfoClicked() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, CarInfoFragment.newInstance())
-                .addToBackStack("car_info")
-                .commit();
+        startActivity(new Intent(this, CarInfoActivity.class));
     }
 
     public void onPaymentInfoClicked() {
-
     }
 
     public void onReceiptsClicked() {
@@ -144,11 +138,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     public void onCommuteScheduled() {
         supportInvalidateOptionsMenu();
         EventBus.getDefault().post(new CommuteRequestedEvent());
-    }
-
-    @Override
-    public void onInfoSaved() {
-        getSupportFragmentManager().popBackStack();
     }
 
     @Override

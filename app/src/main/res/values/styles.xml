@@ -68,7 +68,7 @@
     <style name="OnboardingButton">
         <item name="android:height">60dp</item>
         <item name="android:textSize">@dimen/abc_text_size_large_material</item>
-        <item name="android:textColor">@color/onboarding_button_text_color</item>
+        <item name="android:textColor">@drawable/onboarding_button_text_color</item>
         <item name="android:background">@drawable/onboarding_button_background</item>
     </style>
 
@@ -87,7 +87,7 @@
 
     <style name="PreferenceContent">
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:gravity">center_vertical|right</item>
+        <item name="android:gravity">center_vertical|left</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>

@@ -7,10 +7,12 @@ import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.application.AluviRealm;
@@ -51,8 +53,9 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Bind(R.id.schedule_ride_spinner_start_time) Spinner mStartTimeSpinner;
     @Bind(R.id.schedule_ride_spinner_end_time) Spinner mEndTimeSpinner;
     @Bind(R.id.schedule_ride_checkbox_drive_there) CheckBox mDriveThereCheckbox;
+    @Bind(R.id.schedule_ride_commute_tomorrow_button) Button mCommuteTomorrowButton;
     @Bind({R.id.schedule_ride_home_button_container, R.id.schedule_ride_work_button_container, R.id.schedule_ride_start_time_container,
-            R.id.schedule_ride_end_time_container, R.id.schedule_ride_checkbox_drive_there, R.id.schedule_ride_commute_tomorrow_button})
+            R.id.schedule_ride_end_time_container, R.id.schedule_ride_checkbox_drive_there})
     List<View> mScheduleEditViews;
 
     private final String TAG = "ScheduleRideActivity",
@@ -110,6 +113,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 }
             });
 
+            mCommuteTomorrowButton.setText(R.string.action_cancel_schedule_ride);
             supportInvalidateOptionsMenu();
             getToolbar().setTitle(R.string.action_commute_pending);
         }
@@ -170,29 +174,33 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @SuppressWarnings("unused")
     @OnClick(R.id.schedule_ride_commute_tomorrow_button)
     public void onConfirmCommuteButtonClicked() {
-        if (isCommuteReady()) {
-            if (mDriveThereCheckbox.isChecked() && !UserStateManager.getInstance().isUserDriver()) {
-                DriverRegistrationDialogFragment.newInstance().show(getSupportFragmentManager(), "driver_registration");
+        if (mActiveTicket == null) {
+            if (isCommuteReady()) {
+                if (mDriveThereCheckbox.isChecked() && !UserStateManager.getInstance().isUserDriver()) {
+                    DriverRegistrationDialogFragment.newInstance().show(getSupportFragmentManager(), "driver_registration");
+                } else {
+                    showDefaultProgressDialog();
+                    saveRoute(new Callback() {
+                        @Override
+                        public void success() {
+                            cancelProgressDialogs();
+                            onCommuteRequestAllowed();
+                        }
+
+                        @Override
+                        public void failure(String message) {
+                            if (mRootView != null)
+                                Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+
+                            cancelProgressDialogs();
+                        }
+                    });
+                }
             } else {
-                showDefaultProgressDialog();
-                saveRoute(new Callback() {
-                    @Override
-                    public void success() {
-                        cancelProgressDialogs();
-                        onCommuteRequestAllowed();
-                    }
-
-                    @Override
-                    public void failure(String message) {
-                        if (mRootView != null)
-                            Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-
-                        cancelProgressDialogs();
-                    }
-                });
+                Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
             }
         } else {
-            Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
+            showCancelConfirmationDialog();
         }
     }
 
@@ -255,53 +263,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                     Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void updateEndTimeButton() {
-        ArrayList<TimeHolder> pmTimes = getTimes(MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, 15);
-        TimesAdapter adapter = new TimesAdapter(this, pmTimes);
-        mEndTimeSpinner.setAdapter(adapter);
-
-        int currPos = adapter.getPosition(mEndHour, mEndMin);
-        if (currPos != -1)
-            mEndTimeSpinner.setSelection(currPos);
-    }
-
-    private void updateStartTimeButton() {
-        ArrayList<TimeHolder> amTimes = getTimes(MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR, 15);
-        TimesAdapter adapter = new TimesAdapter(this, amTimes);
-        mStartTimeSpinner.setAdapter(adapter);
-
-        int currPos = adapter.getPosition(mStartHour, mStartMin);
-        if (currPos != -1)
-            mStartTimeSpinner.setSelection(currPos);
-    }
-
-    private ArrayList<TimeHolder> getTimes(int start, int end, int interval) {
-        ArrayList<TimeHolder> times = new ArrayList<>();
-        int iters = 60 / interval;
-        int hour = start;
-        for (; hour < end; hour++) {
-            for (int j = 0; j < iters; j++) {
-                TimeHolder holder = new TimeHolder();
-                holder.hour = hour;
-                holder.minute = j * interval;
-                times.add(holder);
-            }
-        }
-
-        TimeHolder holder = new TimeHolder();
-        holder.hour = hour;
-        holder.minute = 0;
-        times.add(holder);
-        return times;
-    }
-
-    private void normalizeStartEndTimes() {
-        mStartHour = mStartHour == CommuteManager.INVALID_TIME ? MIN_HOME_LEAVE_HOUR : mStartHour;
-        mStartMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mStartMin;
-        mEndHour = mEndHour == CommuteManager.INVALID_TIME ? MIN_WORK_LEAVE_HOUR : mEndHour;
-        mEndMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mEndMin;
     }
 
     private void saveRoute(final Callback callback) {
@@ -371,9 +332,6 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_schedule_ride, menu);
-        boolean isTicketActive = mActiveTicket != null &&
-                (Ticket.isTicketActive(mActiveTicket) || mActiveTicket.getState().equals(Ticket.STATE_REQUESTED));
-        menu.findItem(R.id.action_cancel).setVisible(isTicketActive);
         return true;
     }
 
@@ -384,19 +342,30 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 setResult(RESULT_CANCEL);
                 finish();
                 break;
-            case R.id.action_cancel:
-                if (mActiveTicket != null) {
-                    Trip activeTrip = mActiveTicket.getTrip();
-                    if (activeTrip != null && activeTrip.getTripState().equals(Trip.STATE_REQUESTED))
-                        cancelTrip(mActiveTicket.getTrip());
-                    else
-                        cancelTicket(mActiveTicket);
-                }
-
-                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showCancelConfirmationDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.cancel_trip_title)
+                .content(R.string.cancel_trip_contents)
+                .positiveText(android.R.string.yes)
+                .negativeText(android.R.string.no)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+
+                        Trip activeTrip = mActiveTicket.getTrip();
+                        if (activeTrip != null && activeTrip.getTripState().equals(Trip.STATE_REQUESTED))
+                            cancelTrip(mActiveTicket.getTrip());
+                        else
+                            cancelTicket(mActiveTicket);
+                    }
+                })
+                .show();
     }
 
     private void cancelTicket(Ticket ticket) {
@@ -423,6 +392,26 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         }
     };
 
+    private void updateStartTimeButton() {
+        ArrayList<TimeHolder> amTimes = getTimes(MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR, 15);
+        TimesAdapter adapter = new TimesAdapter(this, amTimes);
+        mStartTimeSpinner.setAdapter(adapter);
+
+        int currPos = adapter.getPosition(mStartHour, mStartMin);
+        if (currPos != -1)
+            mStartTimeSpinner.setSelection(currPos);
+    }
+
+    private void updateEndTimeButton() {
+        ArrayList<TimeHolder> pmTimes = getTimes(MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, 15);
+        TimesAdapter adapter = new TimesAdapter(this, pmTimes);
+        mEndTimeSpinner.setAdapter(adapter);
+
+        int currPos = adapter.getPosition(mEndHour, mEndMin);
+        if (currPos != -1)
+            mEndTimeSpinner.setSelection(currPos);
+    }
+
     private static class TimeHolder {
         private int hour, minute;
 
@@ -438,6 +427,33 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             String formattedMin = min < 10 ? "0" + min : Integer.toString(min);
             return hour + ":" + formattedMin + " " + modifier;
         }
+    }
+
+    private ArrayList<TimeHolder> getTimes(int start, int end, int interval) {
+        ArrayList<TimeHolder> times = new ArrayList<>();
+        int iters = 60 / interval;
+        int hour = start;
+        for (; hour < end; hour++) {
+            for (int j = 0; j < iters; j++) {
+                TimeHolder holder = new TimeHolder();
+                holder.hour = hour;
+                holder.minute = j * interval;
+                times.add(holder);
+            }
+        }
+
+        TimeHolder holder = new TimeHolder();
+        holder.hour = hour;
+        holder.minute = 0;
+        times.add(holder);
+        return times;
+    }
+
+    private void normalizeStartEndTimes() {
+        mStartHour = mStartHour == CommuteManager.INVALID_TIME ? MIN_HOME_LEAVE_HOUR : mStartHour;
+        mStartMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mStartMin;
+        mEndHour = mEndHour == CommuteManager.INVALID_TIME ? MIN_WORK_LEAVE_HOUR : mEndHour;
+        mEndMin = mEndMin == CommuteManager.INVALID_TIME ? 0 : mEndMin;
     }
 
     private static class TimesAdapter extends BaseSpinnerArrayAdapter<TimeHolder> {

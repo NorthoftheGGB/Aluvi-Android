@@ -235,7 +235,7 @@ public class UsersApi {
     public static void saveCarInfo(Car car, final ApiCallback callback) {
         AluviAuthenticatedRequest carRequest = new AluviAuthenticatedRequest<>(
                 Request.Method.POST,
-                AluviApi.API_CAR,
+                AluviApi.API_UPDATE_CAR,
                 Car.toMap(car),
                 new AluviAuthRequestListener<Void>() {
                     @Override
@@ -256,6 +256,31 @@ public class UsersApi {
         carRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK,
                 HttpURLConnection.HTTP_CREATED, HttpURLConnection.HTTP_BAD_REQUEST});
         AluviApi.getInstance().getRequestQueue().add(carRequest);
+    }
+
+    public static void emailReceipts(final ApiCallback callback) {
+        AluviAuthenticatedRequest receiptRequest = new AluviAuthenticatedRequest(
+                Request.Method.POST,
+                AluviApi.API_RECEIPTS,
+                new HashMap<>(),
+                new AluviAuthRequestListener<Void>() {
+                    @Override
+                    public void onAuthenticatedResponse(Void response, int statusCode, VolleyError error) {
+                        if (statusCode == HttpURLConnection.HTTP_OK)
+                            callback.success();
+                        else
+                            callback.failure(statusCode);
+                    }
+
+                    @Override
+                    public JavaType getReturnType() {
+                        return SimpleType.construct(Void.class);
+                    }
+                }
+        );
+
+        receiptRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
+        AluviApi.getInstance().getRequestQueue().add(receiptRequest);
     }
 
     public static void sendSupportRequest(String message, final ApiCallback callback) {

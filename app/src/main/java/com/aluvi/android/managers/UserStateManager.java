@@ -295,6 +295,20 @@ public class UserStateManager {
         });
     }
 
+    public void emailReceipts(final Callback callback) {
+        UsersApi.emailReceipts(new ApiCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Unable to email receipts");
+            }
+        });
+    }
+
     public void clear() {
         AluviRealm.getDefaultRealm().executeTransaction(new Realm.Transaction() {
             @Override

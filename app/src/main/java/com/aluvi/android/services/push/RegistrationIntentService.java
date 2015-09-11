@@ -22,7 +22,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.aluvi.android.R;
 import com.aluvi.android.api.devices.DevicesApi;
@@ -78,12 +77,10 @@ public class RegistrationIntentService extends IntentService {
                 // Notify UI that registration has completed, so the progress indicator can be hidden.
                 Intent registrationComplete = new Intent(PushPreferences.REGISTRATION_COMPLETE);
                 LocalBroadcastManager.getInstance(RegistrationIntentService.this).sendBroadcast(registrationComplete);
-                Toast.makeText(getApplicationContext(), "Finished registering for push", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void failure(int statusCode) {
-                Toast.makeText(getApplicationContext(), "Failed to put push token on server", Toast.LENGTH_SHORT).show();
             }
         });
     }

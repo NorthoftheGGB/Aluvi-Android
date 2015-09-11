@@ -1,9 +1,13 @@
 package com.aluvi.android.api.request;
 
+import android.util.Log;
+
 import com.aluvi.android.api.AuthFailEvent;
 import com.aluvi.android.api.request.utils.AuthenticationChecker;
 import com.android.volley.VolleyError;
 import com.spothero.volley.JacksonRequestListener;
+
+import java.io.UnsupportedEncodingException;
 
 import de.greenrobot.event.EventBus;
 
@@ -17,8 +21,16 @@ public abstract class AluviAuthRequestListener<T> extends JacksonRequestListener
             EventBus.getDefault().post(new AuthFailEvent());
         }
 
-        if (error != null)
-            error.printStackTrace();
+        //get response body and parse with appropriate encoding
+        if (error != null && error.networkResponse != null && error.networkResponse.data != null) {
+            String statusCodeStr = String.valueOf(error.networkResponse.statusCode);
+            try {
+                String body = new String(error.networkResponse.data, "UTF-8");
+                Log.e("AluviResponse", "Status code: " + statusCodeStr + " with error: " + body);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
 
         onAuthenticatedResponse(response, statusCode, error);
     }

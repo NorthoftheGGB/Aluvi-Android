@@ -30,29 +30,34 @@ public class Car extends RealmObject {
     @JsonProperty("state")
     private String state;
 
-    @JsonProperty("year")
-    private int year;
+    @JsonProperty("color")
+    private String color;
 
     @JsonProperty("car_photo")
     private String carPhotoUrl;
 
     public static void updateCarWithCarData(Car car, CarData data) {
         car.setId(data.getId());
-        car.setMake(data.getMake());
-        car.setModel(data.getModel());
-        car.setLicensePlate(data.getLicensePlate());
-        car.setState(data.getState());
-        car.setYear(data.getYear());
-        car.setCarPhotoUrl(data.getCarPhoto());
+        if (data.getMake() != null)
+            car.setMake(data.getMake());
+        if (data.getModel() != null)
+            car.setModel(data.getModel());
+        if (data.getLicensePlate() != null)
+            car.setLicensePlate(data.getLicensePlate());
+        if (data.getState() != null)
+            car.setState(data.getState());
+        if (data.getColor() != null)
+            car.setColor(data.getColor());
+        if (data.getCarPhoto() != null)
+            car.setCarPhotoUrl(data.getCarPhoto());
     }
 
     public static HashMap<String, String> toMap(Car car) {
         HashMap<String, String> out = new HashMap<>();
-        out.put("id", Integer.toString(car.getId()));
         out.put("make", car.getMake());
         out.put("model", car.getModel());
         out.put("license_plate", car.getLicensePlate());
-        out.put("color", "silver");
+        out.put("color", car.getColor());
         return out;
     }
 
@@ -96,12 +101,12 @@ public class Car extends RealmObject {
         this.state = state;
     }
 
-    public int getYear() {
-        return year;
+    public String getColor() {
+        return color;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public String getCarPhotoUrl() {
@@ -119,10 +124,4 @@ public class Car extends RealmObject {
     public void setTickets(RealmList<Ticket> tickets) {
         this.tickets = tickets;
     }
-
-    public static String summary(Car car) {
-        return car.getYear() + ' ' + car.getMake() + ' ' + car.getModel();
-    }
-
-
 }

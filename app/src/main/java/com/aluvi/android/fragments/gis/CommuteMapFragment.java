@@ -1,7 +1,6 @@
 package com.aluvi.android.fragments.gis;
 
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
@@ -22,7 +20,6 @@ import com.aluvi.android.helpers.views.mapbox.MapBoxStateSaver;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.managers.location.RouteMappingManager;
-import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.RouteDirections;
@@ -36,7 +33,6 @@ import com.mapbox.mapboxsdk.views.InfoWindow;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
@@ -227,7 +223,8 @@ public class CommuteMapFragment extends BaseButterFragment {
     }
 
     private void plotPickupPoint(PickupPointData data) {
-        Marker pickupPoint = new Marker(Integer.toString(data.getNumRiders()), "",
+        String pluralPerson = data.getNumRiders() == 1 ? "person" : "people";
+        Marker pickupPoint = new Marker(data.getNumRiders() + " " + pluralPerson + " using this pickup point", "",
                 new LatLng(data.getLocation().getLatitude(), data.getLocation().getLongitude()));
         setMarkerIcon(pickupPoint);
         mMapView.addMarker(pickupPoint);

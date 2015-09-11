@@ -63,7 +63,6 @@ public class ReceiptsFragment extends BaseButterFragment {
 
             @Override
             public void failure(String message) {
-
             }
         });
     }

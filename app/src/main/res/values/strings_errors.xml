@@ -27,5 +27,6 @@
     <string name="photo_required">You must submit a profile photo</string>
     <string name="commute_schedule_failed">Unable to schedule commute</string>
     <string name="ticket_cancelled">Ticket cancelled</string>
+    <string name="ticket_completed">Ticket completed</string>
     <string name="full_name">Please enter your full name</string>
 </resources>

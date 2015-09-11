@@ -21,6 +21,7 @@ public class AluviApi implements AluviApiConstants {
     public final static String API_RECEIPTS = "v2/rides/receipts";
     public final static String API_ROUTE = "v2/rides/route";
     public final static String API_PICKUP_POINTS = "v2/rides/pickup_points";
+    public final static String API_UPDATE_CAR = "v2/users/car";
 
     // geo API
     public final static String API_GET_DRIVER_LOCATION = "geo/driver/";
@@ -41,11 +42,11 @@ public class AluviApi implements AluviApiConstants {
     public final static String API_USER_PROFILE = "v2/users/profile";
     public final static String API_FILL_COMMUTER_PASS = "v2/users/fill_commuter_pass";
     public final static String API_CREATE_SUPPORT_REQUEST = "v2/users/support";
+    public final static String API_EMAIL_RECEIPTS = "v2/users/receipts";
 
     // drivers
     public final static String API_DRIVER_REGISTRATION = "drivers/driver_registration";
     public final static String API_GET_DRIVER_FARE_PATH_PATTERN = "drivers/fares/:id";
-    public final static String API_CAR = "drivers/car";
 
     //Singleton
     private static AluviApi mInstance;

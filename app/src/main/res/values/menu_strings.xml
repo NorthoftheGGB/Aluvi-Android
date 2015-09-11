@@ -6,7 +6,7 @@
     <string name="action_commute_pending">Commute Pending</string>
     <string name="action_commute_tomorrow">Commute Tomorrow</string>
     <string name="action_view_commute">View Commute</string>
-    <string name="action_cancel_schedule_ride">Cancel</string>
+    <string name="action_cancel_schedule_ride">Cancel Commute</string>
     <string name="action_rider_ticket">Rider Ticket</string>
     <string name="action_driver_ticket">Driver Ticket</string>
     <string name="action_log_in">Log In</string>

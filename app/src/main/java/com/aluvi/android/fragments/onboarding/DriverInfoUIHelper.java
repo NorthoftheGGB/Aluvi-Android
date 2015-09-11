@@ -46,15 +46,18 @@ public class DriverInfoUIHelper {
         car.setLicensePlate(mLicensePlateNumberEditText.getText().toString());
         car.setMake(mCarMakeEditText.getText().toString());
         car.setModel(mCarModelEditText.getText().toString());
-        car.setYear(Integer.parseInt(mCarColorEditText.getText().toString()));
+        car.setColor(mCarColorEditText.getText().toString());
         return car;
     }
 
     public void updateData(Profile profile) {
         Car car = profile.getCar();
-        mLicensePlateNumberEditText.setText(car.getLicensePlate());
-        mCarMakeEditText.setText(car.getMake());
-        mCarModelEditText.setText(car.getModel());
+        if (car != null) {
+            mLicensePlateNumberEditText.setText(car.getLicensePlate());
+            mCarMakeEditText.setText(car.getMake());
+            mCarModelEditText.setText(car.getModel());
+            mCarColorEditText.setText(car.getColor());
+        }
     }
 
     public boolean validateForm() {

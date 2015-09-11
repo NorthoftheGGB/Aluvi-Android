@@ -30,6 +30,7 @@ import com.aluvi.android.model.realm.Trip;
 import com.aluvi.android.services.push.AluviPushNotificationListenerService;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,11 +49,12 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
-    @Bind(R.id.commute_fragment_ticket_info_container) View mTicketInfoContainer;
+//    @Bind(R.id.commute_fragment_ticket_info_container) View mTicketInfoContainer;
 
     private Ticket mCurrentTicket;
     private Dialog mDefaultProgressDialog;
     private OnMapEventListener mEventListener;
+    private SlidingUpPanelLayout.PanelState mCurrentPanelState;
 
     public static CommuteFragment newInstance() {
         return new CommuteFragment();
@@ -78,8 +80,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                 EventBus.getDefault().post(new SlidingPanelEvent(view.getHeight() * v));
             }
         });
-
-        mTicketInfoContainer.setVisibility(View.INVISIBLE);
 
         // Can't add nested fragments via XML, so add them dynamically
         if (getChildFragmentManager().findFragmentById(R.id.commute_fragment_map_container) == null)
@@ -111,7 +111,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
     @Override
     public void onTicketInfoUIMeasured(int headerHeight, int panelHeight) {
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        mSlidingLayout.setPanelState(mCurrentPanelState);
         EventBus.getDefault().post(new SlidingPanelEvent(panelHeight));
     }
 
@@ -178,8 +178,12 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket();
         handleTicketStateTransitions(transitions);
 
-        if (Ticket.isTicketActive(mCurrentTicket))
+        if (Ticket.isTicketActive(mCurrentTicket)) {
             onTicketScheduled(mCurrentTicket, false);
+        } else {
+            mCurrentPanelState = SlidingUpPanelLayout.PanelState.HIDDEN;
+            onTicketInfoUIMeasured(-1, -1);
+        }
 
         RealmResults<Ticket> tickets = AluviRealm.getDefaultRealm().where(Ticket.class).findAll();
         EventBus.getDefault().post(new RefreshTicketsEvent(tickets, transitions, mCurrentTicket));
@@ -202,21 +206,21 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     private void onTicketScheduled(Ticket ticket, boolean overrideBackHome) {
+        boolean isTicketInfoVisible = !isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome;
+        mCurrentPanelState = isTicketInfoVisible ? SlidingUpPanelLayout.PanelState.EXPANDED : SlidingUpPanelLayout.PanelState.HIDDEN;
+
         mEventListener.startLocationTracking(ticket);
         EventBus.getDefault().post(new CommuteScheduledEvent(mCurrentTicket.getTrip(), mCurrentTicket));
-
-        if (!isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome) {
-            mTicketInfoContainer.setVisibility(View.VISIBLE);
-        }
     }
 
     private void onLocalTicketsRefreshed() {
         EventBus.getDefault().post(new LocalRefreshTicketsEvent(CommuteManager.getInstance().getActiveTicket()));
+        onTicketsRefreshed(new ArrayList<TicketStateTransition>());
     }
 
     @Override
     public void onRiderStateChanged() {
-        EventBus.getDefault().post(new LocalRefreshTicketsEvent(CommuteManager.getInstance().getActiveTicket()));
+        onLocalTicketsRefreshed();
     }
 
     @SuppressWarnings("unused")
@@ -292,6 +296,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             case Ticket.STATE_RIDER_CANCELLED:
             case Ticket.STATE_DRIVER_CANCELLED:
                 return R.string.ticket_cancelled;
+            case Ticket.STATE_COMPLETE:
+                return R.string.ticket_completed;
         }
 
         return -1;
