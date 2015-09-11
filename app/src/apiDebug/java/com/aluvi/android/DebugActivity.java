@@ -76,8 +76,14 @@ public class DebugActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.log_in_register_button) public void login(){
-        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new Callback() {
+    @OnClick(R.id.log_in_register_button)
+    public void login() {
+        UserStateManager.getInstance().login("paypal@fromthegut.org", "martian", new UserStateManager.LoginCallback() {
+            @Override
+            public void onUserNotFound() {
+
+            }
+
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
@@ -109,8 +115,14 @@ public class DebugActivity extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.driver_login_button) public void driverLogin(){
-        UserStateManager.getInstance().login("bartle@b.com", "bartle", new Callback() {
+    @OnClick(R.id.driver_login_button)
+    public void driverLogin() {
+        UserStateManager.getInstance().login("bartle@b.com", "bartle", new UserStateManager.LoginCallback() {
+            @Override
+            public void onUserNotFound() {
+
+            }
+
             @Override
             public void success() {
                 Toast.makeText(getApplicationContext(), "Logged In", Toast.LENGTH_SHORT).show();
@@ -143,7 +155,8 @@ public class DebugActivity extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.logout_button) public void logout(){
+    @OnClick(R.id.logout_button)
+    public void logout() {
         UserStateManager.getInstance().logout(new Callback() {
             @Override
             public void success() {
@@ -157,9 +170,15 @@ public class DebugActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.schedule_button) public void schedule(){
+    @OnClick(R.id.schedule_button)
+    public void schedule() {
         try {
-            CommuteManager.getInstance().requestRidesForTomorrow(new Callback(){
+            CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.RequestRidesCallback() {
+                @Override
+                public void onPaymentDetailsRequired() {
+
+                }
+
                 @Override
                 public void success() {
                     Toast.makeText(getApplicationContext(), "Scheduled!", Toast.LENGTH_SHORT).show();
@@ -180,10 +199,11 @@ public class DebugActivity extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.cancel_ticket_button) public void cancelTicket(){
+    @OnClick(R.id.cancel_ticket_button)
+    public void cancelTicket() {
         Realm realm = AluviRealm.getDefaultRealm();
         Ticket ticket = realm.where(Ticket.class).findFirst();
-        if(ticket == null){
+        if (ticket == null) {
             Toast.makeText(getApplicationContext(), "Null", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -202,10 +222,11 @@ public class DebugActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.cancel_trip_button) public void cancelTrip(){
+    @OnClick(R.id.cancel_trip_button)
+    public void cancelTrip() {
         Realm realm = AluviRealm.getDefaultRealm();
         Trip trip = realm.where(Trip.class).findFirst();
-        if(trip == null){
+        if (trip == null) {
             Toast.makeText(getApplicationContext(), "Null", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -224,7 +245,8 @@ public class DebugActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.tickets_button) public void refreshTickets(){
+    @OnClick(R.id.tickets_button)
+    public void refreshTickets() {
         CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> result) {
@@ -240,7 +262,8 @@ public class DebugActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.push_token_button) public void pushToken() {
+    @OnClick(R.id.push_token_button)
+    public void pushToken() {
         DeviceData device = new DeviceData();
         device.setPushToken("yeh a push token");
         DevicesApi.patchDevice(device, new DevicesApi.Callback() {
