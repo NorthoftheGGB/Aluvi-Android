@@ -11,7 +11,6 @@ import android.view.MenuItem;
 
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
-import com.aluvi.android.fragments.AluviSupportFragment;
 import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
 import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
@@ -129,10 +128,7 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     }
 
     public void onSupportClicked() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, AluviSupportFragment.newInstance())
-                .addToBackStack("support")
-                .commit();
+        startActivity(new Intent(this, AluviSupportActivity.class));
     }
 
     public void onCommuteScheduled() {

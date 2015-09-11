@@ -136,5 +136,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Dark">
         </activity>
+        <activity
+            android:name=".activities.AluviSupportActivity"
+            android:label="@string/action_support"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark"></activity>
     </application>
 </manifest>
