@@ -14,6 +14,7 @@ import com.aluvi.android.activities.base.BaseToolBarActivity;
 import com.aluvi.android.application.push.PushManager;
 import com.aluvi.android.helpers.ProfileUtils;
 import com.aluvi.android.helpers.views.FormUtils;
+import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
 
@@ -48,10 +49,15 @@ public class LoginActivity extends BaseToolBarActivity {
     @SuppressWarnings("unused")
     @OnClick(R.id.log_in_register_button)
     public void onLogInButtonClicked() {
-        String username = mUsernameEditText.getText().toString();
-        String password = mPasswordEditText.getText().toString();
+        boolean isFormValid = new FormValidator(getString(R.string.all_fields_required))
+                .addField(mUsernameEditText, getString(R.string.email_error), FormUtils.getEmailValidator())
+                .addField(mPasswordEditText)
+                .validate();
 
-        if (!"".equals(username) && !"".equals(password)) {
+        if (isFormValid) {
+            String username = mUsernameEditText.getText().toString();
+            String password = mPasswordEditText.getText().toString();
+
             showDefaultProgressDialog();
             UserStateManager.getInstance().login(username, password, new UserStateManager.LoginCallback() {
                 @Override
@@ -73,7 +79,7 @@ public class LoginActivity extends BaseToolBarActivity {
                 }
             });
         } else {
-            Toast.makeText(this, R.string.all_fields_required, Toast.LENGTH_SHORT).show();
+            Snackbar.make(mRootView, R.string.all_fields_required, Snackbar.LENGTH_SHORT).show();
         }
     }
 

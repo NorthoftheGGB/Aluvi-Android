@@ -10,7 +10,6 @@ import com.aluvi.android.activities.base.AluviAuthActivity;
  * Created by usama on 9/10/15.
  */
 public class AluviSupportActivity extends AluviAuthActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
