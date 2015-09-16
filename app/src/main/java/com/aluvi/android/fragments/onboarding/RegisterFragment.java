@@ -79,7 +79,11 @@ public class RegisterFragment extends BaseButterFragment {
     @SuppressWarnings("unused")
     @OnClick(R.id.register_button_sign_up)
     public void onSignUpButtonClicked() {
-        if (validateForm())
+        // Validate work email manually because it's an optional field
+        String workEmail = mWorkEmailEditText.getText().toString();
+        if (workEmail.length() > 0 && !FormUtils.isValidEmail(workEmail))
+            mWorkEmailEditText.setError(getString(R.string.error_invalid_email));
+        else if (validateForm())
             mRegistrationListener.onRegistered(initRegistrationData());
     }
 
@@ -93,7 +97,6 @@ public class RegisterFragment extends BaseButterFragment {
                             }
                         })
                 .addField(mPhoneNumberEditText, getString(R.string.error_invalid_phone), FormUtils.getPhoneValidator())
-                .addField(mWorkEmailEditText, FormUtils.getEmailValidator())
                 .validate();
     }
 

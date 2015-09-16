@@ -26,8 +26,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
-    private final String TAG = "MainActivity";
-
     private final int SCHEDULE_RIDE_REQUEST_CODE = 982;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -36,6 +34,8 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
         super.onCreate(savedInstanceState);
         initNavigationView();
         onHomeClicked();
+
+        getSupportActionBar().setTitle("");
     }
 
     @Override
@@ -46,7 +46,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     @Override
     public void onResume() {
         super.onResume();
-
         mNavigationView.getMenu().findItem(R.id.action_car_info)
                 .setVisible(UserStateManager.getInstance().isUserDriver());
     }

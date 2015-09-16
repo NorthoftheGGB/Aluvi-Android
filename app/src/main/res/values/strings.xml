@@ -126,4 +126,5 @@
     <string name="cancel_trip_contents">Are you sure you want to cancel this trip?</string>
     <string name="receipts_emailed">Emailed receipts</string>
     <string name="take_selfie">Time to take a selfie so others recognize you</string>
+    <string name="work_email_info">Optional: submit your work email and we\'ll automatically connect you with your co-workers</string>
 </resources>
