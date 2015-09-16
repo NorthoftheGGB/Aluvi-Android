@@ -2,9 +2,4 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.aluvi.android.activities.ReceiptsActivity">
-    <item
-        android:id="@+id/action_print_email"
-        android:orderInCategory="100"
-        android:title="@string/action_print_receipts_email"
-        app:showAsAction="never"/>
 </menu>

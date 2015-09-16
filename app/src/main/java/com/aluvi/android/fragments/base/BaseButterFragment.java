@@ -1,5 +1,6 @@
 package com.aluvi.android.fragments.base;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.aluvi.android.helpers.views.DialogUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -16,6 +20,8 @@ import butterknife.ButterKnife;
  * Created by usama on 7/13/15.
  */
 public abstract class BaseButterFragment extends Fragment {
+    private ArrayList<Dialog> mProgressDialogs = new ArrayList<>();
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -34,6 +40,31 @@ public abstract class BaseButterFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        cancelProgressDialogs();
+    }
+
+    public void showDefaultProgressDialog() {
+        mProgressDialogs.add(DialogUtils.showDefaultProgressDialog(getActivity(), false));
+    }
+
+    public void showCustomProgressDialog(int title, int message, boolean cancelable) {
+        showCustomProgressDialog(getString(title), getString(message), cancelable);
+    }
+
+    public void showCustomProgressDialog(String title, String message, boolean cancelable) {
+        mProgressDialogs.add(DialogUtils.showCustomProgressDialog(getActivity(), title, message, cancelable));
+    }
+
+    public void cancelProgressDialogs() {
+        for (Dialog dialog : mProgressDialogs)
+            dialog.cancel();
+
+        mProgressDialogs.clear();
     }
 
     @Override

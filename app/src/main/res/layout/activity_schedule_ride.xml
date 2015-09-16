@@ -159,7 +159,7 @@
 
     <Button
         android:id="@+id/schedule_ride_commute_tomorrow_button"
-        style="@style/OnboardingButton"
+        style="@style/AluviFullWidthButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -32,7 +32,7 @@
 
     <Button
         android:id="@+id/onboarding_register_driver_button_next"
-        style="@style/OnboardingButton"
+        style="@style/AluviFullWidthButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

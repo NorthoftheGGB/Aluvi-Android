@@ -104,7 +104,7 @@
 
     <Button
         android:id="@+id/log_in_register_button"
-        style="@style/OnboardingButton"
+        style="@style/AluviFullWidthButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

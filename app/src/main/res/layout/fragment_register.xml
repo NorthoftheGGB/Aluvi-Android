@@ -121,7 +121,7 @@
 
     <Button
         android:id="@+id/register_button_sign_up"
-        style="@style/OnboardingButton"
+        style="@style/AluviFullWidthButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

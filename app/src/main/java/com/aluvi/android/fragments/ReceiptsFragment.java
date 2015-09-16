@@ -2,6 +2,7 @@ package com.aluvi.android.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,12 +15,15 @@ import com.aluvi.android.api.users.models.ReceiptData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.CurrencyUtils;
 import com.aluvi.android.managers.PaymentManager;
+import com.aluvi.android.managers.UserStateManager;
+import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 /**
  * Created by usama on 8/20/15.
@@ -50,10 +54,34 @@ public class ReceiptsFragment extends BaseButterFragment {
         fetchReceipts();
     }
 
+    @SuppressWarnings("unused")
+    @OnClick(R.id.receipts_button_print_email)
+    public void onPrintReceiptsButtonClicked() {
+        showDefaultProgressDialog();
+        UserStateManager.getInstance().emailReceipts(new Callback() {
+            @Override
+            public void success() {
+                cancelProgressDialogs();
+                if (getView() != null)
+                    Snackbar.make(getView(), R.string.receipts_emailed, Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(String message) {
+                cancelProgressDialogs();
+                if (getView() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void fetchReceipts() {
+        showDefaultProgressDialog();
         PaymentManager.getInstance().getReceipts(new DataCallback<List<ReceiptData>>() {
             @Override
             public void success(List<ReceiptData> result) {
+                cancelProgressDialogs();
+
                 if (mReceiptsRecyclerView != null) {
                     mAdapter.getData().clear();
                     mAdapter.getData().addAll(result);
@@ -63,6 +91,7 @@ public class ReceiptsFragment extends BaseButterFragment {
 
             @Override
             public void failure(String message) {
+                cancelProgressDialogs();
             }
         });
     }

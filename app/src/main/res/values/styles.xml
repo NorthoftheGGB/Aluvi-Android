@@ -65,7 +65,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="OnboardingButton">
+    <style name="AluviFullWidthButton">
         <item name="android:height">60dp</item>
         <item name="android:textSize">@dimen/abc_text_size_large_material</item>
         <item name="android:textColor">@drawable/onboarding_button_text_color</item>

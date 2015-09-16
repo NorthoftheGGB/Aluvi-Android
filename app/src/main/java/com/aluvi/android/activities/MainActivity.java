@@ -34,8 +34,6 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
         super.onCreate(savedInstanceState);
         initNavigationView();
         onHomeClicked();
-
-        getSupportActionBar().setTitle("");
     }
 
     @Override

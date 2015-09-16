@@ -13,7 +13,7 @@
     <string name="drawer_close">Close</string>
 
     <string name="drive_there_user">I\'ll drive us there!</string>
-    <string name="forget_pickup_point">Don\'t forget to review the pickup point - you may need to drive to reach it.</string>
+    <string name="forget_pickup_point">Don\'t forget to review the pickup point - it may change. You may need to drive to reach it.</string>
     <string name="commute_tomorrow">Commute Tomorrow</string>
     <string name="return_home">Return home at:</string>
     <string name="at">At:</string>
@@ -21,7 +21,7 @@
     <string name="from">From</string>
     <string name="cancelled_trips">Cancelled Trips</string>
 
-    <string name="schedule_ready">Your schedule will be ready at 9:30 PM. You might want to brush up on your puns.</string>
+    <string name="schedule_ready">At 9pm, we\'ll announce the commute groups for tomorrow. Go about your business until then - we\'ll send you an alert.</string>
     <string name="loading">Loading</string>
     <string name="please_wait">Please Wait...</string>
     <string name="logged_in">Logged In</string>

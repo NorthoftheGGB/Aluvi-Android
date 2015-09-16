@@ -261,7 +261,7 @@ public class UsersApi {
     public static void emailReceipts(final ApiCallback callback) {
         AluviAuthenticatedRequest receiptRequest = new AluviAuthenticatedRequest(
                 Request.Method.POST,
-                AluviApi.API_RECEIPTS,
+                AluviApi.API_EMAIL_RECEIPTS,
                 new HashMap<>(),
                 new AluviAuthRequestListener<Void>() {
                     @Override

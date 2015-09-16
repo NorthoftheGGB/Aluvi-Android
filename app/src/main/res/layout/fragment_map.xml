@@ -16,7 +16,6 @@
 
     <TextView
         android:id="@+id/map_text_view_commute_pending"
-        fontPath="fonts/Bryant-Regular.ttf"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"

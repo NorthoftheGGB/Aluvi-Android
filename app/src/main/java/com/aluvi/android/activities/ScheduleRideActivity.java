@@ -63,8 +63,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             TO_LOCATION_TAG = "to_location";
 
     public final static int RESULT_SCHEDULE_OK = 453, RESULT_CANCEL = 354;
-    private final int MIN_HOME_LEAVE_HOUR = 7, MAX_HOME_LEAVE_HOUR = 9,
-            MIN_WORK_LEAVE_HOUR = 16, MAX_WORK_LEAVE_HOUR = 19;
+    private final int MIN_HOME_LEAVE_HOUR = 5, MAX_HOME_LEAVE_HOUR = 10,
+            MIN_WORK_LEAVE_HOUR = 15, MAX_WORK_LEAVE_HOUR = 20;
     private final double DRIVER_PICKUP_ZONE_RADIUS_MILES = 2;
 
     private int mStartHour, mEndHour, mStartMin, mEndMin;

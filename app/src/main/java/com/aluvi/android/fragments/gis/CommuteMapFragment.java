@@ -137,10 +137,13 @@ public class CommuteMapFragment extends BaseButterFragment {
     }
 
     private void plotTicketRoute(final Ticket ticket) {
-        String markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
+        String markerText = "Commute Pending";
+        if (Ticket.isTicketActive(ticket))
+            markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
 
         Marker originMarker = new Marker(markerText, ticket.getOriginPlaceName(),
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
+
         mCurrentlyOpenedInfoWindow = originMarker.getToolTip(mMapView);
         originMarker.showBubble(mCurrentlyOpenedInfoWindow, mMapView, true);
         originMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.pickup_marker)));
