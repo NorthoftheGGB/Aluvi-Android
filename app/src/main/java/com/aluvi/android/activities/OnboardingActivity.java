@@ -165,7 +165,6 @@ public class OnboardingActivity extends BaseButterActivity implements
                 .commit();
     }
 
-
     @Override
     public void onTutorialRequested() {
         mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(this, false);

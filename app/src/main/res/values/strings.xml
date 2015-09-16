@@ -125,4 +125,5 @@
     <string name="cancel_trip_title">Cancel Trip?</string>
     <string name="cancel_trip_contents">Are you sure you want to cancel this trip?</string>
     <string name="receipts_emailed">Emailed receipts</string>
+    <string name="take_selfie">Time to take a selfie so others recognize you</string>
 </resources>

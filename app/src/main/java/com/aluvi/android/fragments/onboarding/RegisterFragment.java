@@ -3,6 +3,7 @@ package com.aluvi.android.fragments.onboarding;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +72,8 @@ public class RegisterFragment extends BaseButterFragment {
 
     @Override
     public void initUI() {
-        mPhoneNumberEditText.setText(ProfileUtils.getUserPhoneNumber(getActivity()));
+        mPhoneNumberEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        mPhoneNumberEditText.setText(ProfileUtils.getUSUserPhoneNumber(getActivity()));
     }
 
     @SuppressWarnings("unused")

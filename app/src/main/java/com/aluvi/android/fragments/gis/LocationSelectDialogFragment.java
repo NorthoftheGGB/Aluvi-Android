@@ -127,14 +127,14 @@ public class LocationSelectDialogFragment extends DialogFragment {
                 mCurrentlySelectedLocation.getLatitude() != GeoLocationUtils.INVALID_LOCATION &&
                 mCurrentlySelectedLocation.getLongitude() != GeoLocationUtils.INVALID_LOCATION)
             centerLocation = new LatLng(mCurrentlySelectedLocation.getLatitude(), mCurrentlySelectedLocation.getLongitude());
-        else if (mDefaultToUserLocation && mMapView.getUserLocation() != null) {
+        else if (mMapView.getUserLocation() != null) {
             centerLocation = mMapView.getUserLocation();
         }
 
         if (centerLocation != null) {
             mMapView.setCenter(new LatLng(centerLocation));
             mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
-            addMarker(centerLocation);
+            addMarker(centerLocation, mDefaultToUserLocation);
         } else {
             MapBoxStateSaver.restoreMapState(mMapView, MAP_STATE_KEY);
         }
@@ -219,24 +219,30 @@ public class LocationSelectDialogFragment extends DialogFragment {
     }
 
     protected boolean addMarker(final ILatLng latLng) {
+        return addMarker(latLng, true);
+    }
+
+    protected boolean addMarker(final ILatLng latLng, boolean updateAddressEditText) {
         if (mMapView != null) {
             mMapView.clear();
             mMapView.addMarker(getDefaultMarker(null, null, new LatLng(latLng.getLatitude(), latLng.getLongitude())));
 
-            Log.d(TAG, "Looking for address for custom marker location");
-            onLocationSearchStarted();
-            GeocodingManager.getInstance().getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(),
-                    new DataCallback<List<Address>>() {
-                        @Override
-                        public void success(List<Address> data) {
-                            onAddressesFoundForLocation(latLng.getLatitude(), latLng.getLongitude(), data);
-                        }
+            if (updateAddressEditText) {
+                Log.d(TAG, "Looking for address for custom marker location");
+                onLocationSearchStarted();
+                GeocodingManager.getInstance().getAddressesForLocation(latLng.getLatitude(), latLng.getLongitude(),
+                        new DataCallback<List<Address>>() {
+                            @Override
+                            public void success(List<Address> data) {
+                                onAddressesFoundForLocation(latLng.getLatitude(), latLng.getLongitude(), data);
+                            }
 
-                        @Override
-                        public void failure(String message) {
-                            Log.e(TAG, message);
-                        }
-                    });
+                            @Override
+                            public void failure(String message) {
+                                Log.e(TAG, message);
+                            }
+                        });
+            }
 
             return true;
         }
@@ -254,8 +260,8 @@ public class LocationSelectDialogFragment extends DialogFragment {
             Location.distanceBetween(address.getLatitude(), address.getLongitude(), lat, lng, distanceArr);
             float distance = distanceArr[0];
 
-            if (distance > 10) // Store the address only if its less than 10 meters away from the placed pin
-            {
+            // Store the address only if its less than 10 meters away from the placed pin
+            if (distance > 10) {
                 Log.d(TAG, "Custom location is far away from fetched address");
                 address.setLocality(null);
             }

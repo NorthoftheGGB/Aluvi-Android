@@ -57,7 +57,7 @@ public class ProfilePhotoFragment extends BaseButterFragment {
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_about_user, container, false);
+        return inflater.inflate(R.layout.fragment_onboarding_take_photo, container, false);
     }
 
     @Override

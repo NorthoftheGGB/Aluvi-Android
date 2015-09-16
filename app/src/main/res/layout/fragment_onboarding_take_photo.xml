@@ -10,13 +10,23 @@
         android:layout_above="@+id/onboarding_about_button_next"
         android:gravity="center_vertical">
 
+        <TextView
+            android:id="@+id/onboarding_take_photo_selfie_info_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/take_selfie"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/onboarding_image_view_profile_picture"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_alignParentTop="true"
+            android:layout_below="@+id/onboarding_take_photo_selfie_info_text"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginTop="8dp"
             android:src="@mipmap/profile_picture_placeholder"/>
 
         <Button

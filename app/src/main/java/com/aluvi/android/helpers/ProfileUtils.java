@@ -17,6 +17,13 @@ public class ProfileUtils {
         return tMgr.getLine1Number();
     }
 
+    public static String getUSUserPhoneNumber(Context context) {
+        String phoneNumber = getUserPhoneNumber(context);
+        if (phoneNumber.length() == 11)
+            phoneNumber = phoneNumber.substring(1); // Remove country code
+        return phoneNumber;
+    }
+
     public static String getUserEmailNumber(Context context) {
         Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
         Account[] accounts = AccountManager.get(context).getAccounts();
