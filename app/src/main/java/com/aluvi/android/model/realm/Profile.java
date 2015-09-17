@@ -25,6 +25,9 @@ public class Profile extends RealmObject {
     @JsonProperty("email")
     private String email;
 
+    @JsonProperty("work_email")
+    private String workEmail;
+
     @JsonProperty("password")
     private String password;
 
@@ -227,5 +230,11 @@ public class Profile extends RealmObject {
         this.largeImageUrl = largeImageUrl;
     }
 
+    public String getWorkEmail() {
+        return workEmail;
+    }
 
+    public void setWorkEmail(String workEmail) {
+        this.workEmail = workEmail;
+    }
 }

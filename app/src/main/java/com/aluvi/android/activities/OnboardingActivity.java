@@ -15,7 +15,6 @@ import com.aluvi.android.activities.base.BaseButterActivity;
 import com.aluvi.android.api.users.models.DriverProfileData;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.application.AluviRealm;
-import com.aluvi.android.fragments.onboarding.DriverRegistrationFragment;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.ProfilePhotoFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
@@ -39,8 +38,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         RegisterFragment.RegistrationListener,
         LocationSelectFragment.LocationSelectedListener,
         ProfilePhotoFragment.AboutUserListener,
-        TutorialFragment.TutorialListener,
-        DriverRegistrationFragment.DriverRegistrationListener {
+        TutorialFragment.TutorialListener {
 
     @Bind(R.id.onboarding_root_container) View mRootView;
     private Dialog mDefaultProgressDialog;
@@ -148,17 +146,6 @@ public class OnboardingActivity extends BaseButterActivity implements
         mRegistrationData.setEmail(mEmail);
         mRegistrationData.setPassword(mPassword);
 
-        Fragment nextFragment = mRegistrationData.isInterestedDriver() ? DriverRegistrationFragment.newInstance()
-                : TutorialFragment.newInstance();
-        attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, nextFragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
-    public void onDriverRegistrationComplete(DriverProfileData data) {
-        mDriverProfileData = data;
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
                 .replace(R.id.onboarding_root_container, TutorialFragment.newInstance())
                 .addToBackStack(null)

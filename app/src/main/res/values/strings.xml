@@ -40,6 +40,7 @@
     <string name="update">Update</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="placeholder_password">AAAAAAA</string>
     <string name="login">Log In</string>
 
     <string name="close">Close</string>
@@ -127,4 +128,5 @@
     <string name="receipts_emailed">Emailed receipts</string>
     <string name="take_selfie">Time to take a selfie so others recognize you</string>
     <string name="work_email_info">Optional: submit your work email and we\'ll automatically connect you with your co-workers</string>
+    <string name="verify_password">Please verify your password to continue</string>
 </resources>

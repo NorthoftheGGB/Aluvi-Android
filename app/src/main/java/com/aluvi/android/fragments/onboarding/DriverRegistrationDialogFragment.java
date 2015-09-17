@@ -64,6 +64,27 @@ public class DriverRegistrationDialogFragment extends DialogFragment {
                                         Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
                                 }
                             });
+
+                            /*
+                            UserStateManager.getInstance().saveCarInfo(helper.initCarData(), new Callback() {
+                                @Override
+                                public void success() {
+                                    if (mDefaultProgressDialog != null)
+                                        mDefaultProgressDialog.cancel();
+
+                                    if (!isDetached())
+                                        dismiss();
+                                }
+
+                                @Override
+                                public void failure(String message) {
+                                    if (mDefaultProgressDialog != null)
+                                        mDefaultProgressDialog.cancel();
+
+                                    if (getView() != null)
+                                        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+                                }
+                            }); */
                         }
                     }
 

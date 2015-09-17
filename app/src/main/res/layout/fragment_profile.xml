@@ -17,6 +17,14 @@
         app:border_color="@color/black"
         app:border_width="1dp"/>
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/profile_image_view"
+        android:layout_alignRight="@+id/profile_image_view"
+        android:layout_marginRight="16dp"
+        android:src="@mipmap/ic_camera"/>
+
     <TextView
         android:id="@+id/profile_text_view_name"
         fontPath="fonts/Bryant-Regular.ttf"
@@ -48,7 +56,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/profile_edit_text_phone_number_container"
+        android:id="@+id/profile_edit_text_password_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/profile_edit_text_email_container"
@@ -59,12 +67,32 @@
         android:layout_marginTop="5dp">
 
         <EditText
-            android:id="@+id/profile_edit_text_phone_number"
+            android:id="@+id/profile_edit_text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/phone_number"
-            android:inputType="phone"/>
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:text="@string/placeholder_password"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/profile_edit_text_work_email_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView2"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_below="@+id/profile_edit_text_password_container">
+
+        <EditText
+            android:id="@+id/profile_edit_text_work_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/work_email"
+            android:inputType="textEmailAddress"/>
     </android.support.design.widget.TextInputLayout>
 
     <TextView
@@ -72,7 +100,7 @@
         fontPath="fonts/Bryant-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profile_edit_text_phone_number_container"
+        android:layout_below="@+id/profile_edit_text_work_email_container"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -81,5 +109,14 @@
         android:gravity="center_horizontal"
         android:text="@string/terms_services"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/profile_text_view_version_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
 
 </RelativeLayout>
