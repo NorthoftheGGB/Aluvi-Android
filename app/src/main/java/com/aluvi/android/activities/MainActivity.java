@@ -13,7 +13,10 @@ import com.aluvi.android.R;
 import com.aluvi.android.activities.base.AluviAuthActivity;
 import com.aluvi.android.fragments.CommuteFragment;
 import com.aluvi.android.fragments.NavigationDrawerHeaderFragment;
+import com.aluvi.android.helpers.eventBus.BackHomeEvent;
 import com.aluvi.android.helpers.eventBus.CommuteRequestedEvent;
+import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
+import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.model.realm.Ticket;
 
@@ -21,7 +24,7 @@ import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AluviAuthActivity implements CommuteFragment.OnMapEventListener,
-        NavigationDrawerHeaderFragment.ProfileRequestedListener{
+        NavigationDrawerHeaderFragment.ProfileRequestedListener {
 
     @Bind(R.id.main_navigation_view) NavigationView mNavigationView;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
@@ -44,8 +47,10 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     @Override
     public void onResume() {
         super.onResume();
+
+        updateBackHomeButton();
         mNavigationView.getMenu().findItem(R.id.action_car_info)
-                .setVisible(UserStateManager.getInstance().isUserDriver());
+                .setVisible(UserStateManager.getInstance().getProfile().getCar() != null);
     }
 
     public void initNavigationView() {
@@ -61,6 +66,9 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
                         switch (menuItem.getItemId()) {
                             case R.id.action_my_commute:
                                 onHomeClicked();
+                                break;
+                            case R.id.action_back_home:
+                                EventBus.getDefault().post(new BackHomeEvent());
                                 break;
                             case R.id.action_car_info:
                                 onCarInfoClicked();
@@ -104,6 +112,18 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
         if (requestCode == SCHEDULE_RIDE_REQUEST_CODE)
             if (resultCode == ScheduleRideActivity.RESULT_SCHEDULE_OK)
                 onCommuteScheduled();
+    }
+
+
+    @SuppressWarnings("unused")
+    public void onEvent(RefreshTicketsEvent event) {
+        updateBackHomeButton();
+    }
+
+    private void updateBackHomeButton() {
+        if (mNavigationView != null)
+            mNavigationView.getMenu().findItem(R.id.action_back_home)
+                    .setVisible(CommuteManager.getInstance().isDriveHomeEnabled());
     }
 
     public void onHomeClicked() {

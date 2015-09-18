@@ -45,27 +45,6 @@ public class DriverRegistrationDialogFragment extends DialogFragment {
                     public void onPositive(final MaterialDialog dialog) {
                         if (helper.validateForm()) {
                             mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
-                            UserStateManager.getInstance().registerDriver(helper.initData(), new Callback() {
-                                @Override
-                                public void success() {
-                                    if (mDefaultProgressDialog != null)
-                                        mDefaultProgressDialog.cancel();
-
-                                    if (!isDetached())
-                                        dismiss();
-                                }
-
-                                @Override
-                                public void failure(String message) {
-                                    if (mDefaultProgressDialog != null)
-                                        mDefaultProgressDialog.cancel();
-
-                                    if (getView() != null)
-                                        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-                                }
-                            });
-
-                            /*
                             UserStateManager.getInstance().saveCarInfo(helper.initCarData(), new Callback() {
                                 @Override
                                 public void success() {
@@ -84,7 +63,7 @@ public class DriverRegistrationDialogFragment extends DialogFragment {
                                     if (getView() != null)
                                         Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
                                 }
-                            }); */
+                            });
                         }
                     }
 

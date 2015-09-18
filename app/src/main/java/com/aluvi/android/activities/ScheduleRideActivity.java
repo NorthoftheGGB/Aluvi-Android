@@ -176,26 +176,10 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     public void onConfirmCommuteButtonClicked() {
         if (mActiveTicket == null) {
             if (isCommuteReady()) {
-                if (mDriveThereCheckbox.isChecked() && !UserStateManager.getInstance().isUserDriver()) {
+                if (mDriveThereCheckbox.isChecked() && UserStateManager.getInstance().getProfile().getCar() == null)
                     DriverRegistrationDialogFragment.newInstance().show(getSupportFragmentManager(), "driver_registration");
-                } else {
-                    showDefaultProgressDialog();
-                    saveRoute(new Callback() {
-                        @Override
-                        public void success() {
-                            cancelProgressDialogs();
-                            onCommuteRequestAllowed();
-                        }
-
-                        @Override
-                        public void failure(String message) {
-                            if (mRootView != null)
-                                Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-
-                            cancelProgressDialogs();
-                        }
-                    });
-                }
+                else
+                    beginCommuteRequest();
             } else {
                 Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
             }
@@ -204,7 +188,26 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
         }
     }
 
-    private void onCommuteRequestAllowed() {
+    private void beginCommuteRequest() {
+        showDefaultProgressDialog();
+        saveRoute(new Callback() {
+            @Override
+            public void success() {
+                cancelProgressDialogs();
+                onRouteSaved();
+            }
+
+            @Override
+            public void failure(String message) {
+                if (mRootView != null)
+                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+
+                cancelProgressDialogs();
+            }
+        });
+    }
+
+    private void onRouteSaved() {
         try {
             CommuteManager.getInstance().requestRidesForTomorrow(new CommuteManager.RequestRidesCallback() {
                 @Override
@@ -253,7 +256,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             @Override
             public void success() {
                 cancelProgressDialogs();
-                onCommuteRequestAllowed();
+                onRouteSaved();
             }
 
             @Override

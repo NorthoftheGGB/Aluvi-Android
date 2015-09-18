@@ -17,6 +17,7 @@ import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.fragments.gis.CommuteMapFragment;
+import com.aluvi.android.helpers.eventBus.BackHomeEvent;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.eventBus.LocalRefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
@@ -26,7 +27,6 @@ import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
-import com.aluvi.android.model.realm.Trip;
 import com.aluvi.android.services.push.AluviPushNotificationListenerService;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -134,7 +134,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         }
 
         menu.findItem(R.id.action_back_home)
-                .setVisible(mCurrentTicket != null && isDriveHomeEnabled(mCurrentTicket.getTrip()));
+                .setVisible(mCurrentTicket != null && CommuteManager.getInstance().isDriveHomeEnabled(mCurrentTicket.getTrip()));
     }
 
     @Override
@@ -206,7 +206,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     private void onTicketScheduled(Ticket ticket, boolean overrideBackHome) {
-        boolean isTicketInfoVisible = !isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome;
+        boolean isTicketInfoVisible = !CommuteManager.getInstance().isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome;
         mCurrentPanelState = isTicketInfoVisible ? SlidingUpPanelLayout.PanelState.EXPANDED : SlidingUpPanelLayout.PanelState.HIDDEN;
 
         mEventListener.startLocationTracking(ticket);
@@ -228,16 +228,9 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         refreshTickets();
     }
 
-    private boolean isDriveHomeEnabled(Trip trip) {
-        RealmResults<Ticket> tickets = trip.getTickets()
-                .where().findAllSorted("pickupTime");
-        if (tickets.size() == 2) {
-            Ticket aSide = tickets.get(0);
-            Ticket bSide = tickets.get(1);
-            return !Ticket.isTicketActive(aSide) && bSide.getState().equals(Ticket.STATE_SCHEDULED);
-        }
-
-        return false;
+    @SuppressWarnings("unused")
+    public void onEvent(BackHomeEvent event) {
+        onTicketScheduled(mCurrentTicket, true);
     }
 
     private MaterialDialog showTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {

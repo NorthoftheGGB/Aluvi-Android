@@ -271,7 +271,7 @@ public class UserStateManager {
         UsersApi.saveCarInfo(car, new ApiCallback() {
             @Override
             public void success() {
-                callback.success();
+                sync(callback);
             }
 
             @Override

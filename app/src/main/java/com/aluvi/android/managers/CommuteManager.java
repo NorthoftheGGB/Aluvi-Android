@@ -19,6 +19,7 @@ import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
@@ -26,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -186,7 +188,11 @@ public class CommuteManager {
             return;
         }
 
-        Date rideDate = new LocalDate().plus(Period.days(1)).toDateTimeAtStartOfDay().toDate();
+        Date rideDate = new LocalDate()
+                .plus(Period.days(1)).toDateTimeAtStartOfDay()
+                .toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")))
+                .toDate();
+
         if (!checkExistingTickets(rideDate))
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
                     "This is a system error but can be recovered by canceling your commuter rides and requesting again.");
@@ -466,6 +472,24 @@ public class CommuteManager {
     public Trip getActiveTrip() {
         Ticket activeTicket = getActiveTicket();
         return activeTicket != null ? activeTicket.getTrip() : null;
+    }
+
+    public boolean isDriveHomeEnabled() {
+        return isDriveHomeEnabled(getActiveTrip());
+    }
+
+    public boolean isDriveHomeEnabled(Trip activeTrip) {
+        if (activeTrip != null) {
+            RealmResults<Ticket> tickets = activeTrip.getTickets()
+                    .where().findAllSorted("pickupTime");
+            if (tickets.size() == 2) {
+                Ticket aSide = tickets.get(0);
+                Ticket bSide = tickets.get(1);
+                return !Ticket.isTicketActive(aSide) && bSide.getState().equals(Ticket.STATE_SCHEDULED);
+            }
+        }
+
+        return false;
     }
 
     public Route getRoute() {

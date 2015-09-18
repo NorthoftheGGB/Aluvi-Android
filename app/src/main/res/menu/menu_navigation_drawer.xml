@@ -6,6 +6,10 @@
             android:icon="@mipmap/ic_action_waypoint_map"
             android:title="@string/action_commute"/>
         <item
+            android:id="@+id/action_back_home"
+            android:icon="@mipmap/ic_action_back_home"
+            android:title="@string/action_back_home"/>
+        <item
             android:id="@+id/action_car_info"
             android:icon="@mipmap/ic_action_car"
             android:title="@string/action_car_info"/>
