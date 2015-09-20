@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
 public class ProfileUtils {
     public static String getUserPhoneNumber(Context context) {
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        return tMgr.getLine1Number();
+        return tMgr != null ? tMgr.getLine1Number() : "";
     }
 
     public static String getUSUserPhoneNumber(Context context) {
         String phoneNumber = getUserPhoneNumber(context);
-        if (phoneNumber.length() == 11)
+        if (phoneNumber != null && phoneNumber.length() == 11)
             phoneNumber = phoneNumber.substring(1); // Remove country code
         return phoneNumber;
     }
