@@ -123,7 +123,7 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     private void updateBackHomeButton() {
         if (mNavigationView != null)
             mNavigationView.getMenu().findItem(R.id.action_back_home)
-                    .setVisible(CommuteManager.getInstance().isDriveHomeEnabled());
+                    .setEnabled(CommuteManager.getInstance().isDriveHomeEnabled());
     }
 
     public void onHomeClicked() {

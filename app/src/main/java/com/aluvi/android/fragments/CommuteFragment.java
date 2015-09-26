@@ -124,10 +124,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
-        boolean isTicketScheduled = mCurrentTicket != null ? Ticket.isTicketActive(mCurrentTicket) : false;
-        boolean isTicketRequestedOrScheduled = isTicketRequested || isTicketScheduled;
-
-        if (isTicketRequestedOrScheduled) {
+        if (isTicketRequested) {
             menu.findItem(R.id.action_schedule_ride)
                     .setVisible(true)
                     .setTitle(R.string.action_view_commute);
