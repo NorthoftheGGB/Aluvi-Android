@@ -18,12 +18,12 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView12"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:text="@string/home_location"
-            android:theme="@style/AluviButton"
-            android:layout_below="@+id/textView12"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:text="@string/pickup"
+            android:theme="@style/AluviButton"/>
 
         <Button
             android:id="@+id/onboarding_button_work_location"
@@ -38,26 +38,40 @@
             android:theme="@style/AluviButton"/>
 
         <CheckBox
+            android:id="@+id/onboarding_checkbox_interested_driver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/driver_interested"
-            android:id="@+id/onboarding_checkbox_interested_driver"
             android:layout_below="@+id/onboarding_button_work_location"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
             android:checked="false"
-            android:layout_marginTop="10dp"/>
+            android:text="@string/driver_interested"/>
 
         <TextView
+            android:id="@+id/textView12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/pickup_place"
-            android:id="@+id/textView12"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal"
+            android:text="@string/pickup_place"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/onboarding_button_work_location"
+            android:layout_alignLeft="@+id/onboarding_button_work_location"
+            android:layout_alignRight="@+id/onboarding_button_work_location"
+            android:layout_alignStart="@+id/onboarding_button_work_location"
+            android:layout_below="@+id/onboarding_checkbox_interested_driver"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/pickup_point_info"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
     </RelativeLayout>
 
     <Button

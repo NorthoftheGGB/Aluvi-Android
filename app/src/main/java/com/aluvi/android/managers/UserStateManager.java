@@ -148,8 +148,11 @@ public class UserStateManager {
                     case HttpURLConnection.HTTP_UNAUTHORIZED:
                         callback.failure("Invalid username or password");
                         break;
-                    default:
+                    case HttpURLConnection.HTTP_NOT_FOUND:
                         callback.onUserNotFound();
+                        break;
+                    default:
+                        callback.failure("Unable to connect to server");
                         break;
                 }
             }

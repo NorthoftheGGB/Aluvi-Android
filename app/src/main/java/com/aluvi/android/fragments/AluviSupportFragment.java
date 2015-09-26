@@ -1,6 +1,5 @@
 package com.aluvi.android.fragments;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,7 +11,6 @@ import android.widget.EditText;
 
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseButterFragment;
-import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
 
@@ -26,8 +24,6 @@ import butterknife.OnTextChanged;
 public class AluviSupportFragment extends BaseButterFragment {
     @Bind(R.id.support_edit_text_message) EditText mSupportEditText;
     @Bind(R.id.support_button_submit) Button mSubmitButton;
-
-    private Dialog mDefaultProgressDialog;
 
     public static AluviSupportFragment newInstance() {
         return new AluviSupportFragment();
@@ -45,10 +41,7 @@ public class AluviSupportFragment extends BaseButterFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mDefaultProgressDialog != null) {
-            mDefaultProgressDialog.cancel();
-            mDefaultProgressDialog = null;
-        }
+        cancelProgressDialogs();
     }
 
     @SuppressWarnings("unused")
@@ -60,24 +53,19 @@ public class AluviSupportFragment extends BaseButterFragment {
     @SuppressWarnings("unused")
     @OnClick(R.id.support_button_submit)
     public void onSubmitButtonClicked() {
-        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
-
+        showDefaultProgressDialog();
         String supportMessage = mSupportEditText.getText().toString();
         UserStateManager.getInstance().sendSupportMessage(supportMessage, new Callback() {
             @Override
             public void success() {
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
-
+                cancelProgressDialogs();
                 if (getView() != null)
                     Snackbar.make(getView(), R.string.successfully_sent_request, Snackbar.LENGTH_SHORT).show();
             }
 
             @Override
             public void failure(String message) {
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
-
+                cancelProgressDialogs();
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
             }

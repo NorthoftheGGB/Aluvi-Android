@@ -129,4 +129,6 @@
     <string name="take_selfie">Time to take a selfie so others recognize you</string>
     <string name="work_email_info">Optional: submit your work email and we\'ll automatically connect you with your co-workers</string>
     <string name="verify_password">Please verify your password to continue</string>
+    <string name="pickup">Pickup Point</string>
+    <string name="pickup_point_info">(Your pickup point will become a circular area 2 mi in diameter)</string>
 </resources>

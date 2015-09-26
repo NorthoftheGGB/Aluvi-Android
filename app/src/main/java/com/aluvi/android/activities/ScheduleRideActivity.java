@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
@@ -397,8 +398,20 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
     private void updateStartTimeButton() {
         ArrayList<TimeHolder> amTimes = getTimes(MIN_HOME_LEAVE_HOUR, MAX_HOME_LEAVE_HOUR, 15);
-        TimesAdapter adapter = new TimesAdapter(this, amTimes);
+        final TimesAdapter adapter = new TimesAdapter(this, amTimes);
         mStartTimeSpinner.setAdapter(adapter);
+        mStartTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TimeHolder time = adapter.getItem(position);
+                mStartHour = time.hour;
+                mStartMin = time.minute;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         int currPos = adapter.getPosition(mStartHour, mStartMin);
         if (currPos != -1)
@@ -407,8 +420,21 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
     private void updateEndTimeButton() {
         ArrayList<TimeHolder> pmTimes = getTimes(MIN_WORK_LEAVE_HOUR, MAX_WORK_LEAVE_HOUR, 15);
-        TimesAdapter adapter = new TimesAdapter(this, pmTimes);
+        final TimesAdapter adapter = new TimesAdapter(this, pmTimes);
         mEndTimeSpinner.setAdapter(adapter);
+        mEndTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TimeHolder time = adapter.getItem(position);
+                mEndHour = time.hour;
+                mEndMin = time.minute;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         int currPos = adapter.getPosition(mEndHour, mEndMin);
         if (currPos != -1)

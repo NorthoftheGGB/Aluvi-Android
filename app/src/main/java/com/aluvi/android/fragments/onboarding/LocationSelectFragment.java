@@ -57,7 +57,6 @@ public class LocationSelectFragment extends BaseButterFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (savedInstanceState != null) {
             mHomeLocation = savedInstanceState.getParcelable(HOME_LOC);
             mWorkLocation = savedInstanceState.getParcelable(WORK_LOC);

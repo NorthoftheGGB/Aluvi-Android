@@ -69,8 +69,11 @@ public class UsersApi {
                 new JacksonRequestListener<LoginResponse>() {
                     @Override
                     public void onResponse(LoginResponse response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK && response.getToken() != null)
-                            loginCallback.success(response);
+                        if (statusCode == HttpURLConnection.HTTP_OK)
+                            if (response.getToken() != null)
+                                loginCallback.success(response);
+                            else
+                                loginCallback.failure(HttpURLConnection.HTTP_NOT_FOUND);
                         else
                             loginCallback.failure(statusCode);
                     }
