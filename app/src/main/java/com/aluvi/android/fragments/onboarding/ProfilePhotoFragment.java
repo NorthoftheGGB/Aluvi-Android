@@ -111,8 +111,11 @@ public class ProfilePhotoFragment extends BaseButterFragment {
     }
 
     public void updateProfilePicture(Bitmap bitmap) {
-        if (bitmap != null && mProfilePictureView != null)
+        if (bitmap != null && mProfilePictureView != null) {
             mProfilePictureView.setImageBitmap(bitmap);
+            mProfilePictureView.setBackgroundResource(0);
+        }
+
         mCurrentProfilePhoto = bitmap;
     }
 }

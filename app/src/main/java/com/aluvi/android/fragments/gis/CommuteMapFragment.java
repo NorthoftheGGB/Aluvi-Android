@@ -25,6 +25,7 @@ import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.RouteDirections;
 import com.aluvi.android.model.realm.Ticket;
 import com.mapbox.mapboxsdk.api.ILatLng;
+import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
 import com.mapbox.mapboxsdk.overlay.Marker;
@@ -33,6 +34,7 @@ import com.mapbox.mapboxsdk.views.InfoWindow;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -176,9 +178,8 @@ public class CommuteMapFragment extends BaseButterFragment {
         mMapView.clear();
         mMapView.addMarker(startMarker);
         mMapView.addMarker(endMarker);
-        mMapView.setCenter(startMarker.getPoint());
-        mMapView.setZoom(19);
 
+        zoomBoundingBox(startMarker, endMarker);
         RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
                 new RouteMappingManager.RouteMappingListener() {
                     @Override
@@ -201,6 +202,28 @@ public class CommuteMapFragment extends BaseButterFragment {
                             Snackbar.make(getView(), R.string.error_fetching_route, Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void zoomBoundingBox(Marker startMarker, Marker endMarker) {
+        final double paddingFactor = .25;
+        double latSpan = mMapView.getBoundingBox().getLatitudeSpan();
+        double lonSpan = mMapView.getBoundingBox().getLongitudeSpan();
+        double latPadding = latSpan * paddingFactor;
+        double lonPadding = lonSpan * paddingFactor;
+
+        LatLng startLatLng = startMarker.getPoint();
+        LatLng endLatLng = endMarker.getPoint();
+
+        double latPaddingFactor = startLatLng.getLatitude() > endLatLng.getLatitude() ? 1 : -1;
+        double lonPaddingFactor = startLatLng.getLongitude() > endLatLng.getLongitude() ? 1 : -1;
+
+        startLatLng = new LatLng(startLatLng.getLatitude() + latPadding * latPaddingFactor,
+                startLatLng.getLongitude() + lonPadding * lonPaddingFactor);
+        endLatLng = new LatLng(endLatLng.getLatitude() - latPadding * latPaddingFactor,
+                endLatLng.getLongitude() - lonPadding * lonPaddingFactor);
+
+        BoundingBox mapBBox = BoundingBox.fromLatLngs(Arrays.asList(startLatLng, endLatLng));
+        mMapView.zoomToBoundingBox(mapBBox, true, true);
     }
 
     private void fetchPickupPoints() {
