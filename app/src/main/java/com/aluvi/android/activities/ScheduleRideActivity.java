@@ -54,7 +54,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     @Bind(R.id.schedule_ride_spinner_start_time) Spinner mStartTimeSpinner;
     @Bind(R.id.schedule_ride_spinner_end_time) Spinner mEndTimeSpinner;
     @Bind(R.id.schedule_ride_checkbox_drive_there) CheckBox mDriveThereCheckbox;
-    @Bind(R.id.schedule_ride_commute_tomorrow_button) Button mCommuteTomorrowButton;
+    @Bind(R.id.schedule_ride_button_commute_tomorrow) Button mCommuteTomorrowButton;
+    @Bind(R.id.schedule_ride_button_cancel_commute) Button mCancelCommuteButton;
     @Bind({R.id.schedule_ride_home_button_container, R.id.schedule_ride_work_button_container, R.id.schedule_ride_start_time_container,
             R.id.schedule_ride_end_time_container, R.id.schedule_ride_checkbox_drive_there})
     List<View> mScheduleEditViews;
@@ -114,7 +115,9 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                 }
             });
 
-            mCommuteTomorrowButton.setText(R.string.action_cancel_schedule_ride);
+            mCancelCommuteButton.setVisibility(View.VISIBLE);
+            mCommuteTomorrowButton.setVisibility(View.INVISIBLE);
+
             supportInvalidateOptionsMenu();
             getToolbar().setTitle(R.string.action_commute_pending);
         }
@@ -173,7 +176,7 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.schedule_ride_commute_tomorrow_button)
+    @OnClick(R.id.schedule_ride_button_commute_tomorrow)
     public void onConfirmCommuteButtonClicked() {
         if (mActiveTicket == null) {
             if (isCommuteReady()) {
@@ -184,9 +187,13 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
             } else {
                 Snackbar.make(mRootView, R.string.please_fill_fields, Snackbar.LENGTH_SHORT).show();
             }
-        } else {
-            showCancelConfirmationDialog();
         }
+    }
+
+    @SuppressWarnings("unused")
+    @OnClick(R.id.schedule_ride_button_cancel_commute)
+    public void onCancelCommuteButtonClicked() {
+        showCancelConfirmationDialog();
     }
 
     private void beginCommuteRequest() {
@@ -365,15 +372,9 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
                         Trip activeTrip = mActiveTicket.getTrip();
                         if (activeTrip != null && activeTrip.getTripState().equals(Trip.STATE_REQUESTED))
                             cancelTrip(mActiveTicket.getTrip());
-                        else
-                            cancelTicket(mActiveTicket);
                     }
                 })
                 .show();
-    }
-
-    private void cancelTicket(Ticket ticket) {
-        CommuteManager.getInstance().cancelTicket(ticket, cancelCallback);
     }
 
     private void cancelTrip(Trip trip) {

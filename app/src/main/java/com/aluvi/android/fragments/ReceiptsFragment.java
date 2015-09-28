@@ -14,15 +14,18 @@ import com.aluvi.android.R;
 import com.aluvi.android.api.users.models.ReceiptData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.CurrencyUtils;
+import com.aluvi.android.helpers.views.DividerItemDecoration;
 import com.aluvi.android.managers.PaymentManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -49,8 +52,8 @@ public class ReceiptsFragment extends BaseButterFragment {
         mAdapter = new ReceiptsAdapter(new ArrayList<ReceiptData>());
 
         mReceiptsRecyclerView.setLayoutManager(mLayoutManager);
+        mReceiptsRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), android.R.color.white));
         mReceiptsRecyclerView.setAdapter(mAdapter);
-        mReceiptsRecyclerView.setHasFixedSize(true);
         fetchReceipts();
     }
 
@@ -96,12 +99,15 @@ public class ReceiptsFragment extends BaseButterFragment {
         });
     }
 
-    private static class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.ViewHolder> {
+    public static class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.ViewHolder> {
         public static class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView mReceiptTypeTextView, mReceiptPriceTextView;
+            @Bind(R.id.receipt_text_view_date) TextView mReceiptDateTextView;
+            @Bind(R.id.receipt_text_view_type) TextView mReceiptTypeTextView;
+            @Bind(R.id.receipt_text_view_price) TextView mReceiptPriceTextView;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+                ButterKnife.bind(this, itemView);
                 mReceiptTypeTextView = (TextView) itemView.findViewById(R.id.receipt_text_view_type);
                 mReceiptPriceTextView = (TextView) itemView.findViewById(R.id.receipt_text_view_price);
             }
@@ -120,9 +126,12 @@ public class ReceiptsFragment extends BaseButterFragment {
             return new ViewHolder(rowLayout);
         }
 
+        private SimpleDateFormat monthDayFormat = new SimpleDateFormat("M/dd");
+
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, int position) {
             ReceiptData receipt = mReceipts.get(position);
+            viewHolder.mReceiptDateTextView.setText(monthDayFormat.format(receipt.getDate()));
             viewHolder.mReceiptPriceTextView.setText(CurrencyUtils.getFormattedDollars(receipt.getAmount()));
             viewHolder.mReceiptTypeTextView.setText(receipt.getType());
         }

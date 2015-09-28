@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.aluvi.android.R;
 import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
-import com.aluvi.android.helpers.eventBus.LocalRefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.SlidingPanelEvent;
 import com.aluvi.android.helpers.views.mapbox.MapBoxStateSaver;
@@ -94,11 +93,6 @@ public class CommuteMapFragment extends BaseButterFragment {
 
     @SuppressWarnings("unused")
     public void onEvent(RefreshTicketsEvent event) {
-        onEvent(new LocalRefreshTicketsEvent(event.getActiveTicket()));
-    }
-
-    @SuppressWarnings("unused")
-    public void onEvent(LocalRefreshTicketsEvent event) {
         onTicketsRefreshed(event.getActiveTicket());
     }
 
@@ -143,7 +137,17 @@ public class CommuteMapFragment extends BaseButterFragment {
         if (Ticket.isTicketActive(ticket))
             markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
 
-        Marker originMarker = new Marker(markerText, ticket.getOriginPlaceName(),
+        String originPlaceName = ticket.getOriginPlaceName();
+        String destinationPlaceName = ticket.getDestinationPlaceName();
+
+        // Fastest way to get just the street address without submitting a geocoding request
+        if (originPlaceName != null && originPlaceName.contains(","))
+            originPlaceName = originPlaceName.substring(0, originPlaceName.indexOf(","));
+
+        if (destinationPlaceName != null && destinationPlaceName.contains(","))
+            destinationPlaceName = destinationPlaceName.substring(0, destinationPlaceName.indexOf(","));
+
+        final Marker originMarker = new Marker(markerText, originPlaceName,
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
 
         if (Ticket.isTicketActive(ticket)) {
@@ -153,7 +157,7 @@ public class CommuteMapFragment extends BaseButterFragment {
 
         originMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.pickup_marker)));
 
-        Marker destinationMarker = new Marker(ticket.getDestinationShortName(), ticket.getDestinationPlaceName(),
+        Marker destinationMarker = new Marker(ticket.getDestinationShortName(), destinationPlaceName,
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
         destinationMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.dropoff_marker)));
 

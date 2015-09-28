@@ -16,7 +16,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/schedule_ride_commute_tomorrow_button"
+        android:layout_above="@+id/schedule_ride_button_commute_tomorrow"
         android:layout_below="@+id/toolbar">
 
         <HorizontalScrollView
@@ -158,7 +158,7 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/schedule_ride_commute_tomorrow_button"
+        android:id="@+id/schedule_ride_button_commute_tomorrow"
         style="@style/AluviFullWidthButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -167,6 +167,18 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:text="@string/commute_tomorrow"
-        />
+        android:text="@string/commute_tomorrow"/>
+
+    <Button
+        android:id="@+id/schedule_ride_button_cancel_commute"
+        style="@style/AluviFullWidthButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/action_cancel_schedule_ride"
+        android:visibility="invisible"/>
 </RelativeLayout>

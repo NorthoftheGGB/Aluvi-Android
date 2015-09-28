@@ -39,6 +39,23 @@ public class GeocodingManager {
         GeocodingApi.getAddressesForLocation(lat, lon, mToken, new GeoCodingCallback(addressCallback));
     }
 
+    public void getAddressForLocation(double lat, double lon, final DataCallback<Address> addressDataCallback) {
+        getAddressesForLocation(lat, lon, new DataCallback<List<Address>>() {
+            @Override
+            public void success(List<Address> result) {
+                if (result.size() > 0)
+                    addressDataCallback.success(result.get(0));
+                else
+                    addressDataCallback.failure("No addresses");
+            }
+
+            @Override
+            public void failure(String message) {
+                addressDataCallback.failure(message);
+            }
+        });
+    }
+
     private class GeoCodingCallback implements GeocodingApi.GeocodingApiCallback {
         private DataCallback<List<Address>> mAddressCallback;
 

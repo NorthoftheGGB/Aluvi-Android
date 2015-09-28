@@ -19,11 +19,11 @@ import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.fragments.gis.CommuteMapFragment;
 import com.aluvi.android.helpers.eventBus.BackHomeEvent;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
-import com.aluvi.android.helpers.eventBus.LocalRefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.SlidingPanelEvent;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
+import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.local.TicketStateTransition;
 import com.aluvi.android.model.realm.Ticket;
@@ -117,18 +117,23 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main_map, menu);
+        inflater.inflate(R.menu.menu_commute_fragment, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
-        if (isTicketRequested) {
-            menu.findItem(R.id.action_schedule_ride)
-                    .setVisible(true)
-                    .setTitle(R.string.action_view_commute);
-        }
+        boolean isTicketActive = Ticket.isTicketActive(mCurrentTicket);
+
+        menu.findItem(R.id.action_view_commute)
+                .setVisible(isTicketRequested);
+
+        menu.findItem(R.id.action_schedule_ride)
+                .setVisible(!isTicketRequested && !isTicketActive);
+
+        menu.findItem(R.id.action_cancel)
+                .setVisible(isTicketActive);
 
         menu.findItem(R.id.action_back_home)
                 .setVisible(mCurrentTicket != null && CommuteManager.getInstance().isDriveHomeEnabled(mCurrentTicket.getTrip()));
@@ -137,11 +142,15 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_view_commute:
             case R.id.action_schedule_ride:
                 mEventListener.onCommuteSchedulerRequested();
                 break;
             case R.id.action_back_home:
                 onTicketScheduled(mCurrentTicket, true);
+                break;
+            case R.id.action_cancel:
+                cancelTicket(mCurrentTicket);
                 break;
         }
 
@@ -186,6 +195,10 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         EventBus.getDefault().post(new RefreshTicketsEvent(tickets, transitions, mCurrentTicket));
     }
 
+    private void onTicketsRefreshed() {
+        onTicketsRefreshed(new ArrayList<TicketStateTransition>());
+    }
+
     private void handleTicketStateTransitions(List<TicketStateTransition> transitions) {
         if (transitions != null) {
             Dialog currTransitionDialog = null;
@@ -210,14 +223,27 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         EventBus.getDefault().post(new CommuteScheduledEvent(mCurrentTicket.getTrip(), mCurrentTicket));
     }
 
-    private void onLocalTicketsRefreshed() {
-        EventBus.getDefault().post(new LocalRefreshTicketsEvent(CommuteManager.getInstance().getActiveTicket()));
-        onTicketsRefreshed(new ArrayList<TicketStateTransition>());
+    private void cancelTicket(Ticket ticket) {
+        CommuteManager.getInstance().cancelTicket(ticket, new Callback() {
+            @Override
+            public void success() {
+                if (getView() != null) {
+                    Snackbar.make(getView(), R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+                    onTicketsRefreshed();
+                }
+            }
+
+            @Override
+            public void failure(String message) {
+                if (getView() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onRiderStateChanged() {
-        onLocalTicketsRefreshed();
+        onTicketsRefreshed();
     }
 
     @SuppressWarnings("unused")
