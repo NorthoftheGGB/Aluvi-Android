@@ -118,7 +118,7 @@ public class UserStateManager {
     }
 
     public boolean isUserDriver() {
-        return driverState != null && driverState.equals(DRIVER_STATE_ACTIVE);
+        return getProfile() != null && getProfile().getCar() != null;
     }
 
     public void setDriverState(String driverState) {

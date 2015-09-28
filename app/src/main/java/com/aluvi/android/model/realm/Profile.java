@@ -55,6 +55,10 @@ public class Profile extends RealmObject {
     @JsonProperty("recipient_card_last_four")
     private String recipientCardLastFour;
 
+    @JsonProperty("default_recipient_debit_card_token")
+    private String recipientDebitCardToken;
+
+    @JsonProperty("bank_account_name")
     private String bankAccountName;
 
     @JsonProperty("image_small")
@@ -75,7 +79,9 @@ public class Profile extends RealmObject {
         out.put("last_name", profile.getLastName());
         out.put("phone", profile.getPhone());
         out.put("email", profile.getEmail());
+        out.put("work_email", profile.getWorkEmail());
         out.put("default_card_token", profile.getDefaultCardToken());
+        out.put("default_recipient_debit_card_token", profile.getRecipientDebitCardToken());
         return out;
     }
 
@@ -236,5 +242,13 @@ public class Profile extends RealmObject {
 
     public void setWorkEmail(String workEmail) {
         this.workEmail = workEmail;
+    }
+
+    public String getRecipientDebitCardToken() {
+        return recipientDebitCardToken;
+    }
+
+    public void setRecipientDebitCardToken(String recipientDebitCardToken) {
+        this.recipientDebitCardToken = recipientDebitCardToken;
     }
 }

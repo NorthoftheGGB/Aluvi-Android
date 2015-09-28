@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.aluvi.android.R;
@@ -15,15 +17,12 @@ import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
 
 import butterknife.Bind;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
 
 /**
  * Created by usama on 8/22/15.
  */
 public class AluviSupportFragment extends BaseButterFragment {
     @Bind(R.id.support_edit_text_message) EditText mSupportEditText;
-    @Bind(R.id.support_button_submit) Button mSubmitButton;
 
     public static AluviSupportFragment newInstance() {
         return new AluviSupportFragment();
@@ -31,6 +30,7 @@ public class AluviSupportFragment extends BaseButterFragment {
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_support, container, false);
     }
 
@@ -44,14 +44,22 @@ public class AluviSupportFragment extends BaseButterFragment {
         cancelProgressDialogs();
     }
 
-    @SuppressWarnings("unused")
-    @OnTextChanged(R.id.support_edit_text_message)
-    public void onSupportTextChanged(CharSequence s, int start, int before, int count) {
-        mSubmitButton.setEnabled(s.length() > 0);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_support, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @SuppressWarnings("unused")
-    @OnClick(R.id.support_button_submit)
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_request_support:
+                onSubmitButtonClicked();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void onSubmitButtonClicked() {
         showDefaultProgressDialog();
         String supportMessage = mSupportEditText.getText().toString();

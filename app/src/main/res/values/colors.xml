@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">@color/aluvi_gradient_start</color>
     <color name="colorPrimaryDark">@color/black</color>
-    <color name="colorAccent">#1085E2</color>
+    <color name="colorAccent">#2F787F</color>
 
     <color name="actionBarBackground">#AAffffff</color>
 
@@ -22,7 +22,7 @@
     <color name="button_transparent_white">#66FFFFFF</color>
     <color name="button_transparent_white_darker">#66DDDDDD</color>
 
-    <color name="ticketInfoPriceBackground">#2360DD</color>
+    <color name="ticketInfoPriceBackground">#2F787F</color>
     <color name="profilePictureOutline">#5FA262</color>
     <color name="pathOverlayColor">#B95040</color>
 

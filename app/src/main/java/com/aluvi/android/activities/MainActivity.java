@@ -50,7 +50,7 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
 
         updateBackHomeButton();
         mNavigationView.getMenu().findItem(R.id.action_car_info)
-                .setVisible(UserStateManager.getInstance().getProfile().getCar() != null);
+                .setVisible(UserStateManager.getInstance().isUserDriver());
     }
 
     public void initNavigationView() {
@@ -138,6 +138,7 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
     }
 
     public void onPaymentInfoClicked() {
+        startActivity(new Intent(this, PaymentInfoActivity.class));
     }
 
     public void onReceiptsClicked() {

@@ -131,6 +131,11 @@
             android:theme="@style/AppTheme.Dark">
         </activity>
         <activity
+            android:name=".activities.PaymentInfoActivity"
+            android:label="@string/action_payments"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark"/>
+        <activity
             android:name=".activities.ReceiptsActivity"
             android:label="@string/title_activity_receipts"
             android:screenOrientation="portrait"
@@ -140,6 +145,6 @@
             android:name=".activities.AluviSupportActivity"
             android:label="@string/action_support"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Dark"></activity>
+            android:theme="@style/AppTheme.Dark"/>
     </application>
 </manifest>

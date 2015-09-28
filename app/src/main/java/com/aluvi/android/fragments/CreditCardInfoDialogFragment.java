@@ -16,8 +16,8 @@ import com.aluvi.android.R;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 import com.aluvi.android.managers.PaymentManager;
-import com.aluvi.android.managers.callbacks.DataCallback;
 import com.aluvi.android.model.local.CreditCard;
+import com.stripe.android.model.Token;
 
 import java.util.regex.Pattern;
 
@@ -29,7 +29,7 @@ import butterknife.ButterKnife;
  */
 public class CreditCardInfoDialogFragment extends DialogFragment {
     public interface CreditCardListener {
-        void onStripeTokenReceived(String token);
+        void onStripeTokenReceived(Token token, CreditCardInfoDialogFragment fragment);
 
         void onCreditCardProcessingError(String message);
     }
@@ -50,7 +50,12 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mListener = (CreditCardListener) activity;
+        if (getParentFragment() != null)
+            mListener = (CreditCardListener) getParentFragment();
+        else
+            mListener = (CreditCardListener) activity;
+
+        mListener = (CreditCardListener) (getParentFragment() != null ? getParentFragment() : getActivity());
     }
 
     @NonNull
@@ -204,24 +209,25 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
             mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
 
             CreditCard card = new CreditCard(cardNumber, extractMonth(cardExpiration), extractYear(cardExpiration), cvv);
-            PaymentManager.getInstance().requestToken(card, new DataCallback<String>() {
+            PaymentManager.getInstance().requestToken(card, new PaymentManager.OnStripeDataFetchedListener() {
                 @Override
-                public void success(String result) {
+                public void onTokenFetched(Token token) {
                     if (!isDetached())
                         dismiss();
 
+                    
                     if (mDefaultProgressDialog != null)
                         mDefaultProgressDialog.cancel();
 
-                    mListener.onStripeTokenReceived(result);
+                    mListener.onStripeTokenReceived(token, CreditCardInfoDialogFragment.this);
                 }
 
                 @Override
-                public void failure(String message) {
+                public void onFailure(String message) {
                     if (mDefaultProgressDialog != null)
                         mDefaultProgressDialog.cancel();
 
-                    if(getView() != null)
+                    if (getView() != null)
                         Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
 
                     mListener.onCreditCardProcessingError(message);

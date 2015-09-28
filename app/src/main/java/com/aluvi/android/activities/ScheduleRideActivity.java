@@ -33,6 +33,7 @@ import com.aluvi.android.model.realm.RealmLatLng;
 import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
+import com.stripe.android.model.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -241,8 +242,8 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     @Override
-    public void onStripeTokenReceived(String token) {
-        updateUserPaymentToken(token);
+    public void onStripeTokenReceived(Token token, CreditCardInfoDialogFragment fragment) {
+        updateUserPaymentToken(token.getId());
     }
 
     @Override

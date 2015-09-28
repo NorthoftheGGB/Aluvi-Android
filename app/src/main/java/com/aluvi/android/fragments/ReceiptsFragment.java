@@ -52,7 +52,7 @@ public class ReceiptsFragment extends BaseButterFragment {
         mAdapter = new ReceiptsAdapter(new ArrayList<ReceiptData>());
 
         mReceiptsRecyclerView.setLayoutManager(mLayoutManager);
-        mReceiptsRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), android.R.color.white));
+        mReceiptsRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.divider_recycler_view));
         mReceiptsRecyclerView.setAdapter(mAdapter);
         fetchReceipts();
     }

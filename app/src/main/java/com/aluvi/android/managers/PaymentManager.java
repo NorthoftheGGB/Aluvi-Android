@@ -10,12 +10,20 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.exception.AuthenticationException;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by usama on 8/11/15.
  */
 public class PaymentManager {
+    public interface OnStripeDataFetchedListener {
+        void onTokenFetched(Token token);
+
+        void onFailure(String message);
+    }
+
     private static PaymentManager instance;
     private Stripe mStripe;
 
@@ -36,7 +44,7 @@ public class PaymentManager {
         }
     }
 
-    public void requestToken(CreditCard card, final DataCallback<String> tokenCallback) {
+    public void requestToken(CreditCard card, final OnStripeDataFetchedListener tokenCallback) {
         Card stripeCard = new Card(card.getCardNumber(), card.getExpirationMonth(),
                 card.getExpirationYear(), card.getCvv());
 
@@ -44,16 +52,16 @@ public class PaymentManager {
             mStripe.createToken(stripeCard, new TokenCallback() {
                 @Override
                 public void onError(Exception e) {
-                    tokenCallback.failure("Unable to create credit card token");
+                    tokenCallback.onFailure("Unable to create credit card token");
                 }
 
                 @Override
                 public void onSuccess(Token token) {
-                    tokenCallback.success(token.getId());
+                    tokenCallback.onTokenFetched(token);
                 }
             });
         } else {
-            tokenCallback.failure("Invalid credit card");
+            tokenCallback.onFailure("Invalid credit card");
         }
     }
 
@@ -67,6 +75,31 @@ public class PaymentManager {
             @Override
             public void failure(int statusCode) {
                 receiptCallback.failure("Unable to fetch receipts");
+            }
+        });
+    }
+
+    public void getLastTransaction(final DataCallback<ReceiptData> lastTransactionCallback) {
+        getReceipts(new DataCallback<List<ReceiptData>>() {
+            @Override
+            public void success(List<ReceiptData> result) {
+                if (result != null && result.size() > 0) {
+                    Collections.sort(result, new Comparator<ReceiptData>() {
+                        @Override
+                        public int compare(ReceiptData lhs, ReceiptData rhs) {
+                            return lhs.getDate().before(rhs.getDate()) ? 1 : -1;
+                        }
+                    });
+
+                    lastTransactionCallback.success(result.get(0));
+                } else {
+                    lastTransactionCallback.failure("No transactions");
+                }
+            }
+
+            @Override
+            public void failure(String message) {
+                lastTransactionCallback.failure(message);
             }
         });
     }

@@ -17,4 +17,5 @@
     <string name="action_payments">Payments</string>
     <string name="action_receipts">Receipts</string>
     <string name="action_support">Support</string>
+    <string name="action_request_support">Submit</string>
 </resources>

@@ -24,12 +24,4 @@
             android:hint="@string/write_message"
             android:inputType="textAutoCorrect"/>
     </android.support.design.widget.TextInputLayout>
-
-    <Button
-        android:id="@+id/support_button_submit"
-        style="@style/AluviFullWidthButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/submit"/>
 </RelativeLayout>
