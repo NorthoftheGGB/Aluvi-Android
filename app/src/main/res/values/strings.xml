@@ -64,6 +64,8 @@
     <string name="register">Register</string>
     <string name="title_activity_onboarding">Onboarding</string>
     <string name="title_activity_receipts">Weekly Receipts</string>
+    <string name="title_activity_tutorial">Tutorial</string>
+
     <string name="everyone_work">Everyone needs to get to work.</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="title_activity_login">Sign in</string>
@@ -90,7 +92,7 @@
     <string name="take_photo">Take Photo</string>
     <string name="choose_existing">Choose Existing</string>
     <string name="welcome_aluvi">Welcome to Aluvi!</string>
-    <string name="welcome_text">We\'re so glad you\'ve decided to join Aluvi. We\'ve designed Aluvi to be super easy to use - just follow the onscreen tutorial on the next page and you\'re going to be carpooling in no time.</string>
+    <string name="welcome_text">We\'re so glad you\'ve decided to join Aluvi.</string>
     <string name="license_plate_number">License Plate #</string>
     <string name="car_details">Your Car\'s Details</string>
     <string name="make">Make</string>
@@ -133,4 +135,10 @@
     <string name="pickup_point_info">(Your pickup point will become a circular area 2 mi in diameter)</string>
     <string name="destination">Destination</string>
     <string name="withdraw_anytime">You can withdraw any time!</string>
+    <string name="set_location">Set location and time</string>
+    <string name="choose_location">Choose a <b>location</b> to get picked up. \nDriving? Set an <b>area</b> in which you\'d be willing to pick up riders. Add your <b>work</b> location and pickup time</string>
+    <string name="schedule">Schedule</string>
+    <string name="schedule_info">We\'ll use those times and locations to match riders and drivers together. Rides are scheduled at 9:00 PM the night before you need to get to work.</string>
+    <string name="get_started">get started with</string>
+    <string name="aluvi_large">Aluvi!</string>
 </resources>

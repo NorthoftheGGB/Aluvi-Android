@@ -15,15 +15,15 @@ import butterknife.OnClick;
 /**
  * Created by usama on 8/7/15.
  */
-public class TutorialFragment extends BaseButterFragment {
+public class TutorialCompleteFragment extends BaseButterFragment {
     public interface TutorialListener {
-        void onTutorialRequested();
+        void onTutorialComplete();
     }
 
     private TutorialListener mTutorialListener;
 
-    public static TutorialFragment newInstance() {
-        return new TutorialFragment();
+    public static TutorialCompleteFragment newInstance() {
+        return new TutorialCompleteFragment();
     }
 
     @Override
@@ -43,6 +43,6 @@ public class TutorialFragment extends BaseButterFragment {
 
     @OnClick(R.id.onboarding_tutorial_next_button)
     public void onNextButtonClicked() {
-        mTutorialListener.onTutorialRequested();
+        mTutorialListener.onTutorialComplete();
     }
 }

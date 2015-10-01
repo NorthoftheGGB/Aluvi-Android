@@ -34,6 +34,7 @@
     <color name="aluvi_gradient_end_tutorial">#159386</color>
     <color name="aluvi_gradient_start_darker">#40A074</color>
     <color name="aluvi_gradient_end_darker">#266A72</color>
+    <color name="tutorial_gradient_start">#307856</color>
 
     <color name="aluvi_activity_background_color">#149B70</color>
     <color name="light_white_background">#CEDFE0</color>

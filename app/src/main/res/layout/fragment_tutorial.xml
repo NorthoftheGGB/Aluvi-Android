@@ -33,7 +33,8 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/welcome_text"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            fontPath="fonts/Bryant-Regular.ttf"/>
+            fontPath="fonts/Bryant-Regular.ttf"
+            android:gravity="center_horizontal"/>
     </RelativeLayout>
 
     <Button

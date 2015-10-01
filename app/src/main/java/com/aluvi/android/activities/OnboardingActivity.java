@@ -18,7 +18,7 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.ProfilePhotoFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
-import com.aluvi.android.fragments.onboarding.TutorialFragment;
+import com.aluvi.android.fragments.onboarding.TutorialCompleteFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -38,7 +38,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         RegisterFragment.RegistrationListener,
         LocationSelectFragment.LocationSelectedListener,
         ProfilePhotoFragment.AboutUserListener,
-        TutorialFragment.TutorialListener {
+        TutorialCompleteFragment.TutorialListener {
 
     @Bind(R.id.onboarding_root_container) View mRootView;
     private Dialog mDefaultProgressDialog;
@@ -147,13 +147,13 @@ public class OnboardingActivity extends BaseButterActivity implements
         mRegistrationData.setPassword(mPassword);
 
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, TutorialFragment.newInstance())
+                .replace(R.id.onboarding_root_container, TutorialCompleteFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
-    public void onTutorialRequested() {
+    public void onTutorialComplete() {
         mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(this, false);
         UserStateManager.getInstance()
                 .registerUser(mRegistrationData, new Callback() {
