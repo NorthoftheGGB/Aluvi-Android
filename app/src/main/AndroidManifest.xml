@@ -106,13 +106,6 @@
             android:name="io.fabric.ApiKey"
             android:value="531b451b5ea5c0dc8f72ba102e736a6a2edb31c0"/>
 
-        <!-- put this here temporarily, required for Matt's launch configuration -->
-        <!-- launch config won't find launcher activities in flavor unless defined in master Manifest -->
-        <activity
-            android:name=".DebugActivity"
-            android:label="Aluvi Debug"
-            android:screenOrientation="portrait">
-        </activity>
         <activity
             android:name=".activities.ProfileActivity"
             android:label="@string/title_activity_profile"
