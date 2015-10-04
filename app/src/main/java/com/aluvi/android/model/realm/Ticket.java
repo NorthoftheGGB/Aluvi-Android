@@ -73,11 +73,11 @@ public class Ticket extends RealmObject {
 
         ticket.setOriginLatitude(origin.getLatitude());
         ticket.setOriginLongitude(origin.getLongitude());
-        ticket.setOriginPlaceName(reverseDirection ? route.getDestinationPlaceName() : route.getOriginPlaceName());
+        ticket.setOriginPlaceName("Pickup");
 
         ticket.setDestinationLatitude(destination.getLatitude());
         ticket.setDestinationLongitude(destination.getLongitude());
-        ticket.setDestinationPlaceName(reverseDirection ? route.getOriginPlaceName() : route.getDestinationPlaceName());
+        ticket.setDestinationPlaceName("Work");
 
         ticket.setDriving(route.isDriving());
 
