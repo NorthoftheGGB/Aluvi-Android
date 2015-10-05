@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/aluvi_activity_background_color"
+    android:background="@color/tutorial_gradient_start"
     android:orientation="vertical"
     tools:context="com.aluvi.android.fragments.LoginFragment"
     tools:ignore="MissingPrefix">

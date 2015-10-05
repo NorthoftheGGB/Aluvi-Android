@@ -15,16 +15,19 @@ import android.view.ViewGroup;
 import com.aluvi.android.R;
 import com.aluvi.android.activities.base.BaseToolBarActivity;
 import com.aluvi.android.application.AluviPreferences;
+import com.aluvi.android.fragments.LoginFragment;
 import com.aluvi.android.fragments.base.BaseButterFragment;
-import com.aluvi.android.fragments.onboarding.TutorialCompleteFragment;
+import com.viewpagerindicator.CirclePageIndicator;
 
 import butterknife.Bind;
 
 /**
  * Created by usama on 9/30/15.
  */
-public class TutorialActivity extends BaseToolBarActivity implements TutorialCompleteFragment.TutorialListener {
+public class TutorialActivity extends BaseToolBarActivity implements LoginFragment.LoginListener {
     @Bind(R.id.tutorial_view_pager) ViewPager mPager;
+    @Bind(R.id.tutorial_view_pager_indicator) CirclePageIndicator mTitlePageIndicator;
+
     private TutorialAdapter mPagerAdapter;
 
     @Override
@@ -38,10 +41,11 @@ public class TutorialActivity extends BaseToolBarActivity implements TutorialCom
 
         mPagerAdapter = new TutorialAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+        mTitlePageIndicator.setViewPager(mPager);
     }
 
     @Override
-    public void onTutorialComplete() {
+    public void onLoggedIn() {
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit().putBoolean(AluviPreferences.TUTORIAL_VIEWED_KEY, true).commit();
 
@@ -69,7 +73,7 @@ public class TutorialActivity extends BaseToolBarActivity implements TutorialCom
                 case POS_TUT3:
                     return Tut3Fragment.newInstance();
                 case POS_TUT4:
-                    return TutorialCompleteFragment.newInstance();
+                    return LoginFragment.newInstance();
             }
 
             return null;

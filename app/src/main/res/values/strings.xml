@@ -136,9 +136,12 @@
     <string name="destination">Destination</string>
     <string name="withdraw_anytime">You can withdraw any time!</string>
     <string name="set_location">Set location and time</string>
-    <string name="choose_location">Choose a <b>location</b> to get picked up. \nDriving? Set an <b>area</b> in which you\'d be willing to pick up riders. Add your <b>work</b> location and pickup time</string>
+    <string name="choose_location">Choose a <b>location</b> to get picked up. Driving? Set an <b>area</b> in which you\'d be willing to pick up riders. Add your <b>work</b> location and pickup time</string>
     <string name="schedule">Schedule</string>
     <string name="schedule_info">We\'ll use those times and locations to match riders and drivers together. Rides are scheduled at 9:00 PM the night before you need to get to work.</string>
-    <string name="get_started">get started with</string>
+    <string name="get_started">Swipe to left to get started with</string>
     <string name="aluvi_large">Aluvi!</string>
+    <string name="skip_tutorial">Skip Tutorial</string>
+    <string name="get_pickup_point">Get to the pickup point!</string>
+    <string name="get_pickup_point_info">Pay close attention to your pickup spot and be sure to be <b>on time</b>. Then sit back and enjoy - your first round trip commute is on <b>US</b>! After that you pay the driver while we take c. 98 per direction, no matter the distance.</string>
 </resources>

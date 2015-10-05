@@ -1,6 +1,6 @@
 package com.aluvi.android.fragments.onboarding;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -27,9 +27,9 @@ public class TutorialCompleteFragment extends BaseButterFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mTutorialListener = (TutorialListener) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mTutorialListener = (TutorialListener) context;
     }
 
     @Override
@@ -41,6 +41,7 @@ public class TutorialCompleteFragment extends BaseButterFragment {
     public void initUI() {
     }
 
+    @SuppressWarnings("unused")
     @OnClick(R.id.onboarding_tutorial_next_button)
     public void onNextButtonClicked() {
         mTutorialListener.onTutorialComplete();

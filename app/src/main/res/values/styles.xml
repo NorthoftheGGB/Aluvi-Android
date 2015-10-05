@@ -72,6 +72,10 @@
         <item name="android:background">@drawable/onboarding_button_background</item>
     </style>
 
+    <style name="AluviFullWidthButton.Dark">
+        <item name="android:background">@drawable/onboarding_button_dark_background</item>
+    </style>
+
     <style name="BorderlessPreferenceContainer">
         <item name="android:paddingBottom">16dp</item>
         <item name="android:paddingTop">16dp</item>

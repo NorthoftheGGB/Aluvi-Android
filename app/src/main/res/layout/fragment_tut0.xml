@@ -5,21 +5,21 @@
                 android:background="@color/tutorial_gradient_start">
 
     <TextView
+        android:id="@+id/textView19"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/get_started"
-        android:id="@+id/textView19"
         android:layout_above="@+id/textView20"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:text="@string/get_started"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
 
     <TextView
+        android:id="@+id/textView20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/aluvi_large"
-        android:id="@+id/textView20"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/aluvi_large"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="60sp"/>
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package com.aluvi.android.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -40,10 +41,14 @@ public class LoginFragment extends BaseButterFragment {
     private LoginListener mListener;
     private final int REGISTER_REQ_CODE = 4223;
 
+    public static LoginFragment newInstance() {
+        return new LoginFragment();
+    }
+
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mListener = (LoginListener) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mListener = (LoginListener) context;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.aluvi.android.fragments;
 
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,7 +53,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @Bind(R.id.ticket_info_image_view_driver_profile) ImageView mDriverProfileImageView;
     @Bind(R.id.ticket_info_container_rider_info) LinearLayout mRiderProfilePictureContainer;
     @Bind(R.id.ticket_info_riders_picked_up) Button mRidersPickedUpButton;
-    @Bind({R.id.ticket_info_relative_layout_driver_info, R.id.ticket_info_late_button}) List<View> mRiderViews;
+    @Bind(R.id.ticket_info_relative_layout_driver_info) View mDriverInfoView;
     @Bind({R.id.ticket_info_riders_picked_up}) List<View> mDriverViews;
 
     private TicketInfoListener mListener;
@@ -73,12 +73,12 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         if (getParentFragment() != null) {
             mListener = (TicketInfoListener) getParentFragment();
         } else {
-            mListener = (TicketInfoListener) activity;
+            mListener = (TicketInfoListener) context;
         }
     }
 
@@ -102,7 +102,7 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                 mDriverNameTextView.setText(getTicket().getDriver().getFirstName());
 
             if (getTicket().isDriving()) {
-                ButterKnife.apply(mRiderViews, INVISIBILITY_ACTION);
+                mDriverInfoView.setVisibility(View.GONE);
                 updateRidersPickedUpButton();
             } else {
                 ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);

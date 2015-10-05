@@ -61,6 +61,7 @@ repositories {
     }
 
     maven { url "https://jitpack.io" }
+    maven { url "http://dl.bintray.com/populov/maven" }
 }
 
 dependencies {
@@ -91,6 +92,7 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile 'fr.avianey.com.viewpagerindicator:library:2.4.1@aar'
 
     // Misc utils
     compile 'com.stripe:stripe-android:+'
