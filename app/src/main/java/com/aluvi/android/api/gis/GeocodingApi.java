@@ -12,9 +12,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequestListener;
 
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -24,51 +21,48 @@ import java.util.Locale;
  */
 public class GeocodingApi {
     public interface GeocodingApiCallback {
-        void onAddressesFound(String query, List<Address> data);
+        void onAddressesFound(List<Address> data);
 
         void onFailure(int statusCode);
     }
 
-    private final static String BASE_GEOCODE_URL = "https://api.mapbox.com/v4/",
-            ENDPOINT_GEOCODE = "geocode/mapbox.places/";
+    private final static String MAPQUEST_GEOCODE_URL = "http://www.mapquestapi.com/",
+            ENDPOINT_GEOCODE = "geocoding/v1/address",
+            ENDPOINT_REVERSE_GEOCODE = "geocoding/v1/reverse";
 
-    public static void getAddressesForName(final String name, String token, GeocodingApiCallback addressCallback) {
-        try {
-            String geocodeUrl = BASE_GEOCODE_URL + ENDPOINT_GEOCODE + URLEncoder.encode(name, "UTF-8").toString() + ".json";
-            sendGeoCodeRequest(geocodeUrl, name, token, addressCallback);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            addressCallback.onFailure(HttpURLConnection.HTTP_BAD_REQUEST);
-        }
+    public static void getAddressesForName(final String name, GeocodingApiCallback addressCallback) {
+        GetRequestBuilder builder = new GetRequestBuilder(MAPQUEST_GEOCODE_URL + ENDPOINT_GEOCODE)
+                .appendParameter("key", MapQuestApi.MAP_QUEST_API_KEY)
+                .appendParameter("location", name);
+
+        sendGeoCodeRequest(builder.build(), addressCallback);
     }
 
-    public static void getAddressesForLocation(final double lat, final double lon, String token, GeocodingApiCallback addressCallback) {
-        try {
-            String reverseGeocodeUrl = BASE_GEOCODE_URL + ENDPOINT_GEOCODE + URLEncoder.encode(lon + "," + lat, "UTF-8") + ".json";
-            sendGeoCodeRequest(reverseGeocodeUrl, token, addressCallback);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            addressCallback.onFailure(HttpURLConnection.HTTP_BAD_REQUEST);
-        }
+    public static void getAddressesForLocation(final double lat, final double lon, GeocodingApiCallback addressCallback) {
+        GetRequestBuilder builder = new GetRequestBuilder(MAPQUEST_GEOCODE_URL + ENDPOINT_REVERSE_GEOCODE)
+                .appendParameter("key", MapQuestApi.MAP_QUEST_API_KEY)
+                .appendParameter("location", lat + "," + lon);
+
+        sendGeoCodeRequest(builder.build(), addressCallback);
     }
 
-    private static void sendGeoCodeRequest(String url, final String query, String token, final GeocodingApiCallback addressCallback) {
-        GetRequestBuilder builder = new GetRequestBuilder(url)
-                .appendParameter("access_token", token);
-
-        AluviUnauthenticatedRequest<GeocodeData> geoCodeRequest = new AluviUnauthenticatedRequest<>(Request.Method.GET,
-                builder.build(),
+    private static void sendGeoCodeRequest(String url, final GeocodingApiCallback addressCallback) {
+        AluviUnauthenticatedRequest<GeocodeData> routeRequest = new AluviUnauthenticatedRequest<>(Request.Method.GET,
+                url,
                 new JacksonRequestListener<GeocodeData>() {
                     @Override
                     public void onResponse(GeocodeData response, int statusCode, VolleyError error) {
-                        if (statusCode == HttpURLConnection.HTTP_OK && response != null) {
+                        if (statusCode == 200) {
                             List<Address> out = new ArrayList<>();
-                            GeocodeData.Feature[] locations = response.getFeatures();
-                            if (locations != null)
-                                for (int i = 0; i < locations.length; i++)
-                                    out.add(addressForGeocodeData(locations[i]));
+                            GeocodeData.GeocodedLocation[] locations = response.getLocations();
+                            if (locations != null) {
+                                for (int i = 0; i < locations.length; i++) {
+                                    GeocodeData.GeocodedLocation location = locations[i];
+                                    out.add(addressForGeocodeLocation(location));
+                                }
+                            }
 
-                            addressCallback.onAddressesFound(query, out);
+                            addressCallback.onAddressesFound(out);
                         } else {
                             addressCallback.onFailure(statusCode);
                         }
@@ -80,43 +74,38 @@ public class GeocodingApi {
                     }
                 });
 
-        geoCodeRequest.addAcceptedStatusCodes(new int[]{HttpURLConnection.HTTP_OK, HttpURLConnection.HTTP_BAD_REQUEST});
-        AluviApi.getInstance().getRequestQueue().add(geoCodeRequest);
+        routeRequest.addAcceptedStatusCodes(new int[]{200, 400});
+        AluviApi.getInstance().getRequestQueue().add(routeRequest);
     }
 
-    private static void sendGeoCodeRequest(String url, String token, final GeocodingApiCallback addressCallback) {
-        sendGeoCodeRequest(url, null, token, addressCallback);
-    }
-
-    private static Address addressForGeocodeData(GeocodeData.Feature location) {
+    private static Address addressForGeocodeLocation(GeocodeData.GeocodedLocation location) {
         Address address = new Address(Locale.getDefault());
-        address.setLatitude(location.getLat());
-        address.setLongitude(location.getLon());
+        address.setLatitude(location.getLatLng().getLat());
+        address.setLongitude(location.getLatLng().getLng());
 
-        int addressLine = 0;
+        address.setThoroughfare(location.getStreet());
+        address.setAddressLine(0, location.getStreet());
 
-        String street = location.getStreet();
-        street = street != null && !location.getStreet().contains("null") ? location.getStreet() : "";
-        address.setThoroughfare(street);
-        address.setAddressLine(addressLine, street);
-
-        String city = location.getCity();
-        String state = location.getState();
-        address.setLocality(city);
-        address.setAdminArea(state);
-
-        String cityState = "";
-        if (city != null && !city.equals("")) {
-            cityState += location.getCity();
-            if (state != null && !state.equals(""))
-                cityState += ", ";
-        }
-
-        cityState += state;
-        address.setAddressLine(++addressLine, cityState);
+        address.setLocality(location.getCity());
+        address.setAdminArea(location.getState());
+        address.setAddressLine(1, location.getCity() + ", " + location.getState());
 
         address.setPostalCode(location.getPostalCode());
+        address.setAddressLine(2, location.getPostalCode());
+
         address.setCountryName(location.getCountry());
         return address;
+    }
+
+    public static String getFormattedAddress(Address address) {
+        StringBuilder out = new StringBuilder();
+        int addressLines = Math.min(2, address.getMaxAddressLineIndex());
+        for (int i = 0; i < addressLines; i++) {
+            out.append(address.getAddressLine(i));
+            if (i + 1 < addressLines)
+                out.append(", ");
+        }
+
+        return out.toString();
     }
 }

@@ -12,31 +12,26 @@ import java.util.List;
  */
 public class GeocodingManager {
     private static GeocodingManager mInstance;
-    private String mToken, mRestrictedCountry;
+    private String mToken;
 
     public static void initialize(String mapBoxToken) {
-        mInstance = new GeocodingManager(mapBoxToken, null);
-    }
-
-    public static void initialize(String mapBoxToken, String restrictedCountry) {
-        mInstance = new GeocodingManager(mapBoxToken, restrictedCountry);
+        mInstance = new GeocodingManager(mapBoxToken);
     }
 
     public static GeocodingManager getInstance() {
         return mInstance;
     }
 
-    private GeocodingManager(String mapBoxToken, String restrictedCountry) {
+    private GeocodingManager(String mapBoxToken) {
         mToken = mapBoxToken;
-        mRestrictedCountry = restrictedCountry;
     }
 
     public void getAddressesForName(String name, final DataCallback<List<Address>> addressCallback) {
-        GeocodingApi.getAddressesForName(name, mToken, new GeoCodingCallback(addressCallback));
+        GeocodingApi.getAddressesForName(name, new GeoCodingCallback(addressCallback));
     }
 
     public void getAddressesForLocation(double lat, double lon, final DataCallback<List<Address>> addressCallback) {
-        GeocodingApi.getAddressesForLocation(lat, lon, mToken, new GeoCodingCallback(addressCallback));
+        GeocodingApi.getAddressesForLocation(lat, lon, new GeoCodingCallback(addressCallback));
     }
 
     public void getAddressForLocation(double lat, double lon, final DataCallback<Address> addressDataCallback) {
@@ -64,25 +59,13 @@ public class GeocodingManager {
         }
 
         @Override
-        public void onAddressesFound(String query, List<Address> data) {
-            if (mRestrictedCountry != null)
-                applyFilter(data, mRestrictedCountry);
-            mAddressCallback.success(data);
-        }
-
-        @Override
         public void onFailure(int statusCode) {
             mAddressCallback.failure("Unable to fetch addresses");
         }
-    }
 
-    private void applyFilter(List<Address> addresses, String countryFilter) {
-        for (int i = 0; i < addresses.size(); i++) {
-            Address address = addresses.get(i);
-            if (!address.getCountryName().equals(countryFilter)) {
-                addresses.remove(i);
-                i--;
-            }
+        @Override
+        public void onAddressesFound(List<Address> data) {
+            mAddressCallback.success(data);
         }
     }
 }

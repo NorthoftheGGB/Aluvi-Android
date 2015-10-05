@@ -33,7 +33,7 @@ public class AluviApplication extends Application {
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
         CommuteManager.initialize();
-        GeocodingManager.initialize(getString(R.string.mapbox_access_token), "United States");
+        GeocodingManager.initialize(getString(R.string.mapbox_access_token));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
         PaymentManager.initialize(getString(R.string.stripe_key));

@@ -8,134 +8,112 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class GeocodeData {
-    @JsonProperty("features")
-    private Feature[] features;
+    @JsonProperty("results")
+    private Results[] results;
 
-    public Feature[] getFeatures() {
-        return features;
+    private static class Results {
+        @JsonProperty("locations")
+        private GeocodedLocation[] locations;
     }
 
-    public void setFeatures(Feature[] features) {
-        this.features = features;
-    }
+    public static class GeocodedLocation {
+        @JsonProperty("street")
+        private String street;
 
-    public static class Feature {
-        @JsonProperty("id")
-        private String id;
+        @JsonProperty("adminArea5")
+        private String city;
 
-        @JsonProperty("type")
-        private String type;
+        @JsonProperty("adminArea3")
+        private String state;
 
-        @JsonProperty("address")
-        private String address;
+        @JsonProperty("adminArea1")
+        private String country;
 
-        @JsonProperty("text")
-        private String streetName;
+        @JsonProperty("postalCode")
+        private String postalCode;
 
-        @JsonProperty("place_name")
-        private String placeName;
+        @JsonProperty("latLng")
+        private GeocodeLatLng latLng;
 
-        @JsonProperty("center")
-        private double[] center;
+        public static class GeocodeLatLng {
+            @JsonProperty("lat")
+            private double lat;
 
-        @JsonProperty("context")
-        private Context[] contexts;
+            @JsonProperty("lng")
+            private double lng;
 
-        public double getLat() {
-            return center[1];
-        }
+            public double getLat() {
+                return lat;
+            }
 
-        public double getLon() {
-            return center[0];
-        }
+            public void setLat(double lat) {
+                this.lat = lat;
+            }
 
-        public String getId() {
-            return id;
-        }
+            public double getLng() {
+                return lng;
+            }
 
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getStreetName() {
-            return streetName;
-        }
-
-        public void setStreetName(String streetName) {
-            this.streetName = streetName;
-        }
-
-        public String getPlaceName() {
-            return placeName;
-        }
-
-        public void setPlaceName(String placeName) {
-            this.placeName = placeName;
+            public void setLng(double lng) {
+                this.lng = lng;
+            }
         }
 
         public String getStreet() {
-            return address + " " + streetName;
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
         }
 
         public String getCity() {
-            return getContextValue("place");
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
         }
 
         public String getState() {
-            return getContextValue("region");
+            return state;
         }
 
-        public String getPostalCode() {
-            return getContextValue("postcode");
+        public void setState(String state) {
+            this.state = state;
         }
 
         public String getCountry() {
-            return getContextValue("country");
+            return country;
         }
 
-        private String getContextValue(String id) {
-            Context stateContext = getContext(id);
-            return stateContext != null ? stateContext.getText() : "";
+        public void setCountry(String country) {
+            this.country = country;
         }
 
-        private Context getContext(String name) {
-            if (contexts != null)
-                for (Context context : contexts)
-                    if (context.getId().contains(name))
-                        return context;
-            return null;
+        public String getPostalCode() {
+            return postalCode;
         }
 
-        private static class Context {
-            @JsonProperty("id")
-            private String id;
-
-            @JsonProperty("text")
-            private String text;
-
-            public String getId() {
-                return id;
-            }
-
-            public void setId(String id) {
-                this.id = id;
-            }
-
-            public String getText() {
-                return text;
-            }
-
-            public void setText(String text) {
-                this.text = text;
-            }
+        public void setPostalCode(String postalCode) {
+            this.postalCode = postalCode;
         }
+
+        public GeocodeLatLng getLatLng() {
+            return latLng;
+        }
+
+        public void setLatLng(GeocodeLatLng latLng) {
+            this.latLng = latLng;
+        }
+    }
+
+    public GeocodedLocation[] getLocations() {
+        if (results != null && results.length > 0 && results[0] != null) {
+            GeocodedLocation[] locations = results[0].locations;
+            return locations;
+        }
+
+        return null;
     }
 }

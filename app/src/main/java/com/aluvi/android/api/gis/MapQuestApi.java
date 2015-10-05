@@ -17,7 +17,6 @@ import java.net.HttpURLConnection;
  * Created by usama on 7/21/15.
  */
 public class MapQuestApi {
-
     public interface MapQuestCallback {
         void onRouteFound(RouteData route);
 
