@@ -29,6 +29,8 @@
         android:layout_gravity="start"
         android:background="@drawable/aluvi_background_gradient"
         app:headerLayout="@layout/layout_navigation_drawer_header"
+        app:itemIconTint="@drawable/navigation_drawer_text_color"
+        app:itemTextColor="@drawable/navigation_drawer_text_color"
         app:menu="@menu/menu_navigation_drawer"
         app:theme="@style/AppTheme.Dark"/>
 </android.support.v4.widget.DrawerLayout>

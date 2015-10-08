@@ -62,13 +62,14 @@ public class MainActivity extends AluviAuthActivity implements CommuteFragment.O
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(false);
                         mDrawerLayout.closeDrawers();
                         switch (menuItem.getItemId()) {
                             case R.id.action_my_commute:
                                 onHomeClicked();
                                 break;
                             case R.id.action_back_home:
-                                EventBus.getDefault().post(new BackHomeEvent());
+                                EventBus.getDefault().post(new BackHomeEvent(CommuteManager.getInstance().getActiveTicket()));
                                 break;
                             case R.id.action_car_info:
                                 onCarInfoClicked();

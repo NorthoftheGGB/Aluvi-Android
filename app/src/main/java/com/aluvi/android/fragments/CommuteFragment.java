@@ -1,10 +1,12 @@
 package com.aluvi.android.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +23,6 @@ import com.aluvi.android.helpers.eventBus.BackHomeEvent;
 import com.aluvi.android.helpers.eventBus.CommuteScheduledEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.SlidingPanelEvent;
-import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.callbacks.Callback;
 import com.aluvi.android.managers.callbacks.DataCallback;
@@ -41,7 +42,7 @@ import io.realm.RealmResults;
 /**
  * Created by usama on 9/3/15.
  */
-public class CommuteFragment extends BaseButterFragment implements TicketInfoFragment.TicketInfoListener {
+public class CommuteFragment extends BaseButterFragment implements TicketInfoFragment.TicketInfoListener, CommuteMapFragment.CommuteMapListener {
     public interface OnMapEventListener {
         void onCommuteSchedulerRequested();
 
@@ -49,10 +50,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
-//    @Bind(R.id.commute_fragment_ticket_info_container) View mTicketInfoContainer;
 
     private Ticket mCurrentTicket;
-    private Dialog mDefaultProgressDialog;
     private OnMapEventListener mEventListener;
     private SlidingUpPanelLayout.PanelState mCurrentPanelState;
 
@@ -61,9 +60,9 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mEventListener = (OnMapEventListener) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mEventListener = (OnMapEventListener) context;
     }
 
     @Override
@@ -102,17 +101,17 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
-
-        if (mDefaultProgressDialog != null) {
-            mDefaultProgressDialog.cancel();
-            mDefaultProgressDialog = null;
-        }
     }
 
     @Override
     public void onTicketInfoUIMeasured(int headerHeight, int panelHeight) {
         mSlidingLayout.setPanelState(mCurrentPanelState);
         EventBus.getDefault().post(new SlidingPanelEvent(panelHeight));
+    }
+
+    @Override
+    public void onMapPanned() {
+        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     @Override
@@ -125,6 +124,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
         boolean isTicketActive = Ticket.isTicketActive(mCurrentTicket);
+        boolean isBackHomeEnabled = mCurrentTicket != null &&
+                CommuteManager.getInstance().isDriveHomeEnabled(mCurrentTicket.getTrip());
 
         menu.findItem(R.id.action_view_commute)
                 .setVisible(isTicketRequested);
@@ -133,10 +134,10 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                 .setVisible(!isTicketRequested && !isTicketActive);
 
         menu.findItem(R.id.action_cancel)
-                .setVisible(isTicketActive);
+                .setVisible(isTicketActive && !isBackHomeEnabled);
 
         menu.findItem(R.id.action_back_home)
-                .setVisible(mCurrentTicket != null && CommuteManager.getInstance().isDriveHomeEnabled(mCurrentTicket.getTrip()));
+                .setVisible(isBackHomeEnabled);
     }
 
     @Override
@@ -147,6 +148,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                 mEventListener.onCommuteSchedulerRequested();
                 break;
             case R.id.action_back_home:
+                EventBus.getDefault().post(new BackHomeEvent(mCurrentTicket));
                 onTicketScheduled(mCurrentTicket, true);
                 break;
             case R.id.action_cancel:
@@ -158,24 +160,20 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     public void refreshTickets() {
-        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
+        showDefaultProgressDialog();
         CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {
                 if (getView() != null)
                     onTicketsRefreshed(stateTransitions);
-
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
+                cancelProgressDialogs();
             }
 
             @Override
             public void failure(String message) {
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-
-                if (mDefaultProgressDialog != null)
-                    mDefaultProgressDialog.cancel();
+                cancelProgressDialogs();
             }
         });
     }
@@ -223,8 +221,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         EventBus.getDefault().post(new CommuteScheduledEvent(mCurrentTicket.getTrip(), mCurrentTicket));
     }
 
-    private void cancelTicket(Ticket ticket) {
-        CommuteManager.getInstance().cancelTicket(ticket, new Callback() {
+    private void cancelTicket(final Ticket ticket) {
+        final Callback onCancelFinishedCallback = new Callback() {
             @Override
             public void success() {
                 if (getView() != null) {
@@ -238,7 +236,24 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
             }
-        });
+        };
+
+        addDialog(new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.cancel_ride_question)
+                .setPositiveButton(R.string.only_work, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        CommuteManager.getInstance().cancelTicket(ticket, onCancelFinishedCallback);
+                    }
+                })
+                .setNegativeButton(R.string.both_directions, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        CommuteManager.getInstance().cancelTrip(ticket.getTrip(), onCancelFinishedCallback);
+                    }
+                })
+                .setNeutralButton(android.R.string.cancel, null)
+                .show());
     }
 
     @Override

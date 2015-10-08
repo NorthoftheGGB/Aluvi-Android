@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:ignore="MissingPrefix"
-    tools:context="com.aluvi.android.fragments.TicketInfoFragment">
+    tools:context="com.aluvi.android.fragments.TicketInfoFragment"
+    tools:ignore="MissingPrefix">
 
     <TextView
         android:id="@+id/ticket_info_text_view_price_info"
+        fontPath="fonts/Bryant-Regular.ttf"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/sliding_panel_header_height"
         android:layout_alignParentLeft="true"
@@ -22,8 +23,7 @@
         android:paddingRight="30dp"
         android:paddingTop="5dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/white"
-        fontPath="fonts/Bryant-Regular.ttf"/>
+        android:textColor="@color/white"/>
 
     <RelativeLayout
         android:id="@+id/ticket_info_relative_layout_driver_info"
@@ -68,6 +68,14 @@
             app:border_color="@color/profilePictureOutline"
             app:border_width="2dp"/>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/ticket_info_image_view_driver_profile"
+            android:layout_alignRight="@+id/ticket_info_image_view_driver_profile"
+            android:layout_marginRight="8dp"
+            android:src="@mipmap/ic_phone_large"/>
+
         <TextView
             android:id="@+id/ticket_info_text_view_driver_name"
             android:layout_width="wrap_content"
@@ -100,10 +108,10 @@
         android:layout_alignEnd="@+id/ticket_info_relative_layout_driver_info"
         android:layout_alignRight="@+id/ticket_info_relative_layout_driver_info"
         android:layout_below="@+id/ticket_info_relative_layout_driver_info"
+        android:layout_marginBottom="16dp"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="16dp">
+        android:layout_marginTop="5dp">
 
         <LinearLayout
             android:id="@+id/ticket_info_container_rider_info"

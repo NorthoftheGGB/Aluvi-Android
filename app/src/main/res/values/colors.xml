@@ -13,6 +13,8 @@
     <color name="scheduleRideButtonBackgroundExtraLight">#EAEAEA</color>
     <color name="scheduleRideButtonBackgroundExtraLightClicked">#C8C8C8</color>
 
+    <color name="navigationDrawerTextDisabledColor">#99FFFFFF</color>
+
     <color name="errorButtonBackground">#FB3341</color>
     <color name="successButtonBackground">@color/colorAccent</color>
 

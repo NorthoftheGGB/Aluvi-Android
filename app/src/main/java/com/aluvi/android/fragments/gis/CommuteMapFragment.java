@@ -1,6 +1,7 @@
 package com.aluvi.android.fragments.gis;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.aluvi.android.R;
 import com.aluvi.android.api.tickets.model.PickupPointData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
+import com.aluvi.android.helpers.eventBus.BackHomeEvent;
 import com.aluvi.android.helpers.eventBus.RefreshTicketsEvent;
 import com.aluvi.android.helpers.eventBus.SlidingPanelEvent;
 import com.aluvi.android.helpers.views.mapbox.MapBoxStateSaver;
@@ -24,6 +26,10 @@ import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.RouteDirections;
 import com.aluvi.android.model.realm.Ticket;
 import com.mapbox.mapboxsdk.api.ILatLng;
+import com.mapbox.mapboxsdk.events.MapListener;
+import com.mapbox.mapboxsdk.events.RotateEvent;
+import com.mapbox.mapboxsdk.events.ScrollEvent;
+import com.mapbox.mapboxsdk.events.ZoomEvent;
 import com.mapbox.mapboxsdk.geometry.BoundingBox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Icon;
@@ -44,6 +50,10 @@ import io.realm.RealmList;
  * Created by usama on 7/13/15.
  */
 public class CommuteMapFragment extends BaseButterFragment {
+    public interface CommuteMapListener {
+        void onMapPanned();
+    }
+
     @Bind(R.id.mapview) MapView mMapView;
     @Bind(R.id.map_text_view_commute_pending) TextView mCommutePendingTextView;
 
@@ -53,8 +63,16 @@ public class CommuteMapFragment extends BaseButterFragment {
     private InfoWindow mCurrentlyOpenedInfoWindow;
     private PathOverlay mCurrentPathOverlay;
 
+    private CommuteMapListener mMapListener;
+
     public static CommuteMapFragment newInstance() {
         return new CommuteMapFragment();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mMapListener = (CommuteMapListener) (getParentFragment() != null ? getParentFragment() : context);
     }
 
     @Override
@@ -75,6 +93,13 @@ public class CommuteMapFragment extends BaseButterFragment {
 
             mMapView.setZoom(MapBoxStateSaver.DEFAULT_ZOOM);
         }
+
+        mMapView.addListener(new PanHelper(new PanHelper.PanListener() {
+            @Override
+            public void onUserPanned() {
+                mMapListener.onMapPanned();
+            }
+        }));
     }
 
     @Override
@@ -99,6 +124,11 @@ public class CommuteMapFragment extends BaseButterFragment {
     @SuppressWarnings("unused")
     public void onEvent(SlidingPanelEvent event) {
         centerMapOnCurrentPin(event.getPanelHeight());
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(BackHomeEvent event) {
+        showInfoForCurrentMarker(event.getActiveTicket(), true);
     }
 
     private void onTicketsRefreshed(Ticket activeTicket) {
@@ -133,6 +163,10 @@ public class CommuteMapFragment extends BaseButterFragment {
     }
 
     private void plotTicketRoute(final Ticket ticket) {
+        plotTicketRoute(ticket, false);
+    }
+
+    private void plotTicketRoute(final Ticket ticket, boolean backHomeEnabled) {
         String markerText = ticket.getOriginShortName();
         if (Ticket.isTicketActive(ticket))
             markerText = "Be here at " + new SimpleDateFormat("h:mm a").format(ticket.getPickupTime());
@@ -147,22 +181,27 @@ public class CommuteMapFragment extends BaseButterFragment {
         if (destinationPlaceName != null && destinationPlaceName.contains(","))
             destinationPlaceName = destinationPlaceName.substring(0, destinationPlaceName.indexOf(","));
 
-        final Marker originMarker = new Marker(markerText, originPlaceName,
+        mCurrentlyFocusedMarker = new Marker(markerText, originPlaceName,
                 new LatLng(ticket.getOriginLatitude(), ticket.getOriginLongitude()));
-
-        if (Ticket.isTicketActive(ticket)) {
-            mCurrentlyOpenedInfoWindow = originMarker.getToolTip(mMapView);
-            originMarker.showBubble(mCurrentlyOpenedInfoWindow, mMapView, true);
-        }
-
-        originMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.pickup_marker)));
+        mCurrentlyFocusedMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.pickup_marker)));
+        showInfoForCurrentMarker(ticket, backHomeEnabled);
 
         Marker destinationMarker = new Marker(ticket.getDestinationShortName(), destinationPlaceName,
                 new LatLng(ticket.getDestinationLatitude(), ticket.getDestinationLongitude()));
         destinationMarker.setIcon(new Icon(ContextCompat.getDrawable(getActivity(), R.mipmap.dropoff_marker)));
 
-        plotRoute(originMarker, destinationMarker);
-        mCurrentlyFocusedMarker = originMarker;
+        plotRoute(mCurrentlyFocusedMarker, destinationMarker);
+    }
+
+    private void showInfoForCurrentMarker(Ticket ticket, boolean backHomeEnabled) {
+        boolean isBackHomeMode = ticket != null &&
+                CommuteManager.getInstance().isDriveHomeEnabled(ticket.getTrip());
+
+        if (mCurrentlyFocusedMarker != null &&
+                Ticket.isTicketActive(ticket) && (!isBackHomeMode || isBackHomeMode && backHomeEnabled)) {
+            mCurrentlyOpenedInfoWindow = mCurrentlyFocusedMarker.getToolTip(mMapView);
+            mCurrentlyFocusedMarker.showBubble(mCurrentlyOpenedInfoWindow, mMapView, true);
+        }
     }
 
     private void plotRoute(Route savedRoute) {
@@ -186,7 +225,7 @@ public class CommuteMapFragment extends BaseButterFragment {
         mMapView.addMarker(startMarker);
         mMapView.addMarker(endMarker);
 
-        zoomBoundingBox(startMarker, endMarker);
+//        zoomBoundingBox(startMarker, endMarker);
         RouteMappingManager.getInstance().loadRoute(startMarker.getPoint(), endMarker.getPoint(),
                 new RouteMappingManager.RouteMappingListener() {
                     @Override
@@ -277,7 +316,37 @@ public class CommuteMapFragment extends BaseButterFragment {
 
             double dy = mCurrentlyFocusedMarker.getPosition().getLatitude() - desiredCenterLoc.getLatitude();
             double newLat = currentCenterLoc.getLatitude() + dy;
-            mMapView.setCenter(new LatLng(newLat, currentCenterLoc.getLongitude()));
+            mMapView.setCenter(new LatLng(newLat, mCurrentlyFocusedMarker.getPosition().getLongitude()));
+        }
+    }
+
+    private static class PanHelper implements MapListener {
+        public interface PanListener {
+            void onUserPanned();
+        }
+
+        private PanListener mListener;
+
+        public PanHelper(PanListener mListener) {
+            this.mListener = mListener;
+        }
+
+        @Override
+        public void onScroll(ScrollEvent event) {
+            if (event.getUserAction())
+                mListener.onUserPanned();
+        }
+
+        @Override
+        public void onZoom(ZoomEvent event) {
+            if (event.getUserAction())
+                mListener.onUserPanned();
+        }
+
+        @Override
+        public void onRotate(RotateEvent event) {
+            if (event.getUserAction())
+                mListener.onUserPanned();
         }
     }
 }

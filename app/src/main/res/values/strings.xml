@@ -144,4 +144,8 @@
     <string name="skip_tutorial">Skip Tutorial</string>
     <string name="get_pickup_point">Get to the pickup point!</string>
     <string name="get_pickup_point_info">Pay close attention to your pickup spot and be sure to be <b>on time</b>. Then sit back and enjoy - your first round trip commute is on <b>US</b>! After that you pay the driver while we take c. 98 per direction, no matter the distance.</string>
+    <string name="cancel_ride_question">Cancel Ride?</string>
+    <string name="cancel_ride_confirmation">Are you cancelling both directions of your commute, or just your commute to work?</string>
+    <string name="only_work">Only to Work</string>
+    <string name="both_directions">Both Directions</string>
 </resources>

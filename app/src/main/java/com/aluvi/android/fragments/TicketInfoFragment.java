@@ -3,11 +3,13 @@ package com.aluvi.android.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.fragments.base.BaseTicketConsumerFragment;
 import com.aluvi.android.helpers.CurrencyUtils;
@@ -26,6 +27,7 @@ import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
+import com.aluvi.android.model.realm.Car;
 import com.aluvi.android.model.realm.Profile;
 import com.aluvi.android.model.realm.Rider;
 import com.aluvi.android.model.realm.Ticket;
@@ -93,8 +95,13 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             int price = getTicket().isDriving() ? getTicket().getEstimatedEarnings() : getTicket().getFixedPrice();
             mTicketPriceTextView.setText(CurrencyUtils.getFormattedDollars(price));
 
-            if (getTicket().getCar() != null) {
-                mCarNameTextView.setText(getTicket().getCar().getMake());
+            Car car = getTicket().getCar();
+            if (car != null) {
+                String carInfo = car.getMake();
+                carInfo += car.getColor() != null && !"".equals(car.getColor()) ? ", " + car.getColor() : "";
+                carInfo += car.getModel() != null && !"".equals(car.getModel()) ? ", " + car.getModel() : "";
+
+                mCarNameTextView.setText(carInfo);
                 mCarLicenseNumberTextView.setText(getTicket().getCar().getLicensePlate());
             }
 
@@ -155,35 +162,35 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                 if (rider.getId() != getTicket().getDriver().getId())
                     addRider(rider);
 
+        // Local user isn't included in riders list, so manually add him/her into the list
         if (!getTicket().isDriving()) {
             Profile userProfile = UserStateManager.getInstance().getProfile();
 
             String profilePictureUrl = userProfile.getSmallImageUrl();
             String firstName = userProfile.getFirstName();
-            addRider(firstName, profilePictureUrl);
+            String phoneNumber = userProfile.getPhone();
+            addRider(firstName, profilePictureUrl, phoneNumber);
         }
     }
 
     private void addRider(Rider rider) {
-        addRider(rider.getFirstName(), rider.getSmallImageUrl());
+        addRider(rider.getFirstName(), rider.getSmallImageUrl(), rider.getPhone());
     }
 
-    private void addRider(String firstName, String profilePictureUrl) {
+    private void addRider(String firstName, String profilePictureUrl, final String phoneNumber) {
         View riderInfoView = View.inflate(getActivity(), R.layout.layout_rider_information, null);
         ImageView riderProfileImageView = (ImageView) riderInfoView.findViewById(R.id.rider_information_image_view_profile);
         TextView riderNameTextView = (TextView) riderInfoView.findViewById(R.id.rider_information_text_view_name);
 
-        if (getTicket().isDriving()) {
-            riderProfileImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showCallTextOptions();
-                }
-            });
-        }
-
         riderNameTextView.setText(firstName);
         loadProfilePicture(profilePictureUrl, riderProfileImageView);
+        riderProfileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCallTextOptions(phoneNumber);
+            }
+        });
+
         mRiderProfilePictureContainer.addView(riderInfoView);
     }
 
@@ -199,23 +206,22 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
     @SuppressWarnings("unused")
     @OnClick(R.id.ticket_info_image_view_driver_profile)
     public void onDriveProfilePictureClicked() {
-        showCallTextOptions();
+        showCallTextOptions(getDriverPhoneNumber());
     }
 
-    private void showCallTextOptions() {
+    private void showCallTextOptions(final String phoneNumber) {
         final int CALL_POS = 0, TEXT_POS = 1;
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.contact_driver)
-                .items(R.array.contact_options)
-                .itemsCallback(new MaterialDialog.ListCallback() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.contact_driver)
+                .setItems(R.array.contact_options, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        switch (i) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
                             case CALL_POS:
-                                callNumber(getDriverPhoneNumber());
+                                callNumber(phoneNumber);
                                 break;
                             case TEXT_POS:
-                                textNumber(getDriverPhoneNumber());
+                                textNumber(phoneNumber);
                                 break;
                         }
                     }

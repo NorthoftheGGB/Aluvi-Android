@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
  * Created by usama on 7/13/15.
  */
 public abstract class BaseButterFragment extends Fragment {
-    private ArrayList<Dialog> mProgressDialogs = new ArrayList<>();
+    private ArrayList<Dialog> mDialogs = new ArrayList<>();
 
     @Nullable
     @Override
@@ -49,7 +49,7 @@ public abstract class BaseButterFragment extends Fragment {
     }
 
     public void showDefaultProgressDialog() {
-        mProgressDialogs.add(DialogUtils.showDefaultProgressDialog(getActivity(), false));
+        mDialogs.add(DialogUtils.showDefaultProgressDialog(getActivity(), false));
     }
 
     public void showCustomProgressDialog(int title, int message, boolean cancelable) {
@@ -57,14 +57,18 @@ public abstract class BaseButterFragment extends Fragment {
     }
 
     public void showCustomProgressDialog(String title, String message, boolean cancelable) {
-        mProgressDialogs.add(DialogUtils.showCustomProgressDialog(getActivity(), title, message, cancelable));
+        mDialogs.add(DialogUtils.showCustomProgressDialog(getActivity(), title, message, cancelable));
+    }
+
+    public void addDialog(Dialog d) {
+        mDialogs.add(d);
     }
 
     public void cancelProgressDialogs() {
-        for (Dialog dialog : mProgressDialogs)
+        for (Dialog dialog : mDialogs)
             dialog.cancel();
 
-        mProgressDialogs.clear();
+        mDialogs.clear();
     }
 
     @Override
