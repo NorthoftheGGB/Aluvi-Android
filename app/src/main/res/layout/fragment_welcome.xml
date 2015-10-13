@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/onboarding_tutorial_next_button"
+        android:layout_above="@+id/onboarding_welcome_next_button"
         android:gravity="center_vertical">
 
         <TextView
@@ -38,7 +38,7 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/onboarding_tutorial_next_button"
+        android:id="@+id/onboarding_welcome_next_button"
         style="@style/AluviFullWidthButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -3,7 +3,7 @@
        android:shape="rectangle">
     <gradient
         android:angle="0"
-        android:endColor="@color/aluvi_gradient_end_sign_up"
-        android:startColor="@color/aluvi_gradient_start"
+        android:endColor="@color/aluvi_gradient_6"
+        android:startColor="@color/aluvi_gradient_5"
         android:type="linear"/>
 </shape>

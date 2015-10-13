@@ -15,26 +15,26 @@ import butterknife.OnClick;
 /**
  * Created by usama on 8/7/15.
  */
-public class TutorialCompleteFragment extends BaseButterFragment {
-    public interface TutorialListener {
+public class WelcomeFragment extends BaseButterFragment {
+    public interface WelcomeListener {
         void onTutorialComplete();
     }
 
-    private TutorialListener mTutorialListener;
+    private WelcomeListener mWelcomeListener;
 
-    public static TutorialCompleteFragment newInstance() {
-        return new TutorialCompleteFragment();
+    public static WelcomeFragment newInstance() {
+        return new WelcomeFragment();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mTutorialListener = (TutorialListener) context;
+        mWelcomeListener = (WelcomeListener) context;
     }
 
     @Override
     public View getRootView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_tutorial, container, false);
+        return inflater.inflate(R.layout.fragment_welcome, container, false);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class TutorialCompleteFragment extends BaseButterFragment {
     }
 
     @SuppressWarnings("unused")
-    @OnClick(R.id.onboarding_tutorial_next_button)
+    @OnClick(R.id.onboarding_welcome_next_button)
     public void onNextButtonClicked() {
-        mTutorialListener.onTutorialComplete();
+        mWelcomeListener.onTutorialComplete();
     }
 }

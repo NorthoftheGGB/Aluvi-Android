@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/aluvi_gradient_start</color>
+    <color name="colorPrimary">@color/aluvi_gradient_1</color>
     <color name="colorPrimaryDark">@color/black</color>
     <color name="colorAccent">#2F787F</color>
 
@@ -29,14 +29,15 @@
     <color name="pathOverlayColor">#B95040</color>
 
     <color name="aluvi_background">#D1E1D7</color>
-    <color name="aluvi_gradient_start">#60c196</color>
-    <color name="aluvi_gradient_end">#388C94</color>
-    <color name="aluvi_gradient_end_sign_up">#149B70</color>
-    <color name="aluvi_gradient_end_location_select">#149A86</color>
-    <color name="aluvi_gradient_end_tutorial">#159386</color>
-    <color name="aluvi_gradient_start_darker">#40A074</color>
-    <color name="aluvi_gradient_end_darker">#266A72</color>
-    <color name="tutorial_gradient_start">#307856</color>
+
+    <color name="aluvi_gradient_1">#60c196</color>
+    <color name="aluvi_gradient_2">#388C94</color>
+    <color name="aluvi_gradient_3">#149B70</color>
+    <color name="aluvi_gradient_4">#149A86</color>
+    <color name="aluvi_gradient_5">#159386</color>
+    <color name="aluvi_gradient_6">#048275</color>
+    <color name="aluvi_gradient_7">#266A72</color>
+    <color name="aluvi_gradient_8">#307856</color>
 
     <color name="aluvi_activity_background_color">#149B70</color>
     <color name="light_white_background">#CEDFE0</color>

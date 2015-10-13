@@ -43,6 +43,7 @@ public class AluviApi implements AluviApiConstants {
     public final static String API_FILL_COMMUTER_PASS = "v2/users/fill_commuter_pass";
     public final static String API_CREATE_SUPPORT_REQUEST = "v2/users/support";
     public final static String API_EMAIL_RECEIPTS = "v2/users/receipts";
+    public final static String API_PAYOUT_REQUESTED = "v2/users/request_payout";
 
     // drivers
     public final static String API_DRIVER_REGISTRATION = "drivers/driver_registration";

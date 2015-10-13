@@ -29,8 +29,8 @@
     <string name="work">Work</string>
     <string name="home">Home</string>
 
-    <string name="trip_requested">Trip Requested</string>
-    <string name="trip_fulfilled">Trip request successful</string>
+    <string name="trip_requested">Your trip has been requested</string>
+    <string name="trip_fulfilled">Your commute to and from work has been fulfilled!</string>
     <string name="trip_unfulfilled">Trip request unsuccessful</string>
     <string name="fare_cancelled_by_rider">Trip cancelled by rider</string>
     <string name="fare_cancelled_by_driver">Trip cancelled by driver</string>
@@ -57,6 +57,8 @@
 
 
     <string name="save">Save</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="withdraw_funds">Withdraw Funds</string>
     <string name="email">Email</string>
     <string name="phone_number">Phone #</string>
     <string name="work_email">Work Email</string>
@@ -139,7 +141,7 @@
     <string name="choose_location">Choose a <b>location</b> to get picked up. Driving? Set an <b>area</b> in which you\'d be willing to pick up riders. Add your <b>work</b> location and pickup time</string>
     <string name="schedule">Schedule</string>
     <string name="schedule_info">We\'ll use those times and locations to match riders and drivers together. Rides are scheduled at 9:00 PM the night before you need to get to work.</string>
-    <string name="get_started">Swipe to left to get started with</string>
+    <string name="get_started">Swipe left to get started with</string>
     <string name="aluvi_large">Aluvi!</string>
     <string name="skip_tutorial">Skip Tutorial</string>
     <string name="get_pickup_point">Get to the pickup point!</string>
@@ -148,4 +150,8 @@
     <string name="cancel_ride_confirmation">Are you cancelling both directions of your commute, or just your commute to work?</string>
     <string name="only_work">Only to Work</string>
     <string name="both_directions">Both Directions</string>
+
+    <string name="ok_do_it">OK, Do it!</string>
+    <string name="not_now">Not Now</string>
+    <string name="withdraw_requested">Your withdrawal will be processed shortly.  You will receive a push message once funds are transfered</string>
 </resources>

@@ -5,8 +5,8 @@
                android:shape="rectangle">
             <gradient
                 android:angle="0"
-                android:endColor="@color/aluvi_gradient_end_darker"
-                android:startColor="@color/aluvi_gradient_start_darker"
+                android:endColor="@color/aluvi_gradient_7"
+                android:startColor="@color/aluvi_gradient_6"
                 android:type="linear"/>
         </shape>
     </item>
@@ -15,8 +15,8 @@
                android:shape="rectangle">
             <gradient
                 android:angle="0"
-                android:endColor="@color/aluvi_gradient_end"
-                android:startColor="@color/aluvi_gradient_start"
+                android:endColor="@color/aluvi_gradient_2"
+                android:startColor="@color/aluvi_gradient_1"
                 android:type="linear"/>
         </shape>
     </item>

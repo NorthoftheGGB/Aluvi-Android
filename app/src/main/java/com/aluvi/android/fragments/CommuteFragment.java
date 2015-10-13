@@ -111,7 +111,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
     @Override
     public void onMapPanned() {
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     @Override
