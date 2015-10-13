@@ -30,8 +30,12 @@
     <string name="home">Home</string>
 
     <string name="trip_requested">Your trip has been requested</string>
+    <string name="trip_fulfilled_title">Commuter Ride Scheduled!</string>
     <string name="trip_fulfilled">Your commute to and from work has been fulfilled!</string>
-    <string name="trip_unfulfilled">Trip request unsuccessful</string>
+    <string name="trip_complete">Your trip is complete</string>
+    <string name="trip_unfulfilled_title">Commuter Ride Not Successful</string>
+    <string name="trip_unfulfilled">We were unable to fulfill your commute to and from work</string>
+    <string name="ride_cancelled">Ride cancelled!</string>
     <string name="fare_cancelled_by_rider">Trip cancelled by rider</string>
     <string name="fare_cancelled_by_driver">Trip cancelled by driver</string>
     <string name="commute_reminder">Buzz! You haven\'t scheduled a commute for tomorrow</string>
@@ -154,4 +158,6 @@
     <string name="ok_do_it">OK, Do it!</string>
     <string name="not_now">Not Now</string>
     <string name="withdraw_requested">Your withdrawal will be processed shortly.  You will receive a push message once funds are transfered</string>
+    <string name="great">Great!</string>
+    <string name="unkown_transition"></string>
 </resources>

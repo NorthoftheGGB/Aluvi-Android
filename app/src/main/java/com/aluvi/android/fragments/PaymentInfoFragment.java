@@ -54,7 +54,23 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
 
     @Override
     public void initUI() {
-        refreshUI();
+        showDefaultProgressDialog();
+
+        // Sync profile in case receipts updated during this session
+        UserStateManager.getInstance().sync(new Callback() {
+            @Override
+            public void success() {
+                cancelProgressDialogs();
+                refreshUI();
+            }
+
+            @Override
+            public void failure(String message) {
+                cancelProgressDialogs();
+                if (getActivity() != null)
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void refreshUI() {
@@ -67,7 +83,7 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
         cardBrand = cardBrand == null ? "" : cardBrand;
         mPayWithButton.setText("Pay with " + cardBrand + " ending in " + lastFour);
 
-        String amountSpentPrefix = profile.getCommuterBalanceCents() < 0 ? "You've spent " : "You've collected ";
+        String amountSpentPrefix = profile.getCommuterBalanceCents() <= 0 ? "You've spent " : "You've collected ";
         mAmountSpentTextView.setText(amountSpentPrefix + getFormattedCommuterBalance(profile));
 
         mPayToButton.setText("Get paid to " + getWithdrawCardBrand(profile) + " ending in " + getWithdrawCardLastFour(profile));

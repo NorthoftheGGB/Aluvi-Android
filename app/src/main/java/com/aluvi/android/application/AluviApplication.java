@@ -7,6 +7,7 @@ import android.support.multidex.MultiDex;
 import com.aluvi.android.R;
 import com.aluvi.android.api.AluviApi;
 import com.aluvi.android.application.push.PushManager;
+import com.aluvi.android.helpers.GeoLocationUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.PaymentManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -14,6 +15,7 @@ import com.aluvi.android.managers.location.DriverLocationManager;
 import com.aluvi.android.managers.location.GeocodingManager;
 import com.aluvi.android.managers.location.RiderLocationManager;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.maps.model.LatLng;
 
 import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -33,7 +35,8 @@ public class AluviApplication extends Application {
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
         CommuteManager.initialize();
-        GeocodingManager.initialize(getString(R.string.mapbox_access_token));
+        GeocodingManager.initialize(getString(R.string.mapbox_access_token), new GeoLocationUtils.BoundingBox(new LatLng(42.020695, -115.497136),
+                new LatLng(32.495821, -124.110417)));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
         PaymentManager.initialize(getString(R.string.stripe_key));
