@@ -58,7 +58,8 @@ public class GeocodingApi {
                             if (locations != null) {
                                 for (int i = 0; i < locations.length; i++) {
                                     GeocodeData.GeocodedLocation location = locations[i];
-                                    out.add(addressForGeocodeLocation(location));
+                                    Address address = addressForGeocodeLocation(location);
+                                    out.add(address);
                                 }
                             }
 
@@ -95,17 +96,5 @@ public class GeocodingApi {
 
         address.setCountryName(location.getCountry());
         return address;
-    }
-
-    public static String getFormattedAddress(Address address) {
-        StringBuilder out = new StringBuilder();
-        int addressLines = Math.min(2, address.getMaxAddressLineIndex());
-        for (int i = 0; i < addressLines; i++) {
-            out.append(address.getAddressLine(i));
-            if (i + 1 < addressLines)
-                out.append(", ");
-        }
-
-        return out.toString();
     }
 }

@@ -284,6 +284,20 @@ public class UserStateManager {
         });
     }
 
+    public void withdrawFunds(final Callback callback) {
+        UsersApi.withdrawFunds(new ApiCallback() {
+            @Override
+            public void success() {
+                callback.success();
+            }
+
+            @Override
+            public void failure(int statusCode) {
+                callback.failure("Error sending withdraw request");
+            }
+        });
+    }
+
     public void sendSupportMessage(String message, final Callback callback) {
         UsersApi.sendSupportRequest(message, new ApiCallback() {
             @Override

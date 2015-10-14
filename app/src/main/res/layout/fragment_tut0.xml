@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/tutorial_gradient_start">
+                android:background="@color/aluvi_gradient_8">
 
     <TextView
         android:id="@+id/textView19"

@@ -18,7 +18,7 @@ import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.onboarding.LocationSelectFragment;
 import com.aluvi.android.fragments.onboarding.ProfilePhotoFragment;
 import com.aluvi.android.fragments.onboarding.RegisterFragment;
-import com.aluvi.android.fragments.onboarding.TutorialCompleteFragment;
+import com.aluvi.android.fragments.onboarding.WelcomeFragment;
 import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.CommuteManager;
 import com.aluvi.android.managers.UserStateManager;
@@ -38,7 +38,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         RegisterFragment.RegistrationListener,
         LocationSelectFragment.LocationSelectedListener,
         ProfilePhotoFragment.AboutUserListener,
-        TutorialCompleteFragment.TutorialListener {
+        WelcomeFragment.WelcomeListener {
 
     @Bind(R.id.onboarding_root_container) View mRootView;
     private Dialog mDefaultProgressDialog;
@@ -147,7 +147,7 @@ public class OnboardingActivity extends BaseButterActivity implements
         mRegistrationData.setPassword(mPassword);
 
         attachOnboardingSlideAnimation(getSupportFragmentManager().beginTransaction())
-                .replace(R.id.onboarding_root_container, TutorialCompleteFragment.newInstance())
+                .replace(R.id.onboarding_root_container, WelcomeFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }

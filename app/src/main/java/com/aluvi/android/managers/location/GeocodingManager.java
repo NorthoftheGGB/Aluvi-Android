@@ -3,7 +3,9 @@ package com.aluvi.android.managers.location;
 import android.location.Address;
 
 import com.aluvi.android.api.gis.GeocodingApi;
+import com.aluvi.android.helpers.GeoLocationUtils;
 import com.aluvi.android.managers.callbacks.DataCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -13,17 +15,23 @@ import java.util.List;
 public class GeocodingManager {
     private static GeocodingManager mInstance;
     private String mToken;
+    private GeoLocationUtils.BoundingBox mBoundingBox;
 
     public static void initialize(String mapBoxToken) {
-        mInstance = new GeocodingManager(mapBoxToken);
+        initialize(mapBoxToken, null);
+    }
+
+    public static void initialize(String mapBoxToken, GeoLocationUtils.BoundingBox boundingBox) {
+        mInstance = new GeocodingManager(mapBoxToken, boundingBox);
     }
 
     public static GeocodingManager getInstance() {
         return mInstance;
     }
 
-    private GeocodingManager(String mapBoxToken) {
+    private GeocodingManager(String mapBoxToken, GeoLocationUtils.BoundingBox boundingBox) {
         mToken = mapBoxToken;
+        mBoundingBox = boundingBox;
     }
 
     public void getAddressesForName(String name, final DataCallback<List<Address>> addressCallback) {
@@ -32,23 +40,6 @@ public class GeocodingManager {
 
     public void getAddressesForLocation(double lat, double lon, final DataCallback<List<Address>> addressCallback) {
         GeocodingApi.getAddressesForLocation(lat, lon, new GeoCodingCallback(addressCallback));
-    }
-
-    public void getAddressForLocation(double lat, double lon, final DataCallback<Address> addressDataCallback) {
-        getAddressesForLocation(lat, lon, new DataCallback<List<Address>>() {
-            @Override
-            public void success(List<Address> result) {
-                if (result.size() > 0)
-                    addressDataCallback.success(result.get(0));
-                else
-                    addressDataCallback.failure("No addresses");
-            }
-
-            @Override
-            public void failure(String message) {
-                addressDataCallback.failure(message);
-            }
-        });
     }
 
     private class GeoCodingCallback implements GeocodingApi.GeocodingApiCallback {
@@ -65,6 +56,16 @@ public class GeocodingManager {
 
         @Override
         public void onAddressesFound(List<Address> data) {
+            if (mBoundingBox != null && data != null) {
+                for (int i = 0; i < data.size(); i++) {
+                    LatLng loc = new LatLng(data.get(i).getLatitude(), data.get(i).getLongitude());
+                    if (!mBoundingBox.contains(loc)) {
+                        data.remove(i);
+                        i--;
+                    }
+                }
+            }
+
             mAddressCallback.success(data);
         }
     }

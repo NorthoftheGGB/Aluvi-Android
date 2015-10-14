@@ -1,6 +1,6 @@
 package com.aluvi.android.fragments;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -58,9 +58,9 @@ public class ProfileFragment extends BaseButterFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mListener = (ProfileListener) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mListener = (ProfileListener) context;
     }
 
     @Override

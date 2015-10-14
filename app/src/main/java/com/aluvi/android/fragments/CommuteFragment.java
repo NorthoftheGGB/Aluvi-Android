@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.aluvi.android.R;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
@@ -50,6 +49,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
+    @Bind(R.id.commute_fragment_ticket_info_container) View mSlidingPanelView;
 
     private Ticket mCurrentTicket;
     private OnMapEventListener mEventListener;
@@ -88,6 +88,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         if (getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info_container) == null)
             getChildFragmentManager().beginTransaction().replace(R.id.commute_fragment_ticket_info,
                     TicketInfoFragment.newInstance()).commit();
+
+        mSlidingPanelView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -111,7 +113,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
     @Override
     public void onMapPanned() {
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        if (Ticket.isTicketActive(mCurrentTicket))
+            mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     @Override
@@ -164,21 +167,22 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {
+                cancelProgressDialogs();
                 if (getView() != null)
                     onTicketsRefreshed(stateTransitions);
-                cancelProgressDialogs();
             }
 
             @Override
             public void failure(String message) {
+                cancelProgressDialogs();
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-                cancelProgressDialogs();
             }
         });
     }
 
     private void onTicketsRefreshed(List<TicketStateTransition> transitions) {
+        mSlidingPanelView.setVisibility(View.VISIBLE);
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket();
         handleTicketStateTransitions(transitions);
 
@@ -203,13 +207,15 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             HashMap<String, String> shownTransitions = new HashMap<>();
             for (TicketStateTransition transition : transitions) {
                 if (shownTransitions.get(transition.getOldState()) == null) {
-                    currTransitionDialog = showTransitionDialog(transition, currTransitionDialog);
+                    currTransitionDialog = buildTransitionDialog(transition, currTransitionDialog);
                     shownTransitions.put(transition.getOldState(), transition.getNewState());
                 }
             }
 
-            if (currTransitionDialog != null)
+            if (currTransitionDialog != null) {
                 currTransitionDialog.show();
+                addDialog(currTransitionDialog);
+            }
         }
     }
 
@@ -271,67 +277,93 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         onTicketScheduled(mCurrentTicket, true);
     }
 
-    private MaterialDialog showTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {
-        return new MaterialDialog.Builder(getActivity())
-                .title(R.string.ticket_updated)
-                .content(getMessageForTransition(transition))
-                .positiveText(android.R.string.ok)
-                .negativeText(android.R.string.no)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onAny(MaterialDialog dialog) {
-                        super.onAny(dialog);
-                        if (nextDialog != null)
-                            nextDialog.show();
-                    }
-                })
-                .build();
+    private Dialog buildTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {
+        TransitionMessageHelper messageHelper = getMessageResouceForTransition(transition);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setPositiveButton(messageHelper.getPositiveText() != -1 ? messageHelper.getPositiveText() : android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (nextDialog != null)
+                                    nextDialog.show();
+                            }
+                        });
+
+        if (messageHelper.getTitle() != -1)
+            builder.setTitle(messageHelper.getTitle() != -1 ? messageHelper.getTitle() : R.string.ticket_updated);
+
+        if (messageHelper.getMessage() != -1)
+            builder.setMessage(messageHelper.getMessage());
+
+        if (messageHelper.getNegativeText() != -1)
+            builder.setNegativeButton(messageHelper.getNegativeText(), null);
+        return builder.create();
     }
 
-    private String getMessageForTransition(TicketStateTransition transition) {
-        int res = getMessageResouceForTransition(transition);
-        return res != -1 ? getString(res) : null;
-    }
-
-    private int getMessageResouceForTransition(TicketStateTransition transition) {
-        String oldState = transition.getOldState();
+    private TransitionMessageHelper getMessageResouceForTransition(TicketStateTransition transition) {
         String newState = transition.getNewState();
 
-        if (newState == null || oldState == null) {
-            return getIllDefinedTransitionMessage(newState);
-        } else if (oldState.equals(Ticket.STATE_REQUESTED)) {
-            if (newState.equals(Ticket.STATE_COMMUTE_SCHEDULER_FAILED)) {
-                return R.string.unable_schedule_commute;
-            } else if (Ticket.isTicketActive(newState)) {
-                return R.string.trip_fulfilled;
-            }
-        } else if (Ticket.isTicketCancelled(newState)) {
-            return R.string.ticket_cancelled;
-        } else {
-            return getIllDefinedTransitionMessage(newState);
-        }
-
-        return -1;
-    }
-
-    private int getIllDefinedTransitionMessage(String newState) {
         switch (newState) {
+            case Ticket.STATE_COMMUTE_SCHEDULER_FAILED:
+                return new TransitionMessageHelper(R.string.trip_unfulfilled_title, R.string.trip_unfulfilled, R.string.great, -1);
             case Ticket.STATE_REQUESTED:
-                return R.string.trip_requested;
+                return new TransitionMessageHelper(R.string.trip_requested, -1, R.string.great, -1);
             case Ticket.STATE_SCHEDULED:
-            case Ticket.STATE_IN_PROGRESS:
-            case Ticket.STATE_STARTED:
-                return R.string.trip_fulfilled;
+                return new TransitionMessageHelper(R.string.trip_fulfilled_title, R.string.trip_fulfilled, R.string.great, -1);
             case Ticket.STATE_ABORTED:
             case Ticket.STATE_CANCELLED:
             case Ticket.STATE_RIDER_CANCELLED:
+                return new TransitionMessageHelper(R.string.ride_cancelled, R.string.fare_cancelled_by_rider, android.R.string.ok, -1);
             case Ticket.STATE_DRIVER_CANCELLED:
-                return R.string.ticket_cancelled;
+                return new TransitionMessageHelper(R.string.ride_cancelled, R.string.fare_cancelled_by_driver, android.R.string.ok, -1);
             case Ticket.STATE_COMPLETE:
-                return R.string.ticket_completed;
+                return new TransitionMessageHelper(R.string.trip_complete, -1, R.string.great, -1);
         }
 
-        return -1;
+        return new TransitionMessageHelper(-1, -1, -1, -1);
+    }
+
+    private static class TransitionMessageHelper {
+        private int title = -1, message = -1, positiveText = -1, negativeText = -1;
+
+        public TransitionMessageHelper(int title, int message, int positiveText, int negativeText) {
+            this.title = title;
+            this.message = message;
+            this.positiveText = positiveText;
+            this.negativeText = negativeText;
+        }
+
+        public int getTitle() {
+            return title;
+        }
+
+        public void setTitle(int title) {
+            this.title = title;
+        }
+
+        public int getMessage() {
+            return message;
+        }
+
+        public void setMessage(int message) {
+            this.message = message;
+        }
+
+        public int getPositiveText() {
+            return positiveText;
+        }
+
+        public void setPositiveText(int positiveText) {
+            this.positiveText = positiveText;
+        }
+
+        public int getNegativeText() {
+            return negativeText;
+        }
+
+        public void setNegativeText(int negativeText) {
+            this.negativeText = negativeText;
+        }
     }
 
     private abstract class SimpleOnPanelSlideListener implements SlidingUpPanelLayout.PanelSlideListener {

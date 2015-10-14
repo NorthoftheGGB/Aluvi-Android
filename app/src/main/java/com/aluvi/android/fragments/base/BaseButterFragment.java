@@ -60,8 +60,9 @@ public abstract class BaseButterFragment extends Fragment {
         mDialogs.add(DialogUtils.showCustomProgressDialog(getActivity(), title, message, cancelable));
     }
 
-    public void addDialog(Dialog d) {
+    public Dialog addDialog(Dialog d) {
         mDialogs.add(d);
+        return d;
     }
 
     public void cancelProgressDialogs() {
