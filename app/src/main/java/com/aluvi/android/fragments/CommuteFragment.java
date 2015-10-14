@@ -49,6 +49,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     @Bind(R.id.sliding_layout) SlidingUpPanelLayout mSlidingLayout;
+    @Bind(R.id.commute_fragment_ticket_info_container) View mSlidingPanelView;
 
     private Ticket mCurrentTicket;
     private OnMapEventListener mEventListener;
@@ -87,6 +88,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         if (getChildFragmentManager().findFragmentById(R.id.commute_fragment_ticket_info_container) == null)
             getChildFragmentManager().beginTransaction().replace(R.id.commute_fragment_ticket_info,
                     TicketInfoFragment.newInstance()).commit();
+
+        mSlidingPanelView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -110,7 +113,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
     @Override
     public void onMapPanned() {
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        if (Ticket.isTicketActive(mCurrentTicket))
+            mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     @Override
@@ -163,21 +167,22 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         CommuteManager.getInstance().refreshTickets(new DataCallback<List<TicketStateTransition>>() {
             @Override
             public void success(List<TicketStateTransition> stateTransitions) {
+                cancelProgressDialogs();
                 if (getView() != null)
                     onTicketsRefreshed(stateTransitions);
-                cancelProgressDialogs();
             }
 
             @Override
             public void failure(String message) {
+                cancelProgressDialogs();
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-                cancelProgressDialogs();
             }
         });
     }
 
     private void onTicketsRefreshed(List<TicketStateTransition> transitions) {
+        mSlidingPanelView.setVisibility(View.VISIBLE);
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket();
         handleTicketStateTransitions(transitions);
 
@@ -208,8 +213,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             }
 
             if (currTransitionDialog != null) {
-                addDialog(currTransitionDialog);
                 currTransitionDialog.show();
+                addDialog(currTransitionDialog);
             }
         }
     }
@@ -275,7 +280,6 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     private Dialog buildTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {
         TransitionMessageHelper messageHelper = getMessageResouceForTransition(transition);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setTitle(messageHelper.getTitle() != -1 ? messageHelper.getTitle() : R.string.ticket_updated)
                 .setPositiveButton(messageHelper.getPositiveText() != -1 ? messageHelper.getPositiveText() : android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -284,6 +288,9 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                                     nextDialog.show();
                             }
                         });
+
+        if (messageHelper.getTitle() != -1)
+            builder.setTitle(messageHelper.getTitle() != -1 ? messageHelper.getTitle() : R.string.ticket_updated);
 
         if (messageHelper.getMessage() != -1)
             builder.setMessage(messageHelper.getMessage());

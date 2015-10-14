@@ -56,10 +56,12 @@ android {
 
 repositories {
     mavenCentral()
-    maven { url 'https://maven.fabric.io/public' }
+    maven {
+        url 'https://maven.fabric.io/public'
+    }
+
     maven { url "https://jitpack.io" }
     maven { url "http://dl.bintray.com/populov/maven" }
-    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local' }
 }
 
 dependencies {
@@ -95,7 +97,7 @@ dependencies {
     // Misc utils
     compile 'com.stripe:stripe-android:+'
     compile 'joda-time:joda-time:2.3'
-    compile 'io.realm:realm-android:0.83.1-SNAPSHOT'
+    compile 'io.realm:realm-android:0.82.1'
 
     // Network Utils
     compile('org.apache.httpcomponents:httpmime:4.3.6') {
