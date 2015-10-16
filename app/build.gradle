@@ -42,6 +42,10 @@ android {
             minSdkVersion 10
             applicationId 'com.aluvi.android.dev'
         }
+        alpha {
+            minSdkVersion 10
+            applicationId 'com.aluvi.android'
+        }
         nightly {
             ext.betaDistributionEmails="u3amar@hotmail.com, gwen.mckay@aluviapp.com, " +
                     "william.obrien@aluviapp.com, mateo.porter@aluviapp.com, matthew.xi@aluviapp.com"
