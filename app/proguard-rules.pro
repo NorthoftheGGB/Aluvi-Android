@@ -29,10 +29,37 @@
 
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
+
+-keepattributes *Annotation*,EnclosingMethod,Signature
+-keepnames class com.fasterxml.jackson.** { *; }
+ -dontwarn com.fasterxml.jackson.databind.**
+ -keep class org.codehaus.** { *; }
+ -keepclassmembers public final enum org.codehaus.jackson.annotate.JsonAutoDetect$Visibility {
+ public static final org.codehaus.jackson.annotate.JsonAutoDetect$Visibility *; }
+
+-keep public class ** {
+  public void set*(***);
+  public *** get*();
+}
+
 -dontwarn javax.**
 -dontwarn io.realm.**
 
--keep class io.card.**
--keepclassmembers class io.card.** {
-    *;
-}
+-dontwarn com.squareup.okhttp.**
+
+-libraryjars <java.home>/lib/rt.jar
+
+-dontwarn javax.annotation.**
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+
+-dontwarn org.joda.convert.**
+-dontwarn org.joda.time.**
+-keep class org.joda.time.** { *; }
+-keep interface org.joda.time.** { *; }
+
+-dontwarn org.apache.http.**
+-dontwarn android.net.http.AndroidHttpClient
+-dontwarn com.google.android.gms.**
+-dontwarn com.android.volley.toolbox.**
+-dontwarn com.viewpagerindicator.**
+-dontwarn com.almeros.android.multitouch.TwoFingerGestureDetector

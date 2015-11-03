@@ -332,12 +332,14 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
 
     @Override
     public void onLocationSelected(TicketLocation address, LocationSelectDialogFragment fragment) {
-        if (fragment.getTag().equals(FROM_LOCATION_TAG)) {
-            mFromButton.setText(address.getPlaceName());
-            mStartLocation = address;
-        } else {
-            mToButton.setText(address.getPlaceName());
-            mEndLocation = address;
+        if (address != null) {
+            if (fragment.getTag().equals(FROM_LOCATION_TAG)) {
+                mFromButton.setText(address.getPlaceName());
+                mStartLocation = address;
+            } else {
+                mToButton.setText(address.getPlaceName());
+                mEndLocation = address;
+            }
         }
     }
 

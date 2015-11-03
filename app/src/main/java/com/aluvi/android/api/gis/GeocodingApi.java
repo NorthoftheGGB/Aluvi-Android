@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.spothero.volley.JacksonRequestListener;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -52,14 +53,16 @@ public class GeocodingApi {
                 new JacksonRequestListener<GeocodeData>() {
                     @Override
                     public void onResponse(GeocodeData response, int statusCode, VolleyError error) {
-                        if (statusCode == 200) {
+                        if (statusCode == HttpURLConnection.HTTP_OK) {
                             List<Address> out = new ArrayList<>();
-                            GeocodeData.GeocodedLocation[] locations = response.getLocations();
-                            if (locations != null) {
-                                for (int i = 0; i < locations.length; i++) {
-                                    GeocodeData.GeocodedLocation location = locations[i];
-                                    Address address = addressForGeocodeLocation(location);
-                                    out.add(address);
+                            if (response != null) {
+                                GeocodeData.GeocodedLocation[] locations = response.getLocations();
+                                if (locations != null) {
+                                    for (int i = 0; i < locations.length; i++) {
+                                        GeocodeData.GeocodedLocation location = locations[i];
+                                        Address address = addressForGeocodeLocation(location);
+                                        out.add(address);
+                                    }
                                 }
                             }
 
