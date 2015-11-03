@@ -35,8 +35,9 @@ public class AluviApplication extends Application {
         AluviApi.initialize(this);
         UserStateManager.initialize(this);
         CommuteManager.initialize();
-        GeocodingManager.initialize(getString(R.string.mapbox_access_token), new GeoLocationUtils.BoundingBox(new LatLng(42.020695, -115.497136),
-                new LatLng(32.495821, -124.110417)));
+        GeocodingManager.initialize(getString(R.string.mapbox_access_token),
+                new GeoLocationUtils.BoundingBox(new LatLng(49.419428, -60.254704),
+                new LatLng(25.851146, -125.821106)));
         DriverLocationManager.initialize(this);
         RiderLocationManager.initialize(this);
         PaymentManager.initialize(getString(R.string.stripe_key));
