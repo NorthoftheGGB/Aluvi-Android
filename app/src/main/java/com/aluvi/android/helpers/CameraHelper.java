@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.aluvi.android.R;
 import com.aluvi.android.helpers.views.CameraImageRotationUtils;
 
 import java.io.File;
@@ -70,43 +71,71 @@ public class CameraHelper {
     }
 
     public boolean takePictureCamera(Activity activity) {
-        Intent pictureIntent = getTakePictureIntent(activity);
-        if (pictureIntent != null) {
-            activity.startActivityForResult(pictureIntent, PICTURE_CAPTURE_REQ_CODE);
-            return true;
+        if (checkCameraPermissions(activity)) {
+            Intent pictureIntent = getTakePictureIntent();
+            if (pictureIntent != null) {
+                activity.startActivityForResult(pictureIntent, PICTURE_CAPTURE_REQ_CODE);
+                return true;
+            }
         }
 
         return false;
     }
 
     public boolean takePictureCamera(Fragment fragment) {
-        Intent pictureIntent = getTakePictureIntent(fragment.getActivity());
-        if (pictureIntent != null) {
-            fragment.startActivityForResult(pictureIntent, PICTURE_CAPTURE_REQ_CODE);
-            return true;
+        if (checkCameraPermissions(fragment)) {
+            Intent pictureIntent = getTakePictureIntent();
+            if (pictureIntent != null) {
+                fragment.startActivityForResult(pictureIntent, PICTURE_CAPTURE_REQ_CODE);
+                return true;
+            }
         }
 
         return false;
     }
 
-    private Intent getTakePictureIntent(Activity activity) {
-        if (checkPermissionForCamera()) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
-                File photoFile = createImageFile();
-                mCurrentPhotoPath = photoFile.getAbsolutePath();
+    private Intent getTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
+            File photoFile = createImageFile();
+            mCurrentPhotoPath = photoFile.getAbsolutePath();
 
-                if (photoFile != null) {
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                            Uri.fromFile(photoFile));
-                    return takePictureIntent;
-                }
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                return takePictureIntent;
             }
-        } else {
-            requestPermissionForCamera(activity);
         }
 
         return null;
+    }
+
+    private boolean checkCameraPermissions(Fragment fragment) {
+        if (checkPermissionForCamera()) {
+            if (!checkPermissionForExternalStorage()) {
+                requestPermissionForExternalStorage(fragment, CAMERA_PERMISSION_REQUEST_CODE);
+                return false;
+            }
+        } else {
+            requestPermissionForCamera(fragment);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkCameraPermissions(Activity activity) {
+        if (checkPermissionForCamera()) {
+            if (!checkPermissionForExternalStorage()) {
+                requestPermissionForExternalStorage(activity);
+                return false;
+            }
+        } else {
+            requestPermissionForCamera(activity);
+            return false;
+        }
+
+        return true;
     }
 
     public void takePictureGallery(Activity activity) {
@@ -121,7 +150,7 @@ public class CameraHelper {
         if (checkPermissionForExternalStorage()) {
             fragment.startActivityForResult(getGalleryPictureIntent(), GALLERY_REQ_CODE);
         } else {
-            requestPermissionForExternalStorage(fragment.getActivity());
+            requestPermissionForExternalStorage(fragment);
         }
     }
 
@@ -145,6 +174,22 @@ public class CameraHelper {
                 mCurrentPhotoPath = getRealPathFromURI(mContext, mCurrentPhotoUri);
                 loadBitmap(mCurrentPhotoPath, pictureLoadCallback);
             }
+        }
+    }
+
+    public void onRequestPermissionsResult(Fragment fragment, int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE) {
+            takePictureGallery(fragment);
+        } else if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            takePictureCamera(fragment);
+        }
+    }
+
+    public void onRequestPermissionsResult(Activity activity, int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE) {
+            takePictureGallery(activity);
+        } else if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            takePictureCamera(activity);
         }
     }
 
@@ -275,19 +320,44 @@ public class CameraHelper {
     }
 
     public void requestPermissionForExternalStorage(Activity activity) {
+        requestPermissionForExternalStorage(activity, EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    public void requestPermissionForExternalStorage(Activity activity, int reqCode) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(activity, "External Storage permission needed.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.external_storage_permission, Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
+                    reqCode);
+        }
+    }
+
+    public void requestPermissionForExternalStorage(Fragment fragment) {
+        requestPermissionForExternalStorage(fragment, EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE);
+    }
+
+    public void requestPermissionForExternalStorage(Fragment fragment, int reqCode) {
+        if (fragment.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Toast.makeText(fragment.getContext(), R.string.external_storage_permission, Toast.LENGTH_LONG).show();
+        } else {
+            fragment.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    reqCode);
         }
     }
 
     public void requestPermissionForCamera(Activity activity) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
-            Toast.makeText(activity, "Camera permission needed.", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, R.string.camera_permission, Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    public void requestPermissionForCamera(Fragment fragment) {
+        if (fragment.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+            Toast.makeText(fragment.getContext(), R.string.camera_permission, Toast.LENGTH_LONG).show();
+        } else {
+            fragment.requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
         }
     }
 }

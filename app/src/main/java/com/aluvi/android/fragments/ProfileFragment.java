@@ -238,6 +238,12 @@ public class ProfileFragment extends BaseButterFragment {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mCameraHelper.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
     private void updateSavedProfilePhoto(String profilePicturePath) {
         Profile profileToEdit = UserStateManager.getInstance().getProfile();
         profileToEdit.setProfilePicturePath(profilePicturePath);
