@@ -305,7 +305,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
 
         switch (newState) {
             case Ticket.STATE_COMMUTE_SCHEDULER_FAILED:
-                return new TransitionMessageHelper(R.string.trip_unfulfilled_title, R.string.trip_unfulfilled, R.string.great, -1);
+                return new TransitionMessageHelper(R.string.trip_unfulfilled_title,
+                        R.string.trip_unfulfilled, android.R.string.ok, -1);
             case Ticket.STATE_REQUESTED:
                 return new TransitionMessageHelper(R.string.trip_requested, -1, R.string.great, -1);
             case Ticket.STATE_SCHEDULED:
