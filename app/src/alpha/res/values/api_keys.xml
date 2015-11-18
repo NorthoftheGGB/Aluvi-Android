@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="gcm_sender_id">478600070499</string>
+    <string name="stripe_key">pk_live_ixJ9Hnt8RsUarfkDICgySIuL</string>
 </resources>

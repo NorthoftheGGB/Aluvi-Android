@@ -12,7 +12,6 @@ import android.widget.EditText;
 import com.aluvi.android.R;
 import com.aluvi.android.api.users.models.ProfileData;
 import com.aluvi.android.fragments.base.BaseButterFragment;
-import com.aluvi.android.helpers.ProfileUtils;
 import com.aluvi.android.helpers.views.FormUtils;
 import com.aluvi.android.helpers.views.FormValidator;
 
@@ -73,7 +72,6 @@ public class RegisterFragment extends BaseButterFragment {
     @Override
     public void initUI() {
         mPhoneNumberEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-        mPhoneNumberEditText.setText(ProfileUtils.getUSUserPhoneNumber(getActivity()));
     }
 
     @SuppressWarnings("unused")

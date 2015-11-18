@@ -39,7 +39,7 @@ public class AluviAuthMultipartRequest<T> extends AluviAuthenticatedRequest<T> {
             ContentType contentType = null;
             String fileName = entry.getValue().getName();
             if (fileName.contains("jpg") || fileName.contains("jpeg"))
-                contentType = ContentType.create("image/jpeg");
+                contentType = ContentType.create("image/jpg");
             else
                 contentType = ContentType.MULTIPART_FORM_DATA;
             mMultipartEntityBuilder.addBinaryBody(entry.getKey(), entry.getValue(), contentType, fileName);
