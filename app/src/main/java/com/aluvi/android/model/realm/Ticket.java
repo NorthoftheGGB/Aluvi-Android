@@ -3,11 +3,15 @@ package com.aluvi.android.model.realm;
 import com.aluvi.android.api.tickets.model.RiderData;
 import com.aluvi.android.api.tickets.model.TicketData;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -60,13 +64,13 @@ public class Ticket extends RealmObject {
     private Trip trip;
     private RealmList<Rider> riders;
 
-    public static Ticket buildNewTicket(Date rideDate, Route route) {
+    public static Ticket buildNewTicket(LocalDate rideDate, Route route) {
         return buildNewTicket(rideDate, route, false);
     }
 
-    public static Ticket buildNewTicket(Date rideDate, Route route, boolean reverseDirection) {
+    public static Ticket buildNewTicket(LocalDate rideDate, Route route, boolean reverseDirection) {
         Ticket ticket = new Ticket();
-        ticket.setRideDate(rideDate);
+        ticket.setRideDate(rideDate.toDate());
 
         RealmLatLng origin = reverseDirection ? route.getDestination() : route.getOrigin();
         RealmLatLng destination = reverseDirection ? route.getOrigin() : route.getDestination();
@@ -84,11 +88,17 @@ public class Ticket extends RealmObject {
         int hour = reverseDirection ? Route.getHour(route.getReturnTime()) : Route.getHour(route.getPickupTime());
         int minute = reverseDirection ? Route.getMinute(route.getReturnTime()) : Route.getMinute(route.getPickupTime());
 
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.setTime(rideDate);
-        cal.add(Calendar.HOUR_OF_DAY, hour);
-        cal.add(Calendar.MINUTE, minute);
-        ticket.setPickupTime(cal.getTime());
+        LocalTime localTime = new LocalTime(hour, minute);
+        DateTime dateTime = rideDate.toDateTime(localTime, DateTimeZone.forOffsetHours(-8));
+
+        //Calendar cal = GregorianCalendar.getInstance();
+        //cal.setTimeZone(TimeZone.getTimeZone("PST"));
+        //cal.setTime(rideDate);
+        //cal.add(Calendar.HOUR_OF_DAY, hour);
+        //cal.add(Calendar.MINUTE, minute);
+        //ticket.setPickupTime(cal.getTime());
+        Date pickupTime = dateTime.toDate();
+        ticket.setPickupTime(pickupTime);
         ticket.setLastUpdated(new Date());
         return ticket;
     }

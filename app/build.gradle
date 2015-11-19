@@ -26,8 +26,8 @@ android {
         applicationId "com.aluvi.android"
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 9
-        versionName "2.1"
+        versionCode 11
+        versionName "2.3"
         multiDexEnabled true
     }
     buildTypes {
@@ -102,7 +102,7 @@ dependencies {
     compile 'fr.avianey.com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.stripe:stripe-android:+'
     compile 'joda-time:joda-time:2.3'
-    compile 'io.realm:realm-android:0.82.1'
+    compile 'io.realm:realm-android:0.84.2'
     compile 'com.spothero.volley:volley-jackson-extension:1.0.1'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'

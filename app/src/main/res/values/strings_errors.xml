@@ -29,4 +29,6 @@
     <string name="ticket_cancelled">Ticket cancelled</string>
     <string name="ticket_completed">Ticket completed</string>
     <string name="full_name">Please enter your full name</string>
+    <string name="external_storage_permission">External Storage permission required. Please enable from phone settings.</string>
+    <string name="camera_permission">Camera permission needed. Please enable from phone settings</string>
 </resources>

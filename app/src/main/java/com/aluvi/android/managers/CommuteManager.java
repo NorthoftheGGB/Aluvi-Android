@@ -19,6 +19,7 @@ import com.aluvi.android.model.realm.Route;
 import com.aluvi.android.model.realm.Ticket;
 import com.aluvi.android.model.realm.Trip;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -188,12 +189,10 @@ public class CommuteManager {
             return;
         }
 
-        Date rideDate = new LocalDate()
-                .plus(Period.days(1)).toDateTimeAtStartOfDay()
-                .toDateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")))
-                .toDate();
+        LocalDate rideDate = new LocalDate().plusDays(1);
+        Date date = rideDate.toDate();
 
-        if (!checkExistingTickets(rideDate))
+        if (!checkExistingTickets(date))
             throw new UserRecoverableSystemError("There are already rides requested or scheduled for tomorrow. " +
                     "This is a system error but can be recovered by canceling your commuter rides and requesting again.");
 

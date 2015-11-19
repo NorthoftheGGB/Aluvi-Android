@@ -110,6 +110,12 @@ public class ProfilePhotoFragment extends BaseButterFragment {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mCameraHelper.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
     public void updateProfilePicture(Bitmap bitmap) {
         if (bitmap != null && mProfilePictureView != null) {
             mProfilePictureView.setImageBitmap(bitmap);
