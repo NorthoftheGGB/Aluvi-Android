@@ -1,5 +1,6 @@
 package com.aluvi.android.fragments;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.aluvi.android.api.users.models.ReceiptData;
 import com.aluvi.android.application.AluviRealm;
 import com.aluvi.android.fragments.base.BaseButterFragment;
 import com.aluvi.android.helpers.CurrencyUtils;
+import com.aluvi.android.helpers.views.DialogUtils;
 import com.aluvi.android.managers.PaymentManager;
 import com.aluvi.android.managers.UserStateManager;
 import com.aluvi.android.managers.callbacks.Callback;
@@ -41,6 +43,9 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
     @Bind(R.id.payment_info_button_pay_withdraw) Button mPayToButton;
     @Bind(R.id.payment_info_view_divider) View mDivider;
     @Bind(R.id.payment_info_text_view_last_transaction) TextView mLastTransactionDateTextView;
+
+
+    private Dialog mDefaultProgressDialog;
 
     public static PaymentInfoFragment newInstance() {
         return new PaymentInfoFragment();
@@ -187,6 +192,7 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
             profile.setRecipientDebitCardToken(mCardWithdrawToken);
         realm.commitTransaction();
 
+        mDefaultProgressDialog = DialogUtils.showDefaultProgressDialog(getActivity(), false);
         UserStateManager.getInstance().saveProfile(new Callback() {
             @Override
             public void success() {
@@ -194,12 +200,18 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
                     Snackbar.make(getView(), R.string.profile_saved, Snackbar.LENGTH_SHORT).show();
                     refreshUI();
                 }
+
+                if (mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
             }
 
             @Override
             public void failure(String message) {
                 if (getView() != null)
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+
+                if (mDefaultProgressDialog != null)
+                    mDefaultProgressDialog.cancel();
             }
         });
     }
