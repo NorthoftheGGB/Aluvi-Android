@@ -50,11 +50,15 @@ public class NavigationDrawerHeaderFragment extends BaseButterFragment {
             String fullName = profile.getFirstName() + " " + profile.getLastName();
             mUserNameTextView.setText(fullName);
 
-            Picasso.with(getActivity()).load(profile.getSmallImageUrl())
-                    .fit().centerCrop()
-                    .placeholder(R.mipmap.profile_picture_placeholder)
-                    .error(R.mipmap.profile_picture_placeholder)
-                    .into(mProfilePictureImageView);
+            String smallImageUrl = profile.getSmallImageUrl();
+
+            if(smallImageUrl != null) {
+                Picasso.with(getActivity()).load(profile.getSmallImageUrl())
+                        .fit().centerCrop()
+                        .placeholder(R.mipmap.profile_picture_placeholder)
+                        .error(R.mipmap.profile_picture_placeholder)
+                        .into(mProfilePictureImageView);
+            }
         }
 
         refreshUI = false;
