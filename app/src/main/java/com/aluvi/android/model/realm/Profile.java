@@ -61,10 +61,10 @@ public class Profile extends RealmObject {
     @JsonProperty("bank_account_name")
     private String bankAccountName;
 
-    @JsonProperty("smallImageUrl")
+    @JsonProperty("image_small")
     private String smallImageUrl;
 
-    @JsonProperty("largeImageUrl")
+    @JsonProperty("image_large")
     private String largeImageUrl;
 
     @JsonProperty("car")
