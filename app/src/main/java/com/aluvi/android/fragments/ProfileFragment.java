@@ -220,7 +220,9 @@ public class ProfileFragment extends BaseButterFragment {
     @SuppressWarnings("unused")
     @OnClick(R.id.profile_image_view)
     public void onProfilePictureClicked() {
-        mCameraHelper.takePictureGallery(this);
+        if (!mCameraHelper.takePictureCamera(this)) {
+            Snackbar.make(getView(), R.string.camera_unavailable, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -250,10 +252,12 @@ public class ProfileFragment extends BaseButterFragment {
     }
 
     public boolean isFormValid() {
-        return new FormValidator(getString(R.string.all_fields_required))
+        FormValidator validator =  new FormValidator(getString(R.string.all_fields_required))
                 .addField(mEmailEditText, getString(R.string.error_invalid_email), FormUtils.getEmailValidator())
-                .addField(mWorkEmailEditText, getString(R.string.error_invalid_email), FormUtils.getEmailValidator())
-                .addField(mPasswordEditText)
-                .validate();
+                .addField(mPasswordEditText);
+        if(mWorkEmailEditText.getText() != null) {
+            validator.addField(mWorkEmailEditText, getString(R.string.error_invalid_email), FormUtils.getEmailValidator());
+        }
+        return validator.validate();
     }
 }
