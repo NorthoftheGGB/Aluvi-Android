@@ -2,6 +2,7 @@ package com.aluvi.android.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -77,6 +79,11 @@ public class CreditCardInfoDialogFragment extends DialogFragment {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
+                        View view =  mCVVEditText;
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
                         validateFields();
                     }
 
