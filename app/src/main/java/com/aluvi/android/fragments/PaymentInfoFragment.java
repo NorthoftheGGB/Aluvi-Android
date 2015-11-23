@@ -130,7 +130,7 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
         inflater.inflate(R.menu.menu_payments, menu);
         super.onCreateOptionsMenu(menu, inflater);
 
-        menu.findItem(R.id.action_withdraw).setVisible(UserStateManager.getInstance().getProfile().getCar() != null);
+        menu.findItem(R.id.action_withdraw).setVisible(UserStateManager.getInstance().getProfile().getCommuterBalanceCents() >= 1000);
     }
 
     @Override
