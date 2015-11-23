@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/card_number"
             android:imeOptions="actionNext"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:maxLength="19"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
