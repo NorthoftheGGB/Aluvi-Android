@@ -1,10 +1,12 @@
 package com.aluvi.android.fragments;
 
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -277,7 +279,18 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
         startActivity(smsIntent);
     }
 
+    private boolean hasPhonePermission() {
+        final PackageManager packageManager = getActivity().getPackageManager();
+        return packageManager.checkPermission(Manifest.permission.CALL_PHONE,
+                getActivity().getPackageName()) == PackageManager.PERMISSION_GRANTED;
+    }
+
     private void callNumber(String phoneNumber) {
+        if(!hasPhonePermission()){
+            Snackbar.make(getView(), R.string.phone_permission_missing, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
         startActivity(intent);
     }

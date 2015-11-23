@@ -160,4 +160,6 @@
     <string name="withdraw_requested">Your withdrawal will be processed shortly.  You will receive a push message once funds are transfered</string>
     <string name="great">Great!</string>
     <string name="unkown_transition"></string>
+
+    <string name="phone_permission_missing">We don\'t have permission to make this call!</string>
 </resources>
