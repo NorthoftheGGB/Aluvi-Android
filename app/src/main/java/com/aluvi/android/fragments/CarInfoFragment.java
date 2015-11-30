@@ -76,20 +76,24 @@ public class CarInfoFragment extends BaseButterFragment {
     }
 
     private void saveCarInfo() {
-        showDefaultProgressDialog();
-        UserStateManager.getInstance().saveCarInfo(mInfoUIHelper.initCarData(),
-                new Callback() {
-                    @Override
-                    public void success() {
-                        cancelProgressDialogs();
-                        mListener.onInfoSaved();
-                    }
+        if(mInfoUIHelper.validateForm()) {
 
-                    @Override
-                    public void failure(String message) {
-                        onError(message);
-                    }
-                });
+            showDefaultProgressDialog();
+            UserStateManager.getInstance().saveCarInfo(mInfoUIHelper.initCarData(),
+                    new Callback() {
+                        @Override
+                        public void success() {
+                            cancelProgressDialogs();
+                            mListener.onInfoSaved();
+                        }
+
+                        @Override
+                        public void failure(String message) {
+                            onError(message);
+                        }
+                    });
+
+        }
     }
 
     private void onError(String error) {
