@@ -164,15 +164,6 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
                 if (rider.getId() != getTicket().getDriver().getId())
                     addRider(rider);
 
-        // Local user isn't included in riders list, so manually add him/her into the list
-        if (!getTicket().isDriving()) {
-            Profile userProfile = UserStateManager.getInstance().getProfile();
-
-            String profilePictureUrl = userProfile.getSmallImageUrl();
-            String firstName = userProfile.getFirstName();
-            String phoneNumber = userProfile.getPhone();
-            addRider(firstName, profilePictureUrl, phoneNumber);
-        }
     }
 
     private void addRider(Rider rider) {
