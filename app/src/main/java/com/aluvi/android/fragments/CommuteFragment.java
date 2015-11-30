@@ -127,7 +127,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     public void onPrepareOptionsMenu(Menu menu) {
         boolean isTicketRequested = mCurrentTicket != null && mCurrentTicket.getState().equals(Ticket.STATE_REQUESTED);
         boolean isTicketActive = Ticket.isTicketActive(mCurrentTicket);
-        boolean isBackHomeEnabled = mCurrentTicket != null &&
+        boolean isBackHomeEnabled = !isTicketActive && mCurrentTicket != null &&
                 CommuteManager.getInstance().isDriveHomeEnabled(mCurrentTicket.getTrip());
 
         menu.findItem(R.id.action_view_commute)
@@ -137,7 +137,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                 .setVisible(!isTicketRequested && !isTicketActive);
 
         menu.findItem(R.id.action_cancel)
-                .setVisible(isTicketActive && !isBackHomeEnabled);
+                .setVisible(isTicketActive);
 
         menu.findItem(R.id.action_back_home)
                 .setVisible(isBackHomeEnabled);
@@ -244,22 +244,37 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             }
         };
 
-        addDialog(new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.cancel_ride_question)
-                .setPositiveButton(R.string.only_work, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CommuteManager.getInstance().cancelTicket(ticket, onCancelFinishedCallback);
-                    }
-                })
-                .setNegativeButton(R.string.both_directions, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CommuteManager.getInstance().cancelTrip(ticket.getTrip(), onCancelFinishedCallback);
-                    }
-                })
-                .setNeutralButton(android.R.string.cancel, null)
-                .show());
+        if (CommuteManager.getInstance().isDriveHomeEnabled()) {
+            // Message if we only have the ride back home to do
+            addDialog(new AlertDialog.Builder(getActivity())
+                    .setTitle("Do you want to cancel your ride back home?")
+                    .setPositiveButton("Cancel Ride", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            CommuteManager.getInstance().cancelTicket(ticket, onCancelFinishedCallback);
+                        }
+                    })
+                    .setNeutralButton(android.R.string.cancel, null)
+                    .show());
+        } else {
+            // Default Messaage
+            addDialog(new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.cancel_ride_question)
+                    .setPositiveButton(R.string.only_work, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            CommuteManager.getInstance().cancelTicket(ticket, onCancelFinishedCallback);
+                        }
+                    })
+                    .setNegativeButton(R.string.both_directions, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            CommuteManager.getInstance().cancelTrip(ticket.getTrip(), onCancelFinishedCallback);
+                        }
+                    })
+                    .setNeutralButton(android.R.string.cancel, null)
+                    .show());
+        }
     }
 
     @Override
