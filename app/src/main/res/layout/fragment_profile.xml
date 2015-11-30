@@ -64,7 +64,8 @@
         android:layout_alignRight="@+id/profile_edit_text_email_container"
         android:layout_alignStart="@+id/profile_edit_text_email_container"
         android:layout_below="@+id/profile_edit_text_email_container"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/profile_edit_text_password"
@@ -73,7 +74,8 @@
             android:ems="10"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:text="@string/placeholder_password"/>
+            android:text="@string/placeholder_password"
+            android:visibility="gone" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout

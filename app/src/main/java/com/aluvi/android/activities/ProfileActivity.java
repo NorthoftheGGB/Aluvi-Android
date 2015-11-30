@@ -23,7 +23,7 @@ public class ProfileActivity extends AluviAuthActivity implements ProfileFragmen
 
     @Override
     public void onProfileSavedListener() {
-        finish();
+        //finish();
     }
 
     @Override

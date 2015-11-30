@@ -154,32 +154,12 @@ public class ProfileFragment extends BaseButterFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, int which) {
+
                         String password = passwordEditText.getText().toString();
-                        String email = UserStateManager.getInstance().getProfile().getEmail();
+                        if (password.equals(mPasswordEditText.getText().toString())) {
+                            onPasswordVerified();
+                        }
 
-                        showDefaultProgressDialog();
-                        UserStateManager.getInstance()
-                                .login(email, password, new UserStateManager.LoginCallback() {
-                                    @Override
-                                    public void onUserNotFound() {
-                                        cancelProgressDialogs();
-                                    }
-
-                                    @Override
-                                    public void success() {
-                                        cancelProgressDialogs();
-                                        if (getView() != null)
-                                            onPasswordVerified();
-                                    }
-
-                                    @Override
-                                    public void failure(String message) {
-                                        cancelProgressDialogs();
-                                        if (getView() != null) {
-                                            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
                     }
                 })
                 .show();
