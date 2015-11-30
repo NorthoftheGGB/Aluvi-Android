@@ -289,9 +289,12 @@ public class CommuteMapFragment extends BaseButterFragment {
     }
 
     private void plotPickupPoints(List<PickupPointData> data) {
+        // Skip pickup points until correct icon is implemented
+        /*
         if (data != null)
             for (PickupPointData point : data)
                 plotPickupPoint(point);
+                */
     }
 
     private void plotPickupPoint(PickupPointData data) {
