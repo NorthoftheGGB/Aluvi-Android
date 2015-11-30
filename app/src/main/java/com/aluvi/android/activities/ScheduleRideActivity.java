@@ -381,23 +381,25 @@ public class ScheduleRideActivity extends AluviAuthActivity implements
     }
 
     private void cancelTrip(Trip trip) {
-        CommuteManager.getInstance().cancelTrip(trip, cancelCallback);
-    }
 
-    private Callback cancelCallback = new Callback() {
-        @Override
-        public void success() {
-            if (mRootView != null) {
-                Snackbar.make(mRootView, R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
-                finish();
+        showDefaultProgressDialog();
+        CommuteManager.getInstance().cancelTrip(trip, new Callback() {
+            @Override
+            public void success() {
+                cancelProgressDialogs();
+                if (mRootView != null) {
+                    Snackbar.make(mRootView, R.string.cancelled_trips, Snackbar.LENGTH_SHORT).show();
+                    finish();
+                }
             }
-        }
 
-        @Override
-        public void failure(String message) {
-            if (mRootView != null)
-                Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
-        }
+            @Override
+            public void failure(String message) {
+                cancelProgressDialogs();
+                if (mRootView != null)
+                    Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
     };
 
     private void updateStartTimeButton() {
