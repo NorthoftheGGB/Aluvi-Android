@@ -63,3 +63,11 @@
 -dontwarn com.android.volley.toolbox.**
 -dontwarn com.viewpagerindicator.**
 -dontwarn com.almeros.android.multitouch.TwoFingerGestureDetector
+
+#Android
+-keep class android.support.v4.app.** { *; }
+-keep interface android.support.v4.app.** { *; }
+-keep class android.support.v7.app.** { *; }
+-keep interface android.support.v7.app.** { *; }
+-keep class android.support.v13.app.** { *; }
+-keep interface android.support.v13.app.** { *; }
