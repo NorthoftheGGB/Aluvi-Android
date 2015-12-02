@@ -30,7 +30,7 @@
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
 
--keepattributes *Annotation*,EnclosingMethod,Signature
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 -keepnames class com.fasterxml.jackson.** { *; }
  -dontwarn com.fasterxml.jackson.databind.**
  -keep class org.codehaus.** { *; }
@@ -71,3 +71,4 @@
 -keep interface android.support.v7.app.** { *; }
 -keep class android.support.v13.app.** { *; }
 -keep interface android.support.v13.app.** { *; }
+
