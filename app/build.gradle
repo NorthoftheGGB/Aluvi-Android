@@ -26,7 +26,7 @@ android {
         applicationId "com.aluvi.android"
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 16
+        versionCode 17
         versionName "2.3"
         multiDexEnabled true
     }
