@@ -102,7 +102,9 @@ public class ProfileFragment extends BaseButterFragment {
 
         try {
             String versionName = "v" + getActivity().getPackageManager()
-                    .getPackageInfo(getActivity().getPackageName(), 0).versionName;
+                    .getPackageInfo(getActivity().getPackageName(), 0).versionName
+                    + "b" + String.valueOf(getActivity().getPackageManager()
+                    .getPackageInfo(getActivity().getPackageName(), 0).versionCode);
             mVersionNumberTextView.setText(versionName);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
