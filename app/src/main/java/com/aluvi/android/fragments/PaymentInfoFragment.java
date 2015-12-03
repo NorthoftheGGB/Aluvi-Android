@@ -93,6 +93,8 @@ public class PaymentInfoFragment extends BaseButterFragment implements CreditCar
 
         mPayToButton.setText("Get paid to " + getWithdrawCardBrand(profile) + " ending in " + getWithdrawCardLastFour(profile));
         updateLastTransaction();
+
+        getActivity().invalidateOptionsMenu();
     }
 
     private SimpleDateFormat mMonthDayFormat = new SimpleDateFormat("MM/dd");

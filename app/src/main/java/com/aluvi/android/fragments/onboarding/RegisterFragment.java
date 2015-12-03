@@ -86,7 +86,7 @@ public class RegisterFragment extends BaseButterFragment {
     }
 
     private boolean validateForm() {
-        return new FormValidator(getString(R.string.field_required_error))
+        FormValidator fv = new FormValidator(getString(R.string.field_required_error))
                 .addField(mFullNameEditText, getString(R.string.full_name),
                         new FormValidator.Validator() {
                             @Override
@@ -95,7 +95,18 @@ public class RegisterFragment extends BaseButterFragment {
                             }
                         })
                 .addField(mPhoneNumberEditText, getString(R.string.error_invalid_phone), FormUtils.getPhoneValidator())
-                .validate();
+
+                .addField(mPhoneNumberEditText, getString(R.string.error_invalid_phone),
+                                        new FormValidator.Validator() {
+                                            @Override
+                                            public boolean isValid(String input) {
+                                                return input.length() == 14;
+                                            }
+                                        }
+                                );
+
+        boolean rval = fv.validate();
+        return rval;
     }
 
     private ProfileData initRegistrationData() {

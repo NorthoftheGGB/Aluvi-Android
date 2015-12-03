@@ -113,7 +113,10 @@ public class TicketInfoFragment extends BaseTicketConsumerFragment {
             if (getTicket().isDriving()) {
                 mDriverInfoView.setVisibility(View.GONE);
                 updateRidersPickedUpButton();
+                ButterKnife.apply(mDriverViews, VISIBILITY_ACTION);
             } else {
+                mDriverInfoView.setVisibility(View.VISIBLE);
+
                 ButterKnife.apply(mDriverViews, INVISIBILITY_ACTION);
                 loadProfilePicture(getTicket().getDriver().getSmallImageUrl(), mDriverProfileImageView);
             }
