@@ -139,7 +139,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         menu.findItem(R.id.action_cancel)
                 .setVisible(isTicketActive);
 
-        menu.findItem(R.id.action_back_home)
+        menu.findItem(R.id.action_back_home_option)
                 .setVisible(isBackHomeEnabled);
     }
 
@@ -150,9 +150,9 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             case R.id.action_schedule_ride:
                 mEventListener.onCommuteSchedulerRequested();
                 break;
-            case R.id.action_back_home:
+            case R.id.action_back_home_option:
                 EventBus.getDefault().post(new BackHomeEvent(mCurrentTicket));
-                onTicketScheduled(mCurrentTicket, true);
+                onTicketScheduled(mCurrentTicket, true); // !! This looks like poor programming, as ticket has not been scheduled here but rather selected
                 break;
             case R.id.action_cancel:
                 cancelTicket(mCurrentTicket);
@@ -184,6 +184,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     private void onTicketsRefreshed(List<TicketStateTransition> transitions) {
         mSlidingPanelView.setVisibility(View.VISIBLE);
         mCurrentTicket = CommuteManager.getInstance().getActiveTicket();
+
         handleTicketStateTransitions(transitions);
 
         if (Ticket.isTicketActive(mCurrentTicket)) {
@@ -220,7 +221,11 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
     }
 
     private void onTicketScheduled(Ticket ticket, boolean overrideBackHome) {
-        boolean isTicketInfoVisible = !CommuteManager.getInstance().isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome;
+        //boolean isTicketInfoVisible = !CommuteManager.getInstance().isDriveHomeEnabled(ticket.getTrip()) || overrideBackHome;
+        // logic above looks to be poor programming.
+        // it is not semantic to call onTicketScheduled when the back home ticket is merely _selected_
+        // this logic also causes the drawer to not open when the 'scheduled' event does come.
+        boolean isTicketInfoVisible = true;
         mCurrentPanelState = isTicketInfoVisible ? SlidingUpPanelLayout.PanelState.EXPANDED : SlidingUpPanelLayout.PanelState.HIDDEN;
 
         mEventListener.startLocationTracking(ticket);
@@ -244,19 +249,7 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
             }
         };
 
-        if (CommuteManager.getInstance().isDriveHomeEnabled()) {
-            // Message if we only have the ride back home to do
-            addDialog(new AlertDialog.Builder(getActivity())
-                    .setTitle("Do you want to cancel your ride back home?")
-                    .setPositiveButton("Cancel Ride", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            CommuteManager.getInstance().cancelTicket(ticket, onCancelFinishedCallback);
-                        }
-                    })
-                    .setNeutralButton(android.R.string.cancel, null)
-                    .show());
-        } else {
+        if(CommuteManager.getInstance().isTripNotStarted()){
             // Default Messaage
             addDialog(new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.cancel_ride_question)
@@ -274,6 +267,18 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
                     })
                     .setNeutralButton(android.R.string.cancel, null)
                     .show());
+        } else if (CommuteManager.getInstance().isDriveHomeEnabled()) {
+            // Message if we only have the ride back home to do
+            addDialog(new AlertDialog.Builder(getActivity())
+                    .setTitle("Do you want to cancel your ride back home?")
+                    .setPositiveButton("Cancel Ride", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            CommuteManager.getInstance().cancelTicket(ticket, onCancelFinishedCallback);
+                        }
+                    })
+                    .setNeutralButton(android.R.string.cancel, null)
+                    .show());
         }
     }
 
@@ -287,9 +292,8 @@ public class CommuteFragment extends BaseButterFragment implements TicketInfoFra
         refreshTickets();
     }
 
-    @SuppressWarnings("unused")
     public void onEvent(BackHomeEvent event) {
-        onTicketScheduled(mCurrentTicket, true);
+        onTicketScheduled(mCurrentTicket, true);  // !! looks like poor programming, doesn't make sense to call onTicketScheduled here, since this isn't the 'scheduled' event
     }
 
     private Dialog buildTransitionDialog(TicketStateTransition transition, final Dialog nextDialog) {

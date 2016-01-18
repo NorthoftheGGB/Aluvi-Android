@@ -442,8 +442,6 @@ public class CommuteManager {
 
     /**
      * Returns tickets that are requested or scheduled that are in the future.
-     * Minimize calling this method - it is relatively expensive to look through a potentially large list of tickets
-     * looking for the most relevant one (nearest in the future, requested or scheduled state).
      *
      * @return
      */
@@ -473,6 +471,22 @@ public class CommuteManager {
         return activeTicket != null ? activeTicket.getTrip() : null;
     }
 
+    public boolean isTripNotStarted() {
+        Trip activeTrip = getActiveTrip();
+        if (activeTrip != null) {
+            RealmResults<Ticket> tickets = activeTrip.getTickets()
+                    .where().findAllSorted("pickupTime");
+            if (tickets.size() == 2) {
+                Ticket aSide = tickets.get(0);
+                Ticket bSide = tickets.get(1);
+                return aSide.getState().equals(Ticket.STATE_SCHEDULED) && bSide.getState().equals(Ticket.STATE_SCHEDULED);
+            }
+        }
+
+        return false;
+
+    }
+
     public boolean isDriveHomeEnabled() {
         return isDriveHomeEnabled(getActiveTrip());
     }
@@ -484,7 +498,7 @@ public class CommuteManager {
             if (tickets.size() == 2) {
                 Ticket aSide = tickets.get(0);
                 Ticket bSide = tickets.get(1);
-                return !Ticket.isTicketActive(aSide) && bSide.getState().equals(Ticket.STATE_SCHEDULED);
+                return bSide.getState().equals(Ticket.STATE_SCHEDULED);
             }
         }
 

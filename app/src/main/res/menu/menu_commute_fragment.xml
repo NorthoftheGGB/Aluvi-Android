@@ -19,7 +19,7 @@
         android:visible="false"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/action_back_home"
+        android:id="@+id/action_back_home_option"
         android:orderInCategory="100"
         android:title="@string/action_back_home"
         android:visible="false"
